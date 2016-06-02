@@ -57,12 +57,16 @@ public class DhcpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
         DhcpMessage request = decoder.decode(msg.content().nioBuffer());
 
         //request.setRelayAgentAddress(InetAddress.getByName("10.8.0.107"));
-        //System.out.println("request: " + request.toString());
-        //System.out.println("msg: " + msg.toString());
-        //System.out.println("relay-agent: " + request.getRelayAgentAddress());
+        System.out.println("request: " + request.toString());
+        System.out.println("msg: " + msg.toString());
+        System.out.println("relay-agent: " + request.getRelayAgentAddress());
 
-        //InetAddress address = DhcpInterfaceUtils.toInetAddress(new Object[]{request.getRelayAgentAddress(), msg.recipient(), (InetSocketAddress) ctx.channel().localAddress(), msg.sender(), request});
-        //System.out.println("address: " + address);
+        InetAddress address = DhcpInterfaceUtils.toInetAddress(new Object[]{request.getRelayAgentAddress(), msg.recipient(), (InetSocketAddress) ctx.channel().localAddress(), msg.sender(), request});
+        System.out.println("address: " + address);
+
+        System.out.println("ctx.localAddress: " + ctx.channel().localAddress().toString());
+        System.out.println("sender: " + msg.sender().toString());
+        System.out.println("recipient: " + msg.recipient().toString());
 
         DhcpRequestContext context = interfaceManager.newRequestContext(
                 (InetSocketAddress) ctx.channel().localAddress(),
@@ -72,7 +76,7 @@ public class DhcpHandler extends SimpleChannelInboundHandler<DatagramPacket> {
         );
         if (context == null) {
             debug("IGNQUERY", msg.sender(), msg.recipient(), request);
-            //System.out.println("Context is NULL");
+            System.out.println("Context is NULL");
             return;
         }
 

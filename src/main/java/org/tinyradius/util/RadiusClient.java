@@ -78,11 +78,11 @@ public class RadiusClient {
 	public synchronized RadiusPacket authenticate(AccessRequest request) 
 	throws IOException, RadiusException {
 		if (logger.isInfoEnabled())
-			logger.info("send Access-Request packet: " + request);
+			logger.debug("send Access-Request packet: " + request);
 		
 		RadiusPacket response = communicate(request, getAuthPort());
 		if (logger.isInfoEnabled())
-			logger.info("received packet: " + response);
+			logger.debug("received packet: " + response);
 		
 		return response;
 	}
@@ -99,11 +99,11 @@ public class RadiusClient {
 	public synchronized RadiusPacket account(AccountingRequest request) 
 	throws IOException, RadiusException {
 		if (logger.isInfoEnabled())
-			logger.info("send Accounting-Request packet: " + request);
+			logger.debug("send Accounting-Request packet: " + request);
 		
 		RadiusPacket response = communicate(request, getAcctPort());
 		if (logger.isInfoEnabled())
-			logger.info("received packet: " + response);
+			logger.debug("received packet: " + response);
 		
 		return response;
 	}

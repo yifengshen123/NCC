@@ -262,4 +262,5 @@ VENDORATTR      9       Pre-Output-Packets              193     integer
 VENDORATTR      9       Disconnect-Cause                195     integer
 VENDORATTR      9       Connection-Progress             196     integer
 VENDORATTR      9       PreSession-Time                 198     integer
+VENDORATTR      9       Account-Info                    250     string
 VENDORATTR      9       SSG-Service-Info                251     string

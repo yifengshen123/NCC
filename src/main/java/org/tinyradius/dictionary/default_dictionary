@@ -251,3 +251,7 @@ VENDOR          311     Microsoft
 
 VENDORATTR      311     MS-CHAP-Challenge               11      octets
 VENDORATTR      311     MS-CHAP2-Response               25      octets
+
+VENDOR          9       Cisco
+
+VENDORATTR      9       SSG-Service-Info                251     string

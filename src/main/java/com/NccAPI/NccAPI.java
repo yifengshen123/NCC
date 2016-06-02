@@ -8,6 +8,8 @@ import com.NccAPI.Pools.PoolsService;
 import com.NccAPI.Pools.PoolsServiceImpl;
 import com.NccAPI.Sessions.SessionsService;
 import com.NccAPI.Sessions.SessionsServiceImpl;
+import com.NccAPI.System.SystemService;
+import com.NccAPI.System.SystemServiceImpl;
 import com.NccAPI.UserAccounts.AccountsService;
 import com.NccAPI.UserAccounts.AccountsServiceImpl;
 import com.NccAPI.Users.UsersService;
@@ -106,6 +108,7 @@ public class NccAPI {
             private NasService nasService;
             private ViewsService viewsService;
             private AstraManagerService astraManagerService;
+            private SystemService systemService;
 
             private Object compositeService;
 
@@ -117,6 +120,7 @@ public class NccAPI {
                 nasService = new NasServiceImpl();
                 viewsService = new ViewsServiceImpl();
                 astraManagerService = new AstraManagerImpl();
+                systemService = new SystemServiceImpl();
 
                 compositeService = ProxyUtil.createCompositeServiceProxy(
                         this.getClass().getClassLoader(),
@@ -127,7 +131,8 @@ public class NccAPI {
                                 sessionsService,
                                 nasService,
                                 viewsService,
-                                astraManagerService
+                                astraManagerService,
+                                systemService
                         },
                         new Class<?>[]{
                                 UsersService.class,

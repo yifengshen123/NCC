@@ -2,13 +2,13 @@ package com.NccAPI.Users;
 
 import com.NccUsers.NccUsers;
 import com.NccUsers.NccUsersException;
-import com.NccUsers.UserData;
+import com.NccUsers.NccUserData;
 
 import java.util.ArrayList;
 
 public class UsersServiceImpl implements UsersService {
 
-    public UserData getUser(String login) {
+    public NccUserData getUser(String login) {
         System.out.println("getUser: '" + login + "'");
 
         try {
@@ -20,7 +20,7 @@ public class UsersServiceImpl implements UsersService {
         return null;
     }
 
-    public ArrayList<UserData> getUsers() {
+    public ArrayList<NccUserData> getUsers() {
         try {
             return new NccUsers().getUsers();
         } catch (NccUsersException e) {
@@ -39,7 +39,7 @@ public class UsersServiceImpl implements UsersService {
 
         System.out.println("API: createUser: " + userLogin);
 
-        UserData userData = new UserData();
+        NccUserData userData = new NccUserData();
         userData.userLogin = userLogin;
         userData.userPassword = userPassword;
         userData.userStatus = userStatus;

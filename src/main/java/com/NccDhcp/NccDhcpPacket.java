@@ -286,7 +286,7 @@ public class NccDhcpPacket {
         return res;
     }
 
-    private int ba2int(byte[] b) {
+    public int ba2int(byte[] b) {
 
         if (b.length == 1) return b[0];
 

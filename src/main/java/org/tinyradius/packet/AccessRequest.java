@@ -15,6 +15,7 @@ import java.util.List;
 import com.NccRadius.MSCHAP;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.tinyradius.attribute.IntegerAttribute;
 import org.tinyradius.attribute.RadiusAttribute;
 import org.tinyradius.attribute.StringAttribute;
 import org.tinyradius.util.RadiusException;
@@ -102,6 +103,15 @@ public class AccessRequest extends RadiusPacket {
 
         RadiusAttribute ra = (RadiusAttribute) attrs.get(0);
         return ((StringAttribute) ra).getAttributeValue();
+    }
+
+    public String getServiceType() {
+        List attrs = getAttributes(SERVICE_TYPE);
+        if (attrs.size() < 1 || attrs.size() > 1)
+            throw new RuntimeException("exactly one Service-Type attribute required");
+
+        RadiusAttribute ra = (RadiusAttribute) attrs.get(0);
+        return ((IntegerAttribute) ra).getAttributeValue();
     }
 
     /**
@@ -410,6 +420,8 @@ public class AccessRequest extends RadiusPacket {
      * Radius attribute type for CHAP-Password attribute.
      */
     private static final int CHAP_PASSWORD = 3;
+
+    private static final int SERVICE_TYPE = 6;
 
     private static final int MSCHAP_CHALLENGE = 11;
     private static final int MSCHAP2_RESPONSE = 25;

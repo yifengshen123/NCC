@@ -33,8 +33,8 @@ public class NccSessions {
                 sessionData.id = rs.getInt("id");
                 sessionData.sessionId = rs.getString("sessionId");
                 sessionData.startTime = rs.getLong("startTime");
-                sessionData.acctInputOctets = rs.getInt("acctInputOctets");
-                sessionData.acctOutputOctets = rs.getInt("acctOutputOctets");
+                sessionData.acctInputOctets = rs.getLong("acctInputOctets");
+                sessionData.acctOutputOctets = rs.getLong("acctOutputOctets");
                 sessionData.nasId = rs.getInt("nasId");
                 sessionData.framedIP = rs.getLong("framedIP");
                 sessionData.framedMAC = rs.getString("framedMAC");
@@ -190,7 +190,7 @@ public class NccSessions {
                     "framedRemoteId, " +
                     "userId, " +
                     "lastAlive, " +
-                    "sessionDuration FROM nccSessions WHERE userId=" + uid);
+                    "sessionDuration FROM nccSessions WHERE userId=" + uid + " ORDER BY id DESC");
 
         } catch (NccQueryException e) {
             e.printStackTrace();

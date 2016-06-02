@@ -1,6 +1,6 @@
 package com.NccAPI.Users;
 
-import com.NccUsers.UserData;
+import com.NccUsers.NccUserData;
 
 import java.util.ArrayList;
 
@@ -9,8 +9,8 @@ import java.util.ArrayList;
  *
  */
 public interface UsersService {
-    UserData getUser(String login);
-    ArrayList<UserData> getUsers();
+    NccUserData getUser(String login);
+    ArrayList<NccUserData> getUsers();
     ArrayList<Integer> createUser(
             String userLogin,
             String userPassword,

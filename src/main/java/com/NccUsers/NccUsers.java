@@ -2,7 +2,6 @@ package com.NccUsers;
 
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
-import com.mongodb.DB;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -25,11 +24,11 @@ public class NccUsers {
         }
     }
 
-    private UserData fillUserData(CachedRowSetImpl rs) throws NccUsersException {
+    private NccUserData fillUserData(CachedRowSetImpl rs) throws NccUsersException {
         if (rs != null) {
             try {
                 if (rs.next()) {
-                    UserData userData = new UserData();
+                    NccUserData userData = new NccUserData();
 
                     userData.userLogin = rs.getString("id");
                     userData.id = rs.getInt("uid");
@@ -52,7 +51,7 @@ public class NccUsers {
         }
     }
 
-    public UserData getUser(Integer uid) throws NccUsersException {
+    public NccUserData getUser(Integer uid) throws NccUsersException {
 
         CachedRowSetImpl rs;
 
@@ -81,7 +80,7 @@ public class NccUsers {
         return fillUserData(rs);
     }
 
-    public UserData getUser(String login) throws NccUsersException {
+    public NccUserData getUser(String login) throws NccUsersException {
 
         CachedRowSetImpl rs;
 
@@ -94,7 +93,7 @@ public class NccUsers {
         if (rs != null) {
             try {
                 if (rs.next()) {
-                    UserData userData = new UserData();
+                    NccUserData userData = new NccUserData();
 
                     userData.id = rs.getInt("id");
                     userData.userLogin = login;
@@ -116,9 +115,9 @@ public class NccUsers {
         }
     }
 
-    public ArrayList<UserData> getUsers() throws NccUsersException {
+    public ArrayList<NccUserData> getUsers() throws NccUsersException {
 
-        ArrayList<UserData> users = new ArrayList<>();
+        ArrayList<NccUserData> users = new ArrayList<>();
 
         CachedRowSetImpl rs;
 
@@ -127,7 +126,7 @@ public class NccUsers {
 
             try {
                 while (rs.next()) {
-                    UserData userData = new UserData();
+                    NccUserData userData = new NccUserData();
 
                     userData.id = rs.getInt("id");
                     userData.userLogin = rs.getString("userLogin");
@@ -153,7 +152,7 @@ public class NccUsers {
         return null;
     }
 
-    public ArrayList<Integer> createUser(UserData userData) throws NccUsersException {
+    public ArrayList<Integer> createUser(NccUserData userData) throws NccUsersException {
 
         try {
             if (getUser(userData.userLogin) != null) {

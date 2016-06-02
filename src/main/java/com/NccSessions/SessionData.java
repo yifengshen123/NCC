@@ -5,8 +5,8 @@ public class SessionData {
     public String sessionId;
     public Long startTime;
     public Long stopTime;
-    public Integer acctInputOctets;
-    public Integer acctOutputOctets;
+    public Long acctInputOctets;
+    public Long acctOutputOctets;
     public Integer terminateCause;
     public Long lastAlive;
     public Long sessionDuration;
