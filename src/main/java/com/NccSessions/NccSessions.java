@@ -44,6 +44,7 @@ public class NccSessions {
                 sessionData.userId = rs.getInt("userId");
                 sessionData.lastAlive = rs.getLong("lastAlive");
                 sessionData.sessionDuration = rs.getLong("sessionDuration");
+                sessionData.userTariff = rs.getInt("userTariff");
 
                 return sessionData;
             } catch (SQLException e) {
@@ -151,7 +152,8 @@ public class NccSessions {
                     "framedRemoteId, " +
                     "userId, " +
                     "lastAlive, " +
-                    "sessionDuration FROM nccSessions WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'");
+                    "sessionDuration, " +
+                    "userTariff FROM nccSessions WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'");
 
         } catch (NccQueryException e) {
             e.printStackTrace();
@@ -272,7 +274,8 @@ public class NccSessions {
                     "sessionDuration, " +
                     "framedAgentId, " +
                     "framedCircuitId, " +
-                    "framedRemoteId" +
+                    "framedRemoteId, " +
+                    "userTariff" +
                     ") VALUES (" +
                     "'" + sessionData.sessionId + "', " +
                     sessionData.startTime + ", " +
@@ -286,7 +289,8 @@ public class NccSessions {
                     sessionData.sessionDuration + ", " +
                     sessionData.framedAgentId + ", " +
                     "'" + sessionData.framedCircuitId + "', " +
-                    "'" + sessionData.framedRemoteId + "'" +
+                    "'" + sessionData.framedRemoteId + "', " +
+                    sessionData.userTariff +
                     ")");
 
             return ids;
@@ -318,7 +322,8 @@ public class NccSessions {
                     "framedRemoteId, " +
                     "lastAlive, " +
                     "sessionDuration, " +
-                    "sessionId) VALUES (" +
+                    "sessionId, " +
+                    "userTariff) VALUES (" +
                     sessionData.userId + ", " +
                     sessionData.startTime + ", " +
                     "UNIX_TIMESTAMP(), " +
@@ -333,7 +338,9 @@ public class NccSessions {
                     "'" + sessionData.framedRemoteId + "', " +
                     sessionData.lastAlive + ", " +
                     sessionData.sessionDuration + ", " +
-                    "'" + sessionData.sessionId + "')");
+                    "'" + sessionData.sessionId + "', " +
+                    sessionData.userTariff +
+                    ")");
 
             ArrayList<Integer> idsDelete = query.updateQuery("DELETE FROM nccSessions WHERE id=" + sessionData.id);
 

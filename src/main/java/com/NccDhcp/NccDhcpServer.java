@@ -240,7 +240,7 @@ public class NccDhcpServer {
 
                                     if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_REQUEST) {
 
-                                        logger.debug("DHCPREQUEST from " + inPkt.getAddress().toString() + " transactionId: " + pkt.ba2int(pkt.dhcpTransID));
+                                        logger.debug("DHCPREQUEST from " + inPkt.getAddress().toString());
 
                                         logger.debug("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
 

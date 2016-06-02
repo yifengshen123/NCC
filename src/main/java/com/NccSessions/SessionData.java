@@ -17,4 +17,5 @@ public class SessionData {
     public Long framedAgentId;
     public String framedCircuitId;
     public String framedRemoteId;
+    public Integer userTariff;
 }

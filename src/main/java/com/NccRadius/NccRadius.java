@@ -290,6 +290,7 @@ public class NccRadius extends RadiusServer {
                                             if (userData != null) {
 
                                                 sessionData.userId = userData.id;
+                                                sessionData.userTariff = userData.userTariff;
                                                 try {
                                                     new NccSessions().startSession(sessionData);
                                                 } catch (NccSessionsException e) {
