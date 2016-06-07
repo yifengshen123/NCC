@@ -128,9 +128,9 @@ public class AttributeType {
 	 * is unknown. 
 	 * @return name
 	 */
-	public String getEnumeration(int value) {
+	public String getEnumeration(long value) {
 		if (enumeration != null)
-			return (String)enumeration.get(new Integer(value));
+			return (String)enumeration.get(new Long(value));
 		else
 			return null;
 	}

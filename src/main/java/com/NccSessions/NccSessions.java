@@ -7,6 +7,7 @@ import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.log4j.Logger;
 
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ import java.util.Objects;
 public class NccSessions {
 
     private NccQuery query;
+    private static Logger logger = Logger.getLogger(NccSessions.class);
 
     public NccSessions() throws NccSessionsException {
         try {
@@ -434,5 +436,22 @@ public class NccSessions {
         }
 
         return null;
+    }
+
+    public void cleanupSessions() {
+        try {
+            ArrayList<SessionData> sessions = getSessions();
+            Long cleanupTime = System.currentTimeMillis() / 1000L - 120;
+
+            for (SessionData session : sessions) {
+                if (session.lastAlive < cleanupTime) {
+                    System.out.println("Dead session: " + session.sessionId + " lastAlive: " + session.lastAlive);
+                    //stopSession(session);
+                }
+            }
+
+        } catch (NccSessionsException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -168,7 +168,7 @@ public class NccRadius extends RadiusServer {
 
                 Integer packetIdentifier = accountingRequest.getPacketIdentifier();
                 Integer packetType = accountingRequest.getPacketType();
-                Integer statusType = 0;
+                Long statusType = 0L;
 
                 try {
                     statusType = accountingRequest.getAcctStatusType();
@@ -243,207 +243,224 @@ public class NccRadius extends RadiusServer {
                         NccDhcpLeaseData leaseData = null;
                         ArrayList<NccDhcpLeaseData> leases = null;
 
-                        switch (statusType) {
-                            case AccountingRequest.ACCT_STATUS_TYPE_START:
+                        if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_START) {
 
-                                logger.info("Session start: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP + " framedMAC=" + framedMAC);
+                            logger.info("Session start: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP + " framedMAC=" + framedMAC);
 
-                                try {
-                                    SessionData checkSession = new NccSessions().getSession(sessionID);
-                                    if (checkSession != null) {
-                                        logger.error("Duplicate session: '" + sessionID + "'");
-                                        break;
-                                    }
-                                } catch (NccSessionsException e) {
-                                    e.printStackTrace();
+                            try {
+                                SessionData checkSession = new NccSessions().getSession(sessionID);
+                                if (checkSession != null) {
+                                    logger.error("Duplicate session: '" + sessionID + "'");
+                                    break;
                                 }
+                            } catch (NccSessionsException e) {
+                                e.printStackTrace();
+                            }
 
-                                sessionData.nasId = nasData.id;
+                            sessionData.nasId = nasData.id;
 
-                                try {
-                                    sessionData.framedIP = NccUtils.ip2long(framedIP);
-                                } catch (UnknownHostException e) {
-                                    e.printStackTrace();
-                                }
-                                sessionData.framedMAC = framedMAC;
-                                sessionData.acctInputOctets = 0L;
-                                sessionData.acctOutputOctets = 0L;
-                                sessionData.sessionId = sessionID;
-                                sessionData.startTime = System.currentTimeMillis() / 1000L;
-                                sessionData.lastAlive = sessionData.startTime;
-                                sessionData.sessionDuration = 0L;
+                            try {
+                                sessionData.framedIP = NccUtils.ip2long(framedIP);
+                            } catch (UnknownHostException e) {
+                                e.printStackTrace();
+                            }
+                            sessionData.framedMAC = framedMAC;
+                            sessionData.acctInputOctets = 0L;
+                            sessionData.acctOutputOctets = 0L;
+                            sessionData.sessionId = sessionID;
+                            sessionData.startTime = System.currentTimeMillis() / 1000L;
+                            sessionData.lastAlive = sessionData.startTime;
+                            sessionData.sessionDuration = 0L;
 
-                                try {
-                                    leases = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
-                                    if (leases.size() > 0) leaseData = leases.get(0);
+                            try {
+                                leases = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
+                                if (leases.size() > 0) leaseData = leases.get(0);
 
-                                    if (leaseData != null) {
+                                if (leaseData != null) {
 
-                                        sessionData.framedMAC = leaseData.leaseClientMAC;
-                                        sessionData.framedAgentId = leaseData.leaseRelayAgent;
-                                        sessionData.framedCircuitId = leaseData.leaseCircuitID;
-                                        sessionData.framedRemoteId = leaseData.leaseRemoteID;
-
-                                        try {
-                                            NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
-
-                                            if (userData != null) {
-
-                                                sessionData.userId = userData.id;
-                                                sessionData.userTariff = userData.userTariff;
-                                                try {
-                                                    new NccSessions().startSession(sessionData);
-                                                } catch (NccSessionsException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        } catch (NccUsersException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    } else {
-
-                                        logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
-                                    }
-                                } catch (NccDhcpException e) {
-                                    e.printStackTrace();
-                                } catch (UnknownHostException e) {
-                                    e.printStackTrace();
-                                }
-
-                                break;
-                            case AccountingRequest.ACCT_STATUS_TYPE_STOP:
-
-                                logger.info("Session stop: '" + userLogin + "' sessionId='" + sessionID + "' nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
-
-                                String terminateCause = accountingRequest.getAttributeValue("Acct-Terminate-Cause");
-
-                                try {
-                                    sessionData = new NccSessions().getSession(sessionID);
-                                } catch (NccSessionsException e) {
-                                    e.printStackTrace();
-                                }
-
-                                if (sessionData != null) {
-                                    sessionData.nasId = nasData.id;
-
-                                    switch (terminateCause) {
-                                        case "User-Request":
-                                            sessionData.terminateCause = 1;
-                                            break;
-                                        default:
-                                            sessionData.terminateCause = 0;
-                                            break;
-                                    }
-
-                                    sessionData.stopTime = System.currentTimeMillis() / 1000L;
+                                    sessionData.framedMAC = leaseData.leaseClientMAC;
+                                    sessionData.framedAgentId = leaseData.leaseRelayAgent;
+                                    sessionData.framedCircuitId = leaseData.leaseCircuitID;
+                                    sessionData.framedRemoteId = leaseData.leaseRemoteID;
 
                                     try {
+                                        NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
 
-                                        new NccSessions().stopSession(sessionData);
+                                        if (userData != null) {
 
-                                    } catch (NccSessionsException e) {
+                                            sessionData.userId = userData.id;
+                                            sessionData.userTariff = userData.userTariff;
+                                            try {
+                                                new NccSessions().startSession(sessionData);
+                                            } catch (NccSessionsException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    } catch (NccUsersException e) {
                                         e.printStackTrace();
                                     }
 
                                 } else {
-                                    logger.error("Session not found: '" + sessionID + "'");
 
+                                    logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
+                                }
+                            } catch (NccDhcpException e) {
+                                e.printStackTrace();
+                            } catch (UnknownHostException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_STOP) {
+
+                            logger.info("Session stop: '" + userLogin + "' sessionId='" + sessionID + "' nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
+
+                            String terminateCause = accountingRequest.getAttributeValue("Acct-Terminate-Cause");
+
+                            try {
+                                sessionData = new NccSessions().getSession(sessionID);
+                            } catch (NccSessionsException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (sessionData != null) {
+                                sessionData.nasId = nasData.id;
+
+                                switch (terminateCause) {
+                                    case "User-Request":
+                                        sessionData.terminateCause = 1;
+                                        break;
+                                    default:
+                                        sessionData.terminateCause = 0;
+                                        break;
                                 }
 
-                                break;
-                            case AccountingRequest.ACCT_STATUS_TYPE_INTERIM_UPDATE:
-
-                                logger.debug("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
+                                sessionData.stopTime = System.currentTimeMillis() / 1000L;
 
                                 try {
-                                    leases = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
-                                    if (leases.size() > 0) leaseData = leases.get(0);
 
-                                    if (leaseData != null) {
+                                    new NccSessions().stopSession(sessionData);
 
-                                        logger.debug("Lease found: " + NccUtils.long2ip(leaseData.leaseIP));
+                                } catch (NccSessionsException e) {
+                                    e.printStackTrace();
+                                }
 
-                                        acctInputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Input-Octets"));
-                                        acctOutputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Output-Octets"));
-                                        acctSessionTime = accountingRequest.getAttributeValue("Acct-Session-Time");
+                            } else {
+                                logger.error("Session not found: '" + sessionID + "'");
+
+                            }
+
+                        } else if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_INTERIM_UPDATE) {
+
+                            logger.debug("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
+
+                            try {
+                                leases = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
+                                if (leases.size() > 0) leaseData = leases.get(0);
+
+                                if (leaseData != null) {
+
+                                    logger.debug("Lease found: " + NccUtils.long2ip(leaseData.leaseIP));
+
+                                    acctInputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Input-Octets"));
+                                    acctOutputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Output-Octets"));
+
+                                    logger.debug("In=" + acctInputOctets + " Out=" + acctOutputOctets);
+
+                                    String attr = null;
+
+                                    attr = accountingRequest.getAttributeValue("Acct-Input-Gigawords");
+                                    if (attr != null) {
+                                        acctInputGigawords = Integer.parseInt(attr);
+                                    } else acctInputGigawords = 0;
+
+                                    attr = accountingRequest.getAttributeValue("Acct-Output-Gigawords");
+                                    if (attr != null) {
+                                        acctOutputGigawords = Integer.parseInt(attr);
+                                    } else acctOutputGigawords = 0;
+
+                                    if (acctInputGigawords > 0) {
+                                        acctInputOctets += acctInputGigawords * (1024 * 1024 * 1024);
+                                    }
+
+                                    if (acctOutputGigawords > 0) {
+                                        acctOutputOctets += acctOutputGigawords * (1024 * 1024 * 1024);
+                                    }
+
+                                    acctSessionTime = accountingRequest.getAttributeValue("Acct-Session-Time");
+
+                                    try {
+                                        sessionData = new NccSessions().getSession(sessionID);
+                                    } catch (NccSessionsException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    if (sessionData != null) {
+                                        sessionData.acctInputOctets = acctInputOctets;
+                                        sessionData.acctOutputOctets = acctOutputOctets;
+                                        sessionData.lastAlive = System.currentTimeMillis() / 1000L;
+                                        sessionData.sessionDuration = sessionData.lastAlive - sessionData.startTime;
 
                                         try {
-                                            sessionData = new NccSessions().getSession(sessionID);
+                                            new NccSessions().updateSession(sessionData);
                                         } catch (NccSessionsException e) {
                                             e.printStackTrace();
                                         }
-
-                                        if (sessionData != null) {
-                                            sessionData.acctInputOctets = acctInputOctets;
-                                            sessionData.acctOutputOctets = acctOutputOctets;
-                                            sessionData.lastAlive = System.currentTimeMillis() / 1000L;
-                                            sessionData.sessionDuration = sessionData.lastAlive - sessionData.startTime;
-
-                                            try {
-                                                new NccSessions().updateSession(sessionData);
-                                            } catch (NccSessionsException e) {
-                                                e.printStackTrace();
-                                            }
-                                        } else {
-
-                                            logger.error("Session not found: '" + sessionID + "'");
-                                            try {
-                                                SessionData resumeSession = new NccSessions().getSessionFromLog(sessionID);
-
-                                                if (resumeSession != null) {
-
-                                                    resumeSession.acctInputOctets = acctInputOctets;
-                                                    resumeSession.acctOutputOctets = acctOutputOctets;
-
-                                                    resumeSession.lastAlive = System.currentTimeMillis() / 1000L;
-                                                    resumeSession.sessionDuration = Long.parseLong(acctSessionTime);
-
-                                                    ArrayList<Integer> ids = new NccSessions().resumeSession(resumeSession);
-                                                    if (ids != null) {
-                                                        logger.info("Session '" + sessionID + "' resumed");
-                                                    }
-                                                } else {
-                                                    logger.debug("No session to resume");
-                                                    disconnectUser(nasIP, userLogin, sessionID);
-                                                }
-                                            } catch (NccSessionsException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
                                     } else {
 
-                                        logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
-
+                                        logger.error("Session not found: '" + sessionID + "'");
                                         try {
-                                            sessionData = new NccSessions().getSession(sessionID);
+                                            SessionData resumeSession = new NccSessions().getSessionFromLog(sessionID);
 
-                                            if (sessionData != null) {
-                                                // TODO: 4/19/16 set correct Terminate-Cause
-                                                sessionData.terminateCause = 0;
+                                            if (resumeSession != null) {
 
-                                                logger.debug("Session found: '" + sessionID + "'");
+                                                resumeSession.acctInputOctets = acctInputOctets;
+                                                resumeSession.acctOutputOctets = acctOutputOctets;
 
-                                                //new NccSessions().stopSession(sessionData);
+                                                resumeSession.lastAlive = System.currentTimeMillis() / 1000L;
+                                                resumeSession.sessionDuration = Long.parseLong(acctSessionTime);
+
+                                                ArrayList<Integer> ids = new NccSessions().resumeSession(resumeSession);
+                                                if (ids != null) {
+                                                    logger.info("Session '" + sessionID + "' resumed");
+                                                }
                                             } else {
-                                                logger.error("Session not found: '" + sessionID + "'");
+                                                logger.debug("No session to resume");
+                                                disconnectUser(nasIP, userLogin, sessionID);
                                             }
-
-                                            disconnectUser(nasIP, userLogin, sessionID);
-
                                         } catch (NccSessionsException e) {
                                             e.printStackTrace();
                                         }
                                     }
-                                } catch (NccDhcpException e) {
-                                    e.printStackTrace();
-                                } catch (UnknownHostException e) {
-                                    e.printStackTrace();
-                                }
+                                } else {
 
-                                break;
-                            default:
-                                break;
+                                    logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
+
+                                    try {
+                                        sessionData = new NccSessions().getSession(sessionID);
+
+                                        if (sessionData != null) {
+                                            // TODO: 4/19/16 set correct Terminate-Cause
+                                            sessionData.terminateCause = 0;
+
+                                            logger.debug("Session found: '" + sessionID + "'");
+
+                                            //new NccSessions().stopSession(sessionData);
+                                        } else {
+                                            logger.error("Session not found: '" + sessionID + "'");
+                                        }
+
+                                        disconnectUser(nasIP, userLogin, sessionID);
+
+                                    } catch (NccSessionsException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (NccDhcpException e) {
+                                e.printStackTrace();
+                            } catch (UnknownHostException e) {
+                                e.printStackTrace();
+                            }
+
                         }
 
                         break;

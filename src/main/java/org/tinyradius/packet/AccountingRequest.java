@@ -24,12 +24,12 @@ public class AccountingRequest extends RadiusPacket {
 	/**
 	 * Acct-Status-Type: Start
 	 */
-	public static final int ACCT_STATUS_TYPE_START = 1;
+	public static final long ACCT_STATUS_TYPE_START = 1L;
 
 	/**
 	 * Acct-Status-Type: Stop
 	 */
-	public static final int ACCT_STATUS_TYPE_STOP = 2;
+	public static final long ACCT_STATUS_TYPE_STOP = 2;
 
 	/**
 	 * Acct-Status-Type: Interim Update/Alive
@@ -39,19 +39,19 @@ public class AccountingRequest extends RadiusPacket {
 	/**
 	 * Acct-Status-Type: Accounting-On
 	 */
-	public static final int ACCT_STATUS_TYPE_ACCOUNTING_ON = 7;
+	public static final long ACCT_STATUS_TYPE_ACCOUNTING_ON = 7;
 
 	/**
 	 * Acct-Status-Type: Accounting-Off
 	 */
-	public static final int ACCT_STATUS_TYPE_ACCOUNTING_OFF = 8;
+	public static final long ACCT_STATUS_TYPE_ACCOUNTING_OFF = 8;
 	
 	/**
 	 * Constructs an Accounting-Request packet to be sent to a Radius server.
 	 * @param userName user name
 	 * @param acctStatusType ACCT_STATUS_TYPE_*
 	 */
-	public AccountingRequest(String userName, int acctStatusType) {
+	public AccountingRequest(String userName, long acctStatusType) {
 		super(ACCOUNTING_REQUEST, getNextPacketIdentifier());
 		setUserName(userName);
 		setAcctStatusType(acctStatusType);
@@ -97,22 +97,22 @@ public class AccountingRequest extends RadiusPacket {
 	 * Sets the Acct-Status-Type attribute of this Accountnig-Request.
 	 * @param acctStatusType ACCT_STATUS_TYPE_* to set
 	 */
-	public void setAcctStatusType(int acctStatusType) {
+	public void setAcctStatusType(long acctStatusType) {
 		if (acctStatusType < 1 || acctStatusType > 15)
 			throw new IllegalArgumentException("bad Acct-Status-Type");
 		removeAttributes(ACCT_STATUS_TYPE);
-		addAttribute(new IntegerAttribute(ACCT_STATUS_TYPE, acctStatusType));
+		addAttribute(new IntegerAttribute(ACCT_STATUS_TYPE, Long.valueOf(acctStatusType)));
 	}
 
 	/**
 	 * Retrieves the user name from the User-Name attribute.
 	 * @return user name
 	 */
-	public int getAcctStatusType() 
+	public Long getAcctStatusType()
 	throws RadiusException {
 		RadiusAttribute ra = getAttribute(ACCT_STATUS_TYPE);
 		if (ra == null)
-			return -1;
+			return -1L;
 		else
 			return ((IntegerAttribute)ra).getAttributeValueInt();
 	}
