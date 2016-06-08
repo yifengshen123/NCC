@@ -194,7 +194,8 @@ public class NccSessions {
                     "framedRemoteId, " +
                     "userId, " +
                     "lastAlive, " +
-                    "sessionDuration FROM nccSessions WHERE userId=" + uid + " ORDER BY id DESC");
+                    "sessionDuration, " +
+                    "userTariff FROM nccSessions WHERE userId=" + uid + " ORDER BY id DESC");
 
         } catch (NccQueryException e) {
             e.printStackTrace();
@@ -280,14 +281,14 @@ public class NccSessions {
                     "userTariff" +
                     ") VALUES (" +
                     "'" + sessionData.sessionId + "', " +
-                    sessionData.startTime + ", " +
+                    "UNIX_TIMESTAMP(NOW()), " +
                     sessionData.acctInputOctets + ", " +
                     sessionData.acctOutputOctets + ", " +
                     sessionData.nasId + ", " +
                     sessionData.framedIP + ", " +
                     "'" + sessionData.framedMAC + "', " +
                     sessionData.userId + ", " +
-                    sessionData.lastAlive + ", " +
+                    "UNIX_TIMESTAMP(NOW()), " +
                     sessionData.sessionDuration + ", " +
                     sessionData.framedAgentId + ", " +
                     "'" + sessionData.framedCircuitId + "', " +
@@ -362,7 +363,7 @@ public class NccSessions {
             ArrayList<Integer> idsUpdate = query.updateQuery("UPDATE nccSessions SET " +
                     "acctInputOctets=" + sessionData.acctInputOctets + ", " +
                     "acctOutputOctets=" + sessionData.acctOutputOctets + ", " +
-                    "lastAlive=" + sessionData.lastAlive + ", " +
+                    "lastAlive=UNIX_TIMESTAMP(NOW()), " +
                     "sessionDuration=" + sessionData.sessionDuration + " " +
                     "WHERE id=" + sessionData.id);
 

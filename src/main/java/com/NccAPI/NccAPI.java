@@ -150,7 +150,7 @@ public class NccAPI {
 
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-                logger.debug("API request: " + request.getServletPath());
+                logger.debug("API request: " + request.getRequestURL());
 
                 switch (target) {
                     case "/api":

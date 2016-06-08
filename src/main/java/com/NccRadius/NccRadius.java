@@ -379,12 +379,14 @@ public class NccRadius extends RadiusServer {
                                     } else acctOutputGigawords = 0;
 
                                     if (acctInputGigawords > 0) {
-                                        acctInputOctets += acctInputGigawords * (1024 * 1024 * 1024);
+                                        acctInputOctets += acctInputGigawords * 1073741824L;
                                     }
 
                                     if (acctOutputGigawords > 0) {
-                                        acctOutputOctets += acctOutputGigawords * (1024 * 1024 * 1024);
+                                        acctOutputOctets += acctOutputGigawords * 1073741824L;
                                     }
+
+                                    logger.debug("Acct-Input-Gigawords=" + acctInputGigawords + " acctInputOctets=" + acctInputOctets);
 
                                     acctSessionTime = accountingRequest.getAttributeValue("Acct-Session-Time");
 
@@ -526,7 +528,7 @@ public class NccRadius extends RadiusServer {
                     return;
                 }
 
-                if (reqServiceType.equals("Outbound-User")) {
+                if (reqServiceType.equals("Outbound-User") || reqServiceType.equals("5")) {
 
                     NccDhcpLeases leases = new NccDhcpLeases();
                     try {

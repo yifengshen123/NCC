@@ -146,7 +146,7 @@ public class NccDhcpLeases {
                                 "0, " +
                                 uid + ", " +
                                 poolData.id + ", " +
-                                transId +
+                                "0" +
                                 ")");
 
                         if (id.get(0) > 0) {
@@ -304,8 +304,9 @@ public class NccDhcpLeases {
 
                                     Long leaseStart = System.currentTimeMillis() / 1000L;
                                     Long leaseExpire = leaseStart + poolData.poolLeaseTime;
+                                    Integer interim = poolData.poolLeaseTime + Math.round(poolData.poolLeaseTime / 3);
 
-                                    query.updateQuery("UPDATE ncc_dhcp_leases SET leaseStatus=1, leaseStart=" + leaseStart + ", leaseExpire=" + leaseExpire + " WHERE id=" + id);
+                                    query.updateQuery("UPDATE ncc_dhcp_leases SET leaseStatus=1, leaseStart=UNIX_TIMESTAMP(NOW()), leaseExpire=UNIX_TIMESTAMP(NOW())+" + interim + " WHERE id=" + id);
                                     return lease;
                                 }
                             }
