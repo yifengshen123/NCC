@@ -84,7 +84,7 @@ public class Ncc {
         if (moduleRadius) {
             logger.info("Starting Radius");
             nccRadius = new NccRadius();
-            nccRadius.start(true, true);
+            nccRadius.startServer();
         }
 
         if (moduleDHCP) {

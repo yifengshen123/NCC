@@ -234,7 +234,8 @@ public class NccSessions {
                     "framedRemoteId, " +
                     "userId, " +
                     "lastAlive, " +
-                    "sessionDuration FROM nccSessions");
+                    "sessionDuration, " +
+                    "userTariff FROM nccSessions");
 
         } catch (NccQueryException e) {
             e.printStackTrace();

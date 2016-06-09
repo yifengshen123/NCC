@@ -36,6 +36,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 // TODO: 27.01.2016 acctInputGigawords support
@@ -50,6 +52,45 @@ public class NccRadius extends RadiusServer {
     private static NccUsers nccUsers;
     private static NccAccounts nccAccounts;
     private static boolean dbg = true;
+    private int pktId = 1;
+
+    public void disconnectUser(String nasIP, String userLogin, String sessionID) {
+        try {
+            NccNasData nasData = null;
+            RadiusClient radiusClient = null;
+            try {
+                nasData = new NccNAS().getNasByIP(NccUtils.ip2long(nasIP));
+                radiusClient = new RadiusClient(NccUtils.long2ip(nasData.nasIP), nasData.nasSecret);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            RadiusPacket pkt = new RadiusPacket();
+
+            pkt.setPacketType(RadiusPacket.COA_REQUEST);
+            pkt.setPacketIdentifier(pktId);
+            pkt.addAttribute("User-Name", userLogin);
+            pkt.addAttribute("Account-Info", "S" + userLogin);
+            pkt.addAttribute("avpair", "subscriber:command=account-logoff");
+
+            try {
+                logger.debug("Sending CoA to " + NccUtils.long2ip(nasData.nasIP) + " for " + sessionID + " and username " + userLogin);
+                pkt = radiusClient.communicate(pkt, 1700);
+                pktId++;
+                logger.debug("CoA reply: " + pkt.getPacketTypeName());
+
+                if (pkt.getPacketType() == RadiusPacket.COA_ACK) {
+                    return;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (RadiusException e) {
+                e.printStackTrace();
+            }
+        } catch (NccNasException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     @Override
     public String getSharedSecret(InetSocketAddress inetSocketAddress) {
@@ -119,48 +160,9 @@ public class NccRadius extends RadiusServer {
         class AccountingThread implements Runnable {
 
             private volatile RadiusPacket radiusPacket = new RadiusPacket();
-            private int pktId = 1;
 
             public RadiusPacket getValue() {
                 return radiusPacket;
-            }
-
-            public void disconnectUser(String nasIP, String userLogin, String sessionID) {
-                try {
-                    NccNasData nasData = null;
-                    RadiusClient radiusClient = null;
-                    try {
-                        nasData = new NccNAS().getNasByIP(NccUtils.ip2long(nasIP));
-                        radiusClient = new RadiusClient(NccUtils.long2ip(nasData.nasIP), nasData.nasSecret);
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    }
-                    RadiusPacket pkt = new RadiusPacket();
-
-                    pkt.setPacketType(RadiusPacket.COA_REQUEST);
-                    pkt.setPacketIdentifier(pktId);
-                    pkt.addAttribute("User-Name", userLogin);
-                    pkt.addAttribute("Account-Info", "S" + userLogin);
-                    pkt.addAttribute("avpair", "subscriber:command=account-logoff");
-
-                    try {
-                        logger.debug("Sending CoA to " + NccUtils.long2ip(nasData.nasIP) + " for " + sessionID + " and username " + userLogin);
-                        pkt = radiusClient.communicate(pkt, 1700);
-                        pktId++;
-                        logger.debug("CoA reply: " + pkt.getPacketTypeName());
-
-                        if (pkt.getPacketType() == RadiusPacket.COA_ACK) {
-                            return;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (RadiusException e) {
-                        e.printStackTrace();
-                    }
-                } catch (NccNasException e) {
-                    e.printStackTrace();
-                }
-
             }
 
             @Override
@@ -679,6 +681,63 @@ public class NccRadius extends RadiusServer {
     }
 
     public void startServer() {
+
+        Thread radiusWatchThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                class NccRadiusTimer extends TimerTask {
+                    @Override
+                    public void run() {
+                        try {
+                            ArrayList<SessionData> sessions = new NccSessions().getSessions();
+
+                            for (SessionData sessionData : sessions) {
+                                try {
+                                    NccUserData userData = new NccUsers().getUser(sessionData.userId);
+
+                                    if (userData != null) {
+                                        try {
+                                            NccNasData nasData = new NccNAS().getNAS(sessionData.nasId);
+
+                                            if (userData.userStatus == 0) {
+                                                logger.debug("Disconnecting user (user disabled): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
+                                                try {
+                                                    disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
+                                                } catch (UnknownHostException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            if (userData.userDeposit <= -userData.userCredit) {
+                                                logger.debug("Disconnecting user (low deposit): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
+                                                try {
+                                                    disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
+                                                } catch (UnknownHostException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        } catch (NccNasException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                } catch (NccUsersException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (NccSessionsException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                Timer radiusTimer = new Timer();
+                radiusTimer.schedule(new NccRadiusTimer(), 1000, 1000);
+            }
+        });
+
+        radiusWatchThread.start();
+
         start(true, true);
     }
 }
