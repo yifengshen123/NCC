@@ -232,9 +232,9 @@ public class NccDhcpPacket {
         }
     }
 
-    public String type2string(byte type){
+    public String type2string(byte type) {
 
-        switch (type){
+        switch (type) {
             case DHCP_MSG_TYPE_DISCOVER:
                 return "DHCPDISCOVER";
             case DHCP_MSG_TYPE_REQUEST:
@@ -391,7 +391,7 @@ public class NccDhcpPacket {
         return null;
     }
 
-    byte[] buildReply(byte type, InetAddress localIP, InetAddress clientIP, InetAddress netmask, InetAddress router, InetAddress dns, int leaseTime) {
+    byte[] buildReply(byte type, InetAddress localIP, InetAddress clientIP, InetAddress netmask, InetAddress router, InetAddress dns1, InetAddress dns2, InetAddress nextserver, int leaseTime) {
 
         int PKT_LEN = 360;
 
@@ -428,6 +428,15 @@ public class NccDhcpPacket {
         byte[] opt6 = {6, 4};
         byte[] opt255 = {(byte) 0xff};
 
+        if ((dns1 == null) && (dns2 != null)) {
+            dns1 = dns2;
+            dns2 = null;
+        }
+
+        if ((dns1 != null) && (dns2 != null)) {
+            opt6[1] = 8;
+        }
+
         if (localIP == null) localIP = router;
 
         data = baInsert(data, p, this.dhcpTransID);
@@ -448,8 +457,13 @@ public class NccDhcpPacket {
         p += clientIP.getAddress().length;
 
         // next server
-        data = baInsert(data, p, router.getAddress());
-        p += router.getAddress().length;
+        if (nextserver != null) {
+            data = baInsert(data, p, nextserver.getAddress());
+            p += nextserver.getAddress().length;
+        } else {
+            data = baInsert(data, p, router.getAddress());
+            p += router.getAddress().length;
+        }
 
         // relay agent
         data = baInsert(data, p, this.dhcpRelayAgentIP);
@@ -485,8 +499,15 @@ public class NccDhcpPacket {
         // dns
         data = baInsert(data, p, opt6);
         p += opt6.length;
-        data = baInsert(data, p, dns.getAddress());
-        p += dns.getAddress().length;
+
+        if (dns1 != null) {
+            data = baInsert(data, p, dns1.getAddress());
+            p += dns1.getAddress().length;
+        }
+        if (dns2 != null) {
+            data = baInsert(data, p, dns2.getAddress());
+            p += dns2.getAddress().length;
+        }
 
         // msg type
         data = baInsert(data, p, opt53);

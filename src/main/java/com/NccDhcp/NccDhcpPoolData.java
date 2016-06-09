@@ -9,5 +9,6 @@ public class NccDhcpPoolData {
     public Long poolNetmask;
     public Long poolDNS1;
     public Long poolDNS2;
+    public Long poolNextServer;
     public Integer poolLeaseTime;
 }

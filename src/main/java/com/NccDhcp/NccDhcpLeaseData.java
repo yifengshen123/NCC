@@ -9,6 +9,7 @@ public class NccDhcpLeaseData {
     public Long leaseNetmask;
     public Long leaseDNS1;
     public Long leaseDNS2;
+    public Long leaseNextServer;
     public String leaseClientMAC;
     public String leaseRemoteID;
     public String leaseCircuitID;

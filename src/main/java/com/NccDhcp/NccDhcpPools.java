@@ -31,6 +31,7 @@ public class NccDhcpPools {
                     "poolNetmask, " +
                     "poolDNS1, " +
                     "poolDNS2, " +
+                    "poolNextServer, " +
                     "poolLeaseTime FROM ncc_dhcp_pools WHERE id=" + id);
 
             if(rs != null){
@@ -47,6 +48,7 @@ public class NccDhcpPools {
                         poolData.poolNetmask  = rs.getLong("poolNetmask");
                         poolData.poolDNS1 = rs.getLong("poolDNS1");
                         poolData.poolDNS2 = rs.getLong("poolDNS2");
+                        poolData.poolNextServer = rs.getLong("poolNextServer");
                         poolData.poolLeaseTime = rs.getInt("poolLeaseTime");
 
                         return poolData;

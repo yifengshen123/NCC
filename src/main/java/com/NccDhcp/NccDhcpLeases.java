@@ -37,6 +37,7 @@ public class NccDhcpLeases {
                     leaseData.leaseNetmask = rs.getLong("leaseNetmask");
                     leaseData.leaseDNS1 = rs.getLong("leaseDNS1");
                     leaseData.leaseDNS2 = rs.getLong("leaseDNS2");
+                    leaseData.leaseNextServer = rs.getLong("leaseNextServer");
                     leaseData.leaseClientMAC = rs.getString("leaseClientMAC");
                     leaseData.leaseRemoteID = rs.getString("leaseRemoteID");
                     leaseData.leaseCircuitID = rs.getString("leaseCircuitID");
@@ -78,6 +79,7 @@ public class NccDhcpLeases {
                     "leaseNetmask, " +
                     "leaseDNS1, " +
                     "leaseDNS2, " +
+                    "leaseNextServer, " +
                     "leaseClientMAC, " +
                     "leaseRemoteID, " +
                     "leaseCircuitID, " +
@@ -124,6 +126,7 @@ public class NccDhcpLeases {
                                 "leaseNetmask, " +
                                 "leaseDNS1, " +
                                 "leaseDNS2, " +
+                                "leaseNextServer, " +
                                 "leaseClientMAC, " +
                                 "leaseRemoteID, " +
                                 "leaseCircuitID, " +
@@ -139,6 +142,7 @@ public class NccDhcpLeases {
                                 poolData.poolNetmask + ", " +
                                 poolData.poolDNS1 + ", " +
                                 poolData.poolDNS2 + ", " +
+                                poolData.poolNextServer + ", " +
                                 "'" + clientMAC + "', " +
                                 "'" + remoteID + "', " +
                                 "'" + circuitID + "', " +
@@ -156,8 +160,15 @@ public class NccDhcpLeases {
                             newLease.leaseIP = allocated;
                             newLease.leaseRouter = poolData.poolRouter;
                             newLease.leaseNetmask = poolData.poolNetmask;
-                            newLease.leaseDNS1 = poolData.poolDNS1;
-                            newLease.leaseDNS2 = poolData.poolDNS2;
+                            if (poolData.poolDNS1 > 0) {
+                                newLease.leaseDNS1 = poolData.poolDNS1;
+                            } else newLease.leaseDNS1 = null;
+                            if (poolData.poolDNS2 > 0) {
+                                newLease.leaseDNS2 = poolData.poolDNS2;
+                            } else newLease.leaseDNS2 = null;
+                            if (poolData.poolNextServer > 0) {
+                                newLease.leaseNextServer = poolData.poolNextServer;
+                            } else newLease.leaseNextServer = null;
                             newLease.leaseClientMAC = clientMAC;
                             newLease.leaseRemoteID = remoteID;
                             newLease.leaseCircuitID = circuitID;
@@ -195,6 +206,7 @@ public class NccDhcpLeases {
                     "leaseNetmask, " +
                     "leaseDNS1, " +
                     "leaseDNS2, " +
+                    "leaseNextServer, " +
                     "leaseClientMAC, " +
                     "leaseRemoteID, " +
                     "leaseCircuitID, " +
@@ -223,6 +235,7 @@ public class NccDhcpLeases {
                     "leaseNetmask, " +
                     "leaseDNS1, " +
                     "leaseDNS2, " +
+                    "leaseNextServer, " +
                     "leaseClientMAC, " +
                     "leaseRemoteID, " +
                     "leaseCircuitID, " +
@@ -251,6 +264,7 @@ public class NccDhcpLeases {
                     "leaseNetmask, " +
                     "leaseDNS1, " +
                     "leaseDNS2, " +
+                    "leaseNextServer, " +
                     "leaseClientMAC, " +
                     "leaseRemoteID, " +
                     "leaseCircuitID, " +
