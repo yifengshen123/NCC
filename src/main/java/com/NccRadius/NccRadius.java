@@ -541,6 +541,12 @@ public class NccRadius extends RadiusServer {
                         NccDhcpLeaseData leaseData = leases.getLeaseByIP(NccUtils.ip2long(reqUserName));
                         if (leaseData != null) {
 
+                            if (leaseData.leaseUID == 0) {
+                                packetType = RadiusPacket.ACCESS_REJECT;
+                                logger.info("Login FAIL: userId=0");
+                                return;
+                            }
+
                             try {
                                 NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
 
@@ -705,7 +711,7 @@ public class NccRadius extends RadiusServer {
                                             logger.debug("Cleaning up session id=" + id + " sessionId=" + sessionId);
 
                                             SessionData sessionData = new NccSessions().getSession(sessionId);
-                                            if(sessionData!=null){
+                                            if (sessionData != null) {
                                                 try {
                                                     new NccSessions().stopSession(sessionData);
                                                 } catch (NccSessionsException e) {

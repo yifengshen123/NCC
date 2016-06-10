@@ -184,7 +184,7 @@ public class NccDhcpServer {
                                         }
 
                                         NccDhcpBindData bindData = checkBind(remoteID, circuitID, clientMAC, relayAgent);
-                                        if (bindData == null) {
+                                        /*if (bindData == null) {
                                             logger.error("User not binded in DHCPDISCOVER");
                                             try {
                                                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
@@ -192,7 +192,7 @@ public class NccDhcpServer {
                                                 e.printStackTrace();
                                             }
                                             return;
-                                        }
+                                        }*/
 
                                         NccDhcpLeaseData leaseData = new NccDhcpLeases().getLeaseByMAC(relayAgent, clientMAC, pkt.ba2int(pkt.dhcpTransID));
 
@@ -213,11 +213,24 @@ public class NccDhcpServer {
                                             try {
                                                 NccDhcpRelayAgentData agentData = new NccDhcpRelayAgents().getAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
 
+
                                                 if (agentData != null) {
-                                                    NccDhcpPoolData poolData = new NccDhcpPools().getPool(agentData.agentPool);
+
+                                                    Integer pool;
+                                                    Integer uid;
+
+                                                    if (bindData != null) {
+                                                        pool = agentData.agentPool;
+                                                        uid = bindData.uid;
+                                                    } else {
+                                                        pool = agentData.agentUnbindedPool;
+                                                        uid = 0;
+                                                    }
+
+                                                    NccDhcpPoolData poolData = new NccDhcpPools().getPool(pool);
 
                                                     if (poolData != null) {
-                                                        leaseData = new NccDhcpLeases().allocateLease(bindData.uid, poolData, clientMAC, remoteID, circuitID, NccUtils.ip2long(agentIP.getHostAddress()), pkt.ba2int(pkt.dhcpTransID));
+                                                        leaseData = new NccDhcpLeases().allocateLease(uid, poolData, clientMAC, remoteID, circuitID, NccUtils.ip2long(agentIP.getHostAddress()), pkt.ba2int(pkt.dhcpTransID));
 
                                                         if (leaseData != null) {
                                                             sendReply(NccDhcpPacket.DHCP_MSG_TYPE_OFFER, NccUtils.ip2long(localIP.getHostAddress()), leaseData.leaseIP, leaseData.leaseNetmask, leaseData.leaseRouter, leaseData.leaseDNS1, leaseData.leaseDNS2, leaseData.leaseNextServer, poolData.poolLeaseTime);
@@ -329,7 +342,7 @@ public class NccDhcpServer {
 
                                             logger.debug("Lease ACCEPT");
 
-                                            if (remoteID.equals("")) {
+                                            /*if (remoteID.equals("")) {
                                                 logger.debug("Empty remoteID in DHCPREQUEST");
                                                 try {
                                                     sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
@@ -337,10 +350,10 @@ public class NccDhcpServer {
                                                     e.printStackTrace();
                                                 }
                                                 return;
-                                            }
+                                            }*/
 
                                             NccDhcpBindData bindData = checkBind(remoteID, circuitID, clientMAC, relayAgent);
-                                            if (bindData == null) {
+                                            /*if (bindData == null) {
                                                 logger.error("User not binded in DHCPREQUEST");
                                                 try {
                                                     sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
@@ -348,7 +361,7 @@ public class NccDhcpServer {
                                                     e.printStackTrace();
                                                 }
                                                 return;
-                                            }
+                                            }*/
 
                                             try {
                                                 leaseData = new NccDhcpLeases().acceptLease(NccUtils.ip2long(reqIP.getHostAddress()), clientMAC, remoteID, circuitID, pkt.ba2int(pkt.dhcpTransID));

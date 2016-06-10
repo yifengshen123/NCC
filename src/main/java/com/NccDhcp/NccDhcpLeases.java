@@ -325,17 +325,18 @@ public class NccDhcpLeases {
 
         // TODO: 4/20/16 not needed to determine id of lease
         try {
-            logger.debug("SELECT id FROM ncc_dhcp_leases WHERE " +
-                    "leaseIP=" + clientIP + " AND " +
-                    "leaseClientMAC='" + clientMAC + "' AND " +
-                    "leaseRemoteID='" + remoteID + "' AND " +
-                    "leaseCircuitID='" + circuitID + "'");
+            String condition = "leaseClientMAC='" + clientMAC + "' ";
+
+            if (!remoteID.equals("")) condition += "AND leaseRemoteID='"+remoteID+"' ";
+            if (!circuitID.equals("")) condition += "AND leaseCircuitID='"+circuitID+"' ";
 
             rs = query.selectQuery("SELECT id FROM ncc_dhcp_leases WHERE " +
                     "leaseIP=" + clientIP + " AND " +
-                    "leaseClientMAC='" + clientMAC + "' AND " +
-                    "leaseRemoteID='" + remoteID + "' AND " +
-                    "leaseCircuitID='" + circuitID + "'");
+                    condition);
+
+            logger.debug("SELECT id FROM ncc_dhcp_leases WHERE " +
+                    "leaseIP=" + clientIP + " AND " +
+                    condition);
 
             if (rs != null) {
                 try {

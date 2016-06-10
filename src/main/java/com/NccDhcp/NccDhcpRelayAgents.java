@@ -28,7 +28,8 @@ public class NccDhcpRelayAgents {
             rs = query.selectQuery("SELECT id, " +
                     "agentName, " +
                     "agentIP, " +
-                    "agentPool FROM ncc_dhcp_relay_agents WHERE agentIP=" + ip);
+                    "agentPool," +
+                    "agentUnbindedPool FROM ncc_dhcp_relay_agents WHERE agentIP=" + ip);
 
             if(rs != null){
 
@@ -40,6 +41,7 @@ public class NccDhcpRelayAgents {
                         agentData.agentName = rs.getString("agentName");
                         agentData.agentIP = rs.getLong("agentIP");
                         agentData.agentPool = rs.getInt("agentPool");
+                        agentData.agentUnbindedPool = rs.getInt("agentUnbindedPool");
 
                         return agentData;
                     }

@@ -5,4 +5,5 @@ public class NccDhcpRelayAgentData {
     public String agentName;
     public Long agentIP;
     public Integer agentPool;
+    public Integer agentUnbindedPool;
 }
