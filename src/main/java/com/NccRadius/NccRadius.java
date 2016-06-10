@@ -14,11 +14,14 @@ import com.NccSessions.NccSessions;
 import com.NccSessions.NccSessionsException;
 import com.NccSessions.SessionData;
 import com.NccSystem.NccUtils;
+import com.NccSystem.SQL.NccQuery;
+import com.NccSystem.SQL.NccQueryException;
 import com.NccTariffScale.NccTariffScale;
 import com.NccTariffScale.RateData;
 import com.NccUsers.NccUsers;
 import com.NccUsers.NccUsersException;
 import com.NccUsers.NccUserData;
+import com.sun.rowset.CachedRowSetImpl;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -32,8 +35,10 @@ import org.tinyradius.util.RadiusException;
 import org.tinyradius.util.RadiusServer;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -688,6 +693,34 @@ public class NccRadius extends RadiusServer {
                     @Override
                     public void run() {
                         try {
+
+                            try {
+                                CachedRowSetImpl rs = new NccQuery().selectQuery("SELECT id, sessionId FROM nccSessions WHERE lastAlive<UNIX_TIMESTAMP(NOW())-120");
+                                if (rs != null) {
+                                    try {
+                                        while (rs.next()) {
+                                            Integer id = rs.getInt("id");
+                                            String sessionId = rs.getString("sessionId");
+
+                                            logger.debug("Cleaning up session id=" + id + " sessionId=" + sessionId);
+
+                                            SessionData sessionData = new NccSessions().getSession(sessionId);
+                                            if(sessionData!=null){
+                                                try {
+                                                    new NccSessions().stopSession(sessionData);
+                                                } catch (NccSessionsException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (NccQueryException e) {
+                                e.printStackTrace();
+                            }
+
                             ArrayList<SessionData> sessions = new NccSessions().getSessions();
 
                             for (SessionData sessionData : sessions) {
