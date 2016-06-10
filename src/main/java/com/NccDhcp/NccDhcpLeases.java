@@ -58,6 +58,40 @@ public class NccDhcpLeases {
         return null;
     }
 
+    private NccDhcpLeaseData fillSingleLeaseData(CachedRowSetImpl rs) {
+        if (rs != null) {
+            try {
+                if (rs.next()) {
+                    NccDhcpLeaseData leaseData = new NccDhcpLeaseData();
+
+                    leaseData.id = rs.getInt("id");
+                    leaseData.leaseStart = rs.getLong("leaseStart");
+                    leaseData.leaseExpire = rs.getLong("leaseExpire");
+                    leaseData.leaseIP = rs.getLong("leaseIP");
+                    leaseData.leaseRouter = rs.getLong("leaseRouter");
+                    leaseData.leaseNetmask = rs.getLong("leaseNetmask");
+                    leaseData.leaseDNS1 = rs.getLong("leaseDNS1");
+                    leaseData.leaseDNS2 = rs.getLong("leaseDNS2");
+                    leaseData.leaseNextServer = rs.getLong("leaseNextServer");
+                    leaseData.leaseClientMAC = rs.getString("leaseClientMAC");
+                    leaseData.leaseRemoteID = rs.getString("leaseRemoteID");
+                    leaseData.leaseCircuitID = rs.getString("leaseCircuitID");
+                    leaseData.leaseRelayAgent = rs.getLong("leaseRelayAgent");
+                    leaseData.leasePool = rs.getInt("leasePool");
+                    leaseData.leaseUID = rs.getInt("leaseUID");
+                    leaseData.transId = rs.getInt("transId");
+
+                    return leaseData;
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
     public ArrayList<NccDhcpLeaseData> getLeases() throws NccDhcpException {
         return getLeases(null);
     }
@@ -223,7 +257,7 @@ public class NccDhcpLeases {
         return fillLeaseData(rs);
     }
 
-    public ArrayList<NccDhcpLeaseData> getLeaseByIP(Long ip) throws NccDhcpException {
+    public NccDhcpLeaseData getLeaseByIP(Long ip) throws NccDhcpException {
         CachedRowSetImpl rs;
 
         try {
@@ -249,7 +283,7 @@ public class NccDhcpLeases {
             throw new NccDhcpException("SQL error: " + e.getMessage());
         }
 
-        return fillLeaseData(rs);
+        return fillSingleLeaseData(rs);
     }
 
     public NccDhcpLeaseData getLeaseByMAC(Long relayAgent, String mac, Integer transId) {

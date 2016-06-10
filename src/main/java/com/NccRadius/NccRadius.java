@@ -275,8 +275,7 @@ public class NccRadius extends RadiusServer {
                             sessionData.sessionDuration = 0L;
 
                             try {
-                                leases = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
-                                if (leases.size() > 0) leaseData = leases.get(0);
+                                leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
 
                                 if (leaseData != null) {
 
@@ -356,8 +355,7 @@ public class NccRadius extends RadiusServer {
                             logger.debug("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
 
                             try {
-                                leases = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
-                                if (leases.size() > 0) leaseData = leases.get(0);
+                                leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
 
                                 if (leaseData != null) {
 
@@ -534,7 +532,8 @@ public class NccRadius extends RadiusServer {
 
                     NccDhcpLeases leases = new NccDhcpLeases();
                     try {
-                        NccDhcpLeaseData leaseData = leases.getLeaseByIP(NccUtils.ip2long(reqUserName)).get(0);
+
+                        NccDhcpLeaseData leaseData = leases.getLeaseByIP(NccUtils.ip2long(reqUserName));
                         if (leaseData != null) {
 
                             try {
