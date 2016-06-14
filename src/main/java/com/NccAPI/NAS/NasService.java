@@ -10,4 +10,10 @@ public interface NasService {
     ArrayList<NccNasData> getNAS(String apiKey);
 
     ArrayList<NccNasType> getNASTypes(String apiKey);
+
+    Integer createNAS(String apiKey, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval);
+
+    Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval);
+
+    Integer deleteNAS(String apiKey, Integer id);
 }

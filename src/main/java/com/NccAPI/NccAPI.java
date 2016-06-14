@@ -81,8 +81,6 @@ public class NccAPI {
                                 "Invalid request method, only POST and GET is supported");
                     }
 
-                    logger.debug("API method request: " + request.getParameter("method"));
-
                     // service the request
                     //fix to set HTTP status correctly
                     int result = handle(input, output);
@@ -152,13 +150,12 @@ public class NccAPI {
 
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-                logger.debug("API request: " + baseRequest.getRequestURL());
-
                 switch (target) {
                     case "/api":
                         compositeServer.handleCORS(request, response);
                         break;
                     default:
+                        compositeServer.handleCORS(request, response);
                         break;
                 }
             }

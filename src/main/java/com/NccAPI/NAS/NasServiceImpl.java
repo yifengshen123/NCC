@@ -11,6 +11,65 @@ import java.util.ArrayList;
 
 public class NasServiceImpl implements NasService {
 
+    public Integer deleteNAS(String apiKey, Integer id){
+        if (!new NccAPI().checkKey(apiKey)) return null;
+
+        Integer did;
+
+        try {
+            did = new NccNAS().deleteNas(id);
+        } catch (NccNasException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return did;
+    }
+
+    public Integer createNAS(String apiKey, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval){
+        if (!new NccAPI().checkKey(apiKey)) return null;
+
+        NccNasData nasData = new NccNasData();
+        Integer id;
+
+        nasData.nasName = nasName;
+        nasData.nasType = nasType;
+        nasData.nasIP = nasIP;
+        nasData.nasSecret = nasSecret;
+        nasData.nasInterimInterval = nasInterimInterval;
+
+        try {
+            id = new NccNAS().createNas(nasData);
+        } catch (NccNasException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return id;
+    }
+
+    public Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval){
+        if (!new NccAPI().checkKey(apiKey)) return null;
+
+        NccNasData nasData = new NccNasData();
+
+        nasData.id = id;
+        nasData.nasName = nasName;
+        nasData.nasType = nasType;
+        nasData.nasIP = nasIP;
+        nasData.nasSecret = nasSecret;
+        nasData.nasInterimInterval = nasInterimInterval;
+
+        try {
+            id = new NccNAS().updateNas(nasData);
+        } catch (NccNasException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return id;
+    }
+
     public NccNasData getNAS(String apiKey, Integer id){
         if (!new NccAPI().checkKey(apiKey)) return null;
         NccNasData nasData = null;

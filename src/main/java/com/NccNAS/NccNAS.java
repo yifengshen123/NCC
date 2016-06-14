@@ -6,6 +6,7 @@ import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -194,6 +195,70 @@ public class NccNAS {
             } catch (UnknownHostException e1) {
                 e1.printStackTrace();
             }
+        }
+
+        return null;
+    }
+
+    public Integer createNas(NccNasData nasData) throws NccNasException {
+
+        try {
+            ArrayList<Integer> ids = query.updateQuery("INSERT INTO nccNAS (" +
+                    "nasName, " +
+                    "nasType, " +
+                    "nasIP, " +
+                    "nasStatus, " +
+                    "nasSecret, " +
+                    "nasInterimInterval) VALUES(" +
+                    "'" + nasData.nasName + "', " +
+                    nasData.nasType + ", " +
+                    nasData.nasIP + ", " +
+                    "1, " +
+                    "'" + nasData.nasSecret + "', " +
+                    nasData.nasInterimInterval + ")");
+
+            if (ids != null && ids.size() > 0) {
+                return ids.get(0);
+            }
+
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Integer updateNas(NccNasData nasData) throws NccNasException {
+
+        try {
+            ArrayList<Integer> ids = query.updateQuery("UPDATE nccNAS SET " +
+                    "nasName='" + nasData.nasName + "', " +
+                    "nasType=" + nasData.nasType + ", " +
+                    "nasIP=" + nasData.nasIP + ", " +
+                    "nasSecret='" + nasData.nasSecret + "', " +
+                    "nasInterimInterval="+nasData.nasInterimInterval+" " +
+                    "WHERE id="+nasData.id);
+
+            if (ids != null && ids.size() > 0) {
+                return ids.get(0);
+            }
+
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public Integer deleteNas(Integer id) throws NccNasException {
+        try {
+            ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccNAS WHERE id=" + id);
+
+            if (ids != null && ids.size() > 0) {
+                return ids.get(0);
+            }
+        } catch (NccQueryException e) {
+            e.printStackTrace();
         }
 
         return null;
