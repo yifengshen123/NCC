@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class NccNAS {
@@ -24,7 +25,7 @@ public class NccNAS {
         }
     }
 
-    private NccNasData fillNasData(CachedRowSetImpl rs){
+    private NccNasData fillNasData(CachedRowSetImpl rs) {
 
         NccNasData nasData = new NccNasData();
 
@@ -42,6 +43,20 @@ public class NccNAS {
         }
 
         return nasData;
+    }
+
+    private NccNasType fillNasType(CachedRowSetImpl rs) {
+        NccNasType nasType = new NccNasType();
+
+        try {
+            nasType.id = rs.getInt("id");
+            nasType.typeName = rs.getString("typeName");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return nasType;
     }
 
     public NccNasData getNAS(Integer id) throws NccNasException {
@@ -70,6 +85,69 @@ public class NccNAS {
         throw new NccNasException("getNAS: NAS not found");
     }
 
+    public ArrayList<NccNasData> getNAS() throws NccNasException {
+        CachedRowSetImpl rs;
+
+        try {
+            rs = query.selectQuery("SELECT * FROM nccNAS");
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+            throw new NccNasException("getNAS: SQL error: " + e.getMessage());
+        }
+
+        if (rs != null) {
+            ArrayList<NccNasData> nas = new ArrayList<>();
+
+            try {
+                NccNasData nasData;
+
+                while (rs.next()) {
+                    nasData = fillNasData(rs);
+                    if (nasData != null) {
+                        nas.add(nasData);
+                    }
+                }
+
+                return nas;
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new NccNasException("getNAS: SQL error: " + e.getMessage());
+            }
+        } else {
+            throw new NccNasException("getNAS: NAS not found");
+        }
+    }
+
+    public ArrayList<NccNasType> getNASTypes() throws NccNasException {
+        CachedRowSetImpl rs;
+
+        try {
+            rs = query.selectQuery("SELECT * FROM nccNASTypes");
+
+            if (rs != null) {
+                ArrayList<NccNasType> types = new ArrayList<>();
+                NccNasType nasType;
+
+                try {
+                    while (rs.next()) {
+                        nasType = fillNasType(rs);
+                        if (nasType != null) {
+                            types.add(nasType);
+                        }
+                    }
+
+                    return types;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public NccNasData getNasByIP(Long nasIP) throws NccNasException {
         CachedRowSetImpl rs;
 
@@ -96,7 +174,7 @@ public class NccNAS {
         throw new NccNasException("getNasByIP: NAS not found");
     }
 
-    public String getNasSecretByIP(Long nasIP){
+    public String getNasSecretByIP(Long nasIP) {
         try {
             NccNAS nas = new NccNAS();
             try {

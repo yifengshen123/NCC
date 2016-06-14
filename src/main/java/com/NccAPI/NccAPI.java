@@ -55,20 +55,20 @@ public class NccAPI {
 
                     // setup streams
                     InputStream input;
-                    OutputStream output	= response.getOutputStream();
+                    OutputStream output = response.getOutputStream();
 
                     // POST
                     if (request.getMethod().equals("POST")) {
                         input = request.getInputStream();
                         response.addHeader("Access-Control-Allow-Origin", "*");
 
-                    } else if (request.getMethod().equals("OPTIONS")){
+                    } else if (request.getMethod().equals("OPTIONS")) {
                         response.addHeader("Access-Control-Allow-Headers", "Content-Type, POST");
                         response.addHeader("Access-Control-Allow-Origin", "*");
 
                         output.flush();
                         return;
-                    // GET
+                        // GET
                     } else if (request.getMethod().equals("GET")) {
                         input = createInputStream(
                                 request.getParameter("method"),
@@ -81,10 +81,12 @@ public class NccAPI {
                                 "Invalid request method, only POST and GET is supported");
                     }
 
+                    logger.debug("API method request: " + request.getParameter("method"));
+
                     // service the request
                     //fix to set HTTP status correctly
                     int result = handle(input, output);
-                    if(result != 0){
+                    if (result != 0) {
                         if (result == -32700 || result == -32602 || result == -32603
                                 || (result <= -32000 && result >= -32099)) {
                             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -150,7 +152,7 @@ public class NccAPI {
 
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-                logger.debug("API request: " + request.getRequestURL());
+                logger.debug("API request: " + baseRequest.getRequestURL());
 
                 switch (target) {
                     case "/api":
@@ -183,18 +185,18 @@ public class NccAPI {
         }
     }
 
-    public boolean checkKey(String apiKey){
-        if(apiKey.equals("CtrhtnT,fnmRfrjq")) return true;
+    public boolean checkKey(String apiKey) {
+        if (apiKey.equals("CtrhtnT,fnmRfrjq")) return true;
         return false;
     }
 
-    public boolean checkPermission(String apiKey, String permission){
+    public boolean checkPermission(String apiKey, String permission) {
         String login = "admin";
         String password = "CtrhtnysqGfhjkm";
 
         String hash = DigestUtils.md5Hex(DigestUtils.md5Hex(login).concat(password));
 
-        if(apiKey.equals(hash)) return true;
+        if (apiKey.equals(hash)) return true;
 
         return false;
     }
