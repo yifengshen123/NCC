@@ -6,6 +6,8 @@ import com.NccAPI.NAS.NasService;
 import com.NccAPI.NAS.NasServiceImpl;
 import com.NccAPI.Pools.PoolsService;
 import com.NccAPI.Pools.PoolsServiceImpl;
+import com.NccAPI.RelayAgents.RelayAgentService;
+import com.NccAPI.RelayAgents.RelayAgentServiceImpl;
 import com.NccAPI.Sessions.SessionsService;
 import com.NccAPI.Sessions.SessionsServiceImpl;
 import com.NccAPI.System.SystemService;
@@ -108,6 +110,7 @@ public class NccAPI {
             private NasService nasService;
             private ViewsService viewsService;
             private AstraManagerService astraManagerService;
+            private RelayAgentService relayAgentService;
             private SystemService systemService;
 
             private Object compositeService;
@@ -120,6 +123,7 @@ public class NccAPI {
                 nasService = new NasServiceImpl();
                 viewsService = new ViewsServiceImpl();
                 astraManagerService = new AstraManagerImpl();
+                relayAgentService = new RelayAgentServiceImpl();
                 systemService = new SystemServiceImpl();
 
                 compositeService = ProxyUtil.createCompositeServiceProxy(
@@ -132,6 +136,7 @@ public class NccAPI {
                                 nasService,
                                 viewsService,
                                 astraManagerService,
+                                relayAgentService,
                                 systemService
                         },
                         new Class<?>[]{
@@ -141,7 +146,9 @@ public class NccAPI {
                                 SessionsService.class,
                                 NasService.class,
                                 ViewsService.class,
-                                AstraManagerService.class
+                                AstraManagerService.class,
+                                RelayAgentService.class,
+                                SystemService.class
                         },
                         true);
 

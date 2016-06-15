@@ -9,29 +9,54 @@ import java.util.ArrayList;
 
 public class NccPools {
 
-    public ArrayList<PoolData> getPools(){
-        ArrayList<PoolData> pools = new ArrayList<>();
+    private NccQuery query;
+
+    public NccPools(){
+        try {
+            query = new NccQuery();
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private NccPoolData fillPoolData(CachedRowSetImpl rs){
+        NccPoolData poolData = new NccPoolData();
 
         try {
-            CachedRowSetImpl rs = new NccQuery().selectQuery("SELECT id, poolStart, poolEnd, poolStatus, poolComments, poolName FROM nccPools");
+            poolData.id = rs.getInt("id");
+            poolData.poolName = rs.getString("poolName");
+            poolData.poolStart = rs.getLong("poolStart");
+            poolData.poolEnd = rs.getLong("poolEnd");
+            poolData.poolRouter = rs.getLong("poolRouter");
+            poolData.poolNetmask  = rs.getLong("poolNetmask");
+            poolData.poolDNS1 = rs.getLong("poolDNS1");
+            poolData.poolDNS2 = rs.getLong("poolDNS2");
+            poolData.poolNextServer = rs.getLong("poolNextServer");
+            poolData.poolLeaseTime = rs.getInt("poolLeaseTime");
 
-            try {
-                while (rs.next()){
-                    PoolData poolData = new PoolData();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-                    poolData.id = rs.getInt("id");
-                    poolData.poolStart = rs.getLong("poolStart");
-                    poolData.poolEnd = rs.getLong("poolEnd");
-                    poolData.poolStatus = rs.getInt("poolStatus");
-                    poolData.poolComments = rs.getString("poolComments");
-                    poolData.poolName = rs.getString("poolName");
+        return poolData;
+    }
 
-                    pools.add(poolData);
+    public NccPoolData getPool(Integer id) {
+
+        CachedRowSetImpl rs;
+
+        try {
+            rs = query.selectQuery("SELECT * FROM nccPools WHERE id=" + id);
+
+            if(rs != null){
+
+                try {
+                    if(rs.next()){
+                        return fillPoolData(rs);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-
-                return pools;
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
         } catch (NccQueryException e) {
@@ -41,26 +66,28 @@ public class NccPools {
         return null;
     }
 
-    public PoolData getPool(Integer poolId){
+    public ArrayList<NccPoolData> getPool() {
+
+        CachedRowSetImpl rs;
 
         try {
-            CachedRowSetImpl rs = new NccQuery().selectQuery("SELECT * FROM nccPools WHERE id="+poolId);
+            rs = query.selectQuery("SELECT * FROM nccPools");
 
-            try {
-                if(rs.next()){
-                    PoolData poolData = new PoolData();
+            if(rs != null){
+                ArrayList<NccPoolData> pools = new ArrayList<>();
 
-                    poolData.id = rs.getInt("id");
-                    poolData.poolStart = rs.getLong("poolStart");
-                    poolData.poolEnd = rs.getLong("poolEnd");
-                    poolData.poolStatus = rs.getInt("poolStatus");
-                    poolData.poolComments = rs.getString("poolComments");
-                    poolData.poolName = rs.getString("poolName");
+                try {
+                    while(rs.next()){
+                        NccPoolData poolData = fillPoolData(rs);
+                        if(poolData!=null){
+                            pools.add(poolData);
+                        }
+                    }
 
-                    return poolData;
+                    return pools;
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
         } catch (NccQueryException e) {
@@ -69,4 +96,5 @@ public class NccPools {
 
         return null;
     }
+
 }

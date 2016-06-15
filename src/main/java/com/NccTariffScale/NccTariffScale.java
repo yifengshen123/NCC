@@ -1,12 +1,10 @@
 package com.NccTariffScale;
 
-import com.NccPools.NccPools;
-import com.NccPools.PoolData;
+import com.NccPools.NccPoolData;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
-import org.tinyradius.packet.RadiusPacket;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -100,7 +98,7 @@ public class NccTariffScale {
         return null;
     }
 
-    public ArrayList<PoolData> getTariffPools(Integer tariffId) {
+    public ArrayList<NccPoolData> getTariffPools(Integer tariffId) {
         try {
             NccQuery query = new NccQuery();
             CachedRowSetImpl rs;
@@ -109,17 +107,15 @@ public class NccTariffScale {
 
             if (rs != null) {
                 try {
-                    ArrayList<PoolData> tariffPools = new ArrayList<>();
+                    ArrayList<NccPoolData> tariffPools = new ArrayList<>();
 
                     while (rs.next()) {
-                        PoolData poolData = new PoolData();
+                        NccPoolData poolData = new NccPoolData();
 
                         poolData.id = rs.getInt("poolId");
                         poolData.poolName = rs.getString("poolName");
                         poolData.poolStart = rs.getLong("poolStart");
                         poolData.poolEnd = rs.getLong("poolEnd");
-                        poolData.poolStatus = rs.getInt("poolStatus");
-                        poolData.poolComments = rs.getString("poolComments");
 
                         tariffPools.add(poolData);
                     }

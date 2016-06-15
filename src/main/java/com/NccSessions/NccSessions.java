@@ -1,15 +1,12 @@
 package com.NccSessions;
 
-import com.NccPools.PoolData;
-import com.NccPools.NccPools;
-import com.NccSystem.NccUtils;
+import com.NccPools.NccPoolData;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -65,8 +62,7 @@ public class NccSessions {
         return false;
     }
 
-    public Long getIPFromPool(ArrayList<PoolData> pools) {
-        //ArrayList<PoolData> pools = new NccPools().getPools();
+    public Long getIPFromPool(ArrayList<NccPoolData> pools) {
         ArrayList<SessionData> sessions = new ArrayList<>();
 
         try {
@@ -77,8 +73,8 @@ public class NccSessions {
         }
 
         if (pools != null) {
-            for (PoolData pool : pools) {
-                if (pool != null) if (pool.poolStatus == 1) {
+            for (NccPoolData pool : pools) {
+                if (pool != null) {
                     for (Long ip = pool.poolStart; ip <= pool.poolEnd; ip++) {
                         if (!isAllocated(sessions, ip)) return ip;
                     }

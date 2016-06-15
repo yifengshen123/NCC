@@ -1,18 +1,14 @@
 package com.NccDhcp;
 
+import com.NccPools.NccPoolData;
+import com.NccPools.NccPools;
+import com.NccRelayAgent.NccRelayAgent;
+import com.NccRelayAgent.NccRelayAgentData;
 import com.NccSystem.NccUtils;
-import com.google.common.net.InetAddresses;
-import com.google.common.primitives.Ints;
-import com.googlecode.jsonrpc4j.JsonRpcClient;
-import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 import org.apache.log4j.Logger;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -200,7 +196,7 @@ public class NccDhcpServer {
 
                                             logger.debug("Found lease for " + relayAgent.toString() + " " + clientMAC);
 
-                                            NccDhcpPoolData poolData = new NccDhcpPools().getPool(leaseData.leasePool);
+                                            NccPoolData poolData = new NccPools().getPool(leaseData.leasePool);
 
                                             try {
                                                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_OFFER, NccUtils.ip2long(localIP.getHostAddress()), leaseData.leaseIP, leaseData.leaseNetmask, leaseData.leaseRouter, leaseData.leaseDNS1, leaseData.leaseDNS2, leaseData.leaseNextServer, poolData.poolLeaseTime);
@@ -211,7 +207,7 @@ public class NccDhcpServer {
                                         } else {
 
                                             try {
-                                                NccDhcpRelayAgentData agentData = new NccDhcpRelayAgents().getAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
+                                                NccRelayAgentData agentData = new NccRelayAgent().getAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
 
 
                                                 if (agentData != null) {
@@ -227,7 +223,7 @@ public class NccDhcpServer {
                                                         uid = 0;
                                                     }
 
-                                                    NccDhcpPoolData poolData = new NccDhcpPools().getPool(pool);
+                                                    NccPoolData poolData = new NccPools().getPool(pool);
 
                                                     if (poolData != null) {
                                                         leaseData = new NccDhcpLeases().allocateLease(uid, poolData, clientMAC, remoteID, circuitID, NccUtils.ip2long(agentIP.getHostAddress()), pkt.ba2int(pkt.dhcpTransID));
@@ -306,7 +302,7 @@ public class NccDhcpServer {
                                                     e.printStackTrace();
                                                 }
 
-                                                NccDhcpPoolData poolData = new NccDhcpPools().getPool(leaseData.leasePool);
+                                                NccPoolData poolData = new NccPools().getPool(leaseData.leasePool);
 
                                                 if (poolData != null) {
                                                     try {
@@ -368,7 +364,7 @@ public class NccDhcpServer {
 
                                                 if (leaseData != null) {
 
-                                                    NccDhcpPoolData poolData = new NccDhcpPools().getPool(leaseData.leasePool);
+                                                    NccPoolData poolData = new NccPools().getPool(leaseData.leasePool);
 
                                                     try {
                                                         sendReply(NccDhcpPacket.DHCP_MSG_TYPE_ACK, NccUtils.ip2long(localIP.getHostAddress()), leaseData.leaseIP, leaseData.leaseNetmask, leaseData.leaseRouter, leaseData.leaseDNS1, leaseData.leaseDNS2, leaseData.leaseNextServer, poolData.poolLeaseTime);

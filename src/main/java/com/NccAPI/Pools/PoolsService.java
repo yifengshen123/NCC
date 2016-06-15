@@ -1,9 +1,10 @@
 package com.NccAPI.Pools;
 
-import com.NccPools.PoolData;
+import com.NccPools.NccPoolData;
 
 import java.util.ArrayList;
 
 public interface PoolsService {
-    ArrayList<PoolData> getPools();
+    ArrayList<NccPoolData> getPool(String apiKey);
+    NccPoolData getPool(String apiKey, Integer id);
 }

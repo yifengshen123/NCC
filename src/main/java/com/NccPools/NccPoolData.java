@@ -1,6 +1,6 @@
-package com.NccDhcp;
+package com.NccPools;
 
-public class NccDhcpPoolData {
+public class NccPoolData {
     public Integer id;
     public String poolName;
     public Long poolStart;

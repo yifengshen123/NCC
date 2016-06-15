@@ -1,11 +1,12 @@
 package com.NccDhcp;
 
+import com.NccPools.NccPoolData;
+import com.NccPools.NccPools;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
-import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -130,7 +131,7 @@ public class NccDhcpLeases {
         return fillLeaseData(rs);
     }
 
-    public NccDhcpLeaseData allocateLease(Integer uid, NccDhcpPoolData poolData, String clientMAC, String remoteID, String circuitID, Long RelayAgent, Integer transId) throws NccDhcpException {
+    public NccDhcpLeaseData allocateLease(Integer uid, NccPoolData poolData, String clientMAC, String remoteID, String circuitID, Long RelayAgent, Integer transId) throws NccDhcpException {
 
         try {
             ArrayList<NccDhcpLeaseData> leases = getLeases();
@@ -349,7 +350,7 @@ public class NccDhcpLeases {
                                 NccDhcpLeaseData lease = leases.get(0);
 
                                 if (lease != null) {
-                                    NccDhcpPoolData poolData = new NccDhcpPools().getPool(lease.leasePool);
+                                    NccPoolData poolData = new NccPools().getPool(lease.leasePool);
 
                                     Long leaseStart = System.currentTimeMillis() / 1000L;
                                     Long leaseExpire = leaseStart + poolData.poolLeaseTime;
@@ -378,7 +379,7 @@ public class NccDhcpLeases {
 
     public void renewLease(NccDhcpLeaseData leaseData) {
 
-        NccDhcpPoolData poolData = new NccDhcpPools().getPool(leaseData.leasePool);
+        NccPoolData poolData = new NccPools().getPool(leaseData.leasePool);
         Integer interim = poolData.poolLeaseTime + Math.round(poolData.poolLeaseTime / 3);
 
         try {

@@ -9,7 +9,7 @@ import com.NccDhcp.NccDhcpLeases;
 import com.NccNAS.NccNAS;
 import com.NccNAS.NccNasData;
 import com.NccNAS.NccNasException;
-import com.NccPools.PoolData;
+import com.NccPools.NccPoolData;
 import com.NccSessions.NccSessions;
 import com.NccSessions.NccSessionsException;
 import com.NccSessions.SessionData;
@@ -35,7 +35,6 @@ import org.tinyradius.util.RadiusException;
 import org.tinyradius.util.RadiusServer;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -632,7 +631,7 @@ public class NccRadius extends RadiusServer {
                                         packetType = RadiusPacket.ACCESS_ACCEPT;
 
                                         try {
-                                            ArrayList<PoolData> pools;
+                                            ArrayList<NccPoolData> pools;
 
                                             NccTariffScale tariffScale = new NccTariffScale();
 
