@@ -2,6 +2,8 @@ package com.NccAPI;
 
 import com.NccAPI.AstraManager.AstraManagerImpl;
 import com.NccAPI.AstraManager.AstraManagerService;
+import com.NccAPI.DhcpLeases.DhcpLeasesService;
+import com.NccAPI.DhcpLeases.DhcpLeasesServiceImpl;
 import com.NccAPI.NAS.NasService;
 import com.NccAPI.NAS.NasServiceImpl;
 import com.NccAPI.Pools.PoolsService;
@@ -111,6 +113,7 @@ public class NccAPI {
             private ViewsService viewsService;
             private AstraManagerService astraManagerService;
             private RelayAgentService relayAgentService;
+            private DhcpLeasesService dhcpLeasesService;
             private SystemService systemService;
 
             private Object compositeService;
@@ -124,6 +127,7 @@ public class NccAPI {
                 viewsService = new ViewsServiceImpl();
                 astraManagerService = new AstraManagerImpl();
                 relayAgentService = new RelayAgentServiceImpl();
+                dhcpLeasesService = new DhcpLeasesServiceImpl();
                 systemService = new SystemServiceImpl();
 
                 compositeService = ProxyUtil.createCompositeServiceProxy(
@@ -137,6 +141,7 @@ public class NccAPI {
                                 viewsService,
                                 astraManagerService,
                                 relayAgentService,
+                                dhcpLeasesService,
                                 systemService
                         },
                         new Class<?>[]{
@@ -148,6 +153,7 @@ public class NccAPI {
                                 ViewsService.class,
                                 AstraManagerService.class,
                                 RelayAgentService.class,
+                                DhcpLeasesService.class,
                                 SystemService.class
                         },
                         true);
