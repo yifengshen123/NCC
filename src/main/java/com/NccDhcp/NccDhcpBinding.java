@@ -21,6 +21,31 @@ public class NccDhcpBinding {
         }
     }
 
+    public NccDhcpBindData getBindingByUID(Integer uid) {
+        CachedRowSetImpl rs;
+
+        try {
+            rs = query.selectQuery("SELECT b.id, " +
+                    "b.uid, " +
+                    "b.remoteID, " +
+                    "b.circuitID, " +
+                    "b.clientMAC, " +
+                    "b.relayAgent, " +
+                    "a.agentStreet, " +
+                    "a.agentBuild, " +
+                    "a.agentIP, " +
+                    "a.agentName, " +
+                    "a.agentType " +
+                    "FROM nccDhcpBinding b " +
+                    "LEFT JOIN nccRelayAgents a ON a.agentIP=b.relayAgent " +
+                    "WHERE b.uid=" + uid);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public NccDhcpBindData getBinding(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
 
         CachedRowSetImpl rs;
@@ -90,7 +115,7 @@ public class NccDhcpBinding {
         }
     }
 
-    public void cleanupBinding(){
+    public void cleanupBinding() {
         Long cleanupTime = System.currentTimeMillis() / 1000L;
 
         try {

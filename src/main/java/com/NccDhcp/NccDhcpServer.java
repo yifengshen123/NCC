@@ -14,6 +14,7 @@ import java.util.TimerTask;
 
 public class NccDhcpServer {
     private static Logger logger = Logger.getLogger(NccDhcpServer.class);
+    private InetAddress localIP;
 
     private static DatagramSocket dhcpSocket;
 
@@ -25,7 +26,10 @@ public class NccDhcpServer {
         }
     }
 
-    public void start() {
+    public void start(final InetAddress localIP) {
+
+        this.localIP = localIP;
+
         Thread dhcpWatchThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -57,7 +61,13 @@ public class NccDhcpServer {
                         final DatagramPacket inPkt = new DatagramPacket(recv, recv.length);
                         dhcpSocket.receive(inPkt);
 
-                        Thread dhcpReceiveThread = new Thread(new Runnable() {
+                        class ReceiveRunnable implements Runnable {
+
+                            InetAddress localIP;
+
+                            ReceiveRunnable(InetAddress localIP) {
+                                this.localIP = localIP;
+                            }
 
                             NccDhcpBindData checkBind(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
                                 NccDhcpBindData bindData = new NccDhcpBinding().getBinding(remoteID, circuitID, clientMAC, relayAgent);
@@ -78,6 +88,7 @@ public class NccDhcpServer {
                             }
 
                             DatagramPacket sendReply(byte type, Long localIP, Long leaseIP, Long leaseNetmask, Long leaseRouter, Long leaseDNS1, Long leaseDNS2, Long leaseNextServer, int leaseTime) {
+
                                 NccDhcpPacket pkt = null;
                                 try {
                                     pkt = new NccDhcpPacket(recv, inPkt.getLength());
@@ -106,13 +117,9 @@ public class NccDhcpServer {
 
                                 byte[] dhcpReply = null;
 
-                                try {
-                                    dhcpReply = pkt.buildReply(type, InetAddress.getByName(NccUtils.long2ip(localIP)), ip, netmask, router, dns1, dns2, nextserver, leaseTime);
-                                } catch (UnknownHostException e) {
-                                    e.printStackTrace();
-                                }
+                                dhcpReply = pkt.buildReply(type, this.localIP, ip, netmask, router, dns1, dns2, nextserver, leaseTime);
 
-                                logger.debug("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort());
+                                logger.debug("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " localIP=" + this.localIP.getHostAddress());
 
                                 try {
                                     DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), 67);
@@ -325,7 +332,7 @@ public class NccDhcpServer {
                                                 }
 
                                             } else {
-                                                logger.error("Lease for " + clientMAC + "not found");
+                                                logger.error("Lease for " + clientMAC + " not found");
                                                 try {
                                                     sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
                                                     return;
@@ -397,7 +404,9 @@ public class NccDhcpServer {
                                     e.printStackTrace();
                                 }
                             }
-                        });
+                        };
+
+                        Thread dhcpReceiveThread = new Thread(new ReceiveRunnable(localIP));
 
                         dhcpReceiveThread.start();
 

@@ -3,11 +3,13 @@ package com;
 import com.NccAPI.NccAPI;
 import com.NccDhcp.NccDhcpServer;
 import com.NccRadius.NccRadius;
+import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccSQLPool;
 import org.apache.commons.configuration.*;
 import org.apache.log4j.*;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.sql.*;
 
 // TODO: 15.01.2016 override class RadiusServer to serve BindException exceptions
@@ -88,9 +90,11 @@ public class Ncc {
         }
 
         if (moduleDHCP) {
+            InetAddress localIP = InetAddress.getByName(config.getString("dhcp.server"));
+
             logger.info("Starting DHCP");
             nccDhcp = new NccDhcpServer();
-            nccDhcp.start();
+            nccDhcp.start(localIP);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {

@@ -260,9 +260,15 @@ public class NccDhcpLeases {
 
     public NccDhcpLeaseData getLeaseByMAC(Long relayAgent, String mac, Integer transId) {
         CachedRowSetImpl rs;
+        String relayAgentWhere = "";
+
+        if (relayAgent > 0) {
+            relayAgentWhere = " AND leaseRelayAgent=" + relayAgent;
+        }
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "' AND leaseRelayAgent=" + relayAgent);
+            logger.debug("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere);
+            rs = query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere);
 
             if (rs != null) {
                 try {

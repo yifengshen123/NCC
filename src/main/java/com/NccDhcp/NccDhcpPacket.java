@@ -534,7 +534,7 @@ public class NccDhcpPacket {
         // dhcp server
         data = baInsert(data, p, opt54);
         p += opt54.length;
-        data = baInsert(data, p, router.getAddress());
+        data = baInsert(data, p, localIP.getAddress());
         p += router.getAddress().length;
 
         // opt61
