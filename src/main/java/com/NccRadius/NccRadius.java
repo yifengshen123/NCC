@@ -541,7 +541,8 @@ public class NccRadius extends RadiusServer {
                         if (leaseData != null) {
 
                             if (leaseData.leaseUID == 0) {
-                                packetType = RadiusPacket.ACCESS_REJECT;
+                                radiusPacket.setPacketIdentifier(reqPacketIdentifier);
+                                radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                                 logger.info("Login FAIL: userId=0");
                                 return;
                             }
@@ -552,15 +553,15 @@ public class NccRadius extends RadiusServer {
                                 if (userData != null) {
 
                                     if (userData.userStatus == 0) {
-                                        packetType = RadiusPacket.ACCESS_REJECT;
+                                        radiusPacket.setPacketIdentifier(reqPacketIdentifier);
+                                        radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                                         logger.info("Login FAIL: [" + userData.userLogin + "] user disabled");
                                         return;
                                     }
 
                                     if (userData.userDeposit <= -userData.userCredit) {
-                                        packetType = RadiusPacket.ACCESS_REJECT;
                                         radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                                        radiusPacket.setPacketType(packetType);
+                                        radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                                         logger.info("Login FAIL: [" + userData.userLogin + "] negative deposit");
                                         return;
                                     }
@@ -587,18 +588,16 @@ public class NccRadius extends RadiusServer {
                                     return;
                                 }
 
-                                packetType = RadiusPacket.ACCESS_REJECT;
                                 radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                                radiusPacket.setPacketType(packetType);
+                                radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                                 logger.info("Login FAIL: [" + reqUserName + "] user not found");
                             } catch (NccUsersException e) {
                                 e.printStackTrace();
                             }
 
                         } else {
-                            packetType = RadiusPacket.ACCESS_REJECT;
                             radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                            radiusPacket.setPacketType(packetType);
+                            radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                             logger.info("Login FAIL: [" + reqUserName + "] lease not found");
                         }
 
@@ -608,9 +607,8 @@ public class NccRadius extends RadiusServer {
                         e.printStackTrace();
                     }
 
-                    packetType = RadiusPacket.ACCESS_REJECT;
                     radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                    radiusPacket.setPacketType(packetType);
+                    radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                     logger.info("Login FAIL: " + reqUserName);
                     return;
                 }
