@@ -119,7 +119,7 @@ public class NccDhcpServer {
 
                                 dhcpReply = pkt.buildReply(type, this.localIP, ip, netmask, router, dns1, dns2, nextserver, leaseTime);
 
-                                logger.debug("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " localIP=" + this.localIP.getHostAddress());
+                                logger.debug("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " IP=" + ip.getHostAddress() + " localIP=" + this.localIP.getHostAddress());
 
                                 try {
                                     DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), 67);
@@ -197,7 +197,7 @@ public class NccDhcpServer {
                                             return;
                                         }*/
 
-                                        NccDhcpLeaseData leaseData = new NccDhcpLeases().getLeaseByMAC(relayAgent, clientMAC, pkt.ba2int(pkt.dhcpTransID));
+                                        NccDhcpLeaseData leaseData = new NccDhcpLeases().getLeaseByMAC(relayAgent, circuitID, clientMAC, pkt.ba2int(pkt.dhcpTransID));
 
                                         if (leaseData != null) {
 
@@ -298,7 +298,7 @@ public class NccDhcpServer {
 
                                             logger.debug("Lease RENEW");
 
-                                            leaseData = new NccDhcpLeases().getLeaseByMAC(relayAgent, clientMAC, pkt.ba2int(pkt.dhcpTransID));
+                                            leaseData = new NccDhcpLeases().getLeaseByMAC(relayAgent, circuitID, clientMAC, pkt.ba2int(pkt.dhcpTransID));
 
                                             if (leaseData != null) {
 
@@ -404,7 +404,8 @@ public class NccDhcpServer {
                                     e.printStackTrace();
                                 }
                             }
-                        };
+                        }
+                        ;
 
                         Thread dhcpReceiveThread = new Thread(new ReceiveRunnable(localIP));
 
