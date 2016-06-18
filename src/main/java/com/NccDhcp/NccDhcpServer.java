@@ -1,5 +1,6 @@
 package com.NccDhcp;
 
+import com.Ncc;
 import com.NccPools.NccPoolData;
 import com.NccPools.NccPools;
 import com.NccRelayAgent.NccRelayAgent;
@@ -45,7 +46,8 @@ public class NccDhcpServer {
                 }
 
                 Timer dhcpTimer = new Timer();
-                dhcpTimer.schedule(new NccDhcpTimer(), 1000, 1000);
+                logger.debug("Starting dhcpTimer with timeout=" + Ncc.dhcpTimer);
+                dhcpTimer.schedule(new NccDhcpTimer(), 1000, Ncc.dhcpTimer * 1000);
             }
         });
         dhcpWatchThread.start();

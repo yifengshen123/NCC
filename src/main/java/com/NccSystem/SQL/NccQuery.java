@@ -2,8 +2,13 @@ package com.NccSystem.SQL;
 
 import com.Ncc;
 import com.sun.rowset.CachedRowSetImpl;
+import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -16,6 +21,8 @@ public class NccQuery {
     }
 
     public CachedRowSetImpl selectQuery(String query) throws NccQueryException {
+
+        if (Ncc.logQuery) logger.debug("SQL: '" + query + "'");
 
         try {
 
@@ -48,6 +55,8 @@ public class NccQuery {
     }
 
     public ArrayList<Integer> updateQuery(String query) throws NccQueryException {
+
+        if (Ncc.logQuery) logger.debug("SQL: '" + query + "'");
 
         try {
 

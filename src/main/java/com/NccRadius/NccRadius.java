@@ -1,5 +1,6 @@
 package com.NccRadius;
 
+import com.Ncc;
 import com.NccAccounts.AccountData;
 import com.NccAccounts.NccAccounts;
 import com.NccAccounts.NccAccountsException;
@@ -767,7 +768,8 @@ public class NccRadius extends RadiusServer {
                 }
 
                 Timer radiusTimer = new Timer();
-                radiusTimer.schedule(new NccRadiusTimer(), 1000, 1000);
+                logger.debug("Starting radiusTimer with timeout=" + Ncc.radiusTimer);
+                radiusTimer.schedule(new NccRadiusTimer(), 1000, Ncc.radiusTimer * 1000);
             }
         });
 

@@ -10,6 +10,7 @@ import org.apache.log4j.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.*;
 
 // TODO: 15.01.2016 override class RadiusServer to serve BindException exceptions
@@ -22,9 +23,12 @@ public class Ncc {
     public static NccSQLPool sqlPool;
     private static Logger logger = Logger.getRootLogger();
     private static String logLevel = "DEBUG";
-    private static String logFile = "NCC.log";
+    public static String logFile = "NCC.log";
     private static boolean moduleRadius = true;
     private static boolean moduleDHCP = true;
+    public static boolean logQuery = false;
+    public static Integer dhcpTimer = 1;
+    public static Integer radiusTimer = 60;
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -44,8 +48,10 @@ public class Ncc {
 
             logLevel = config.getString("log.level");
             logFile = config.getString("log.file");
+            logQuery = Boolean.valueOf(config.getString("log.query"));
 
             moduleRadius = Boolean.valueOf(config.getString("module.radius"));
+
             moduleDHCP = Boolean.valueOf(config.getString("module.dhcp"));
 
             logger.setLevel(Level.toLevel(logLevel));
@@ -85,6 +91,7 @@ public class Ncc {
 
         if (moduleRadius) {
             logger.info("Starting Radius");
+            radiusTimer = config.getInt("radius.timer");
             nccRadius = new NccRadius();
             nccRadius.startServer();
         }
@@ -93,6 +100,7 @@ public class Ncc {
             InetAddress localIP = InetAddress.getByName(config.getString("dhcp.server"));
 
             logger.info("Starting DHCP");
+            dhcpTimer = config.getInt("dhcp.timer");
             nccDhcp = new NccDhcpServer();
             nccDhcp.start(localIP);
         }

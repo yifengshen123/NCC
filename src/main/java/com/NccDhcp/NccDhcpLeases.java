@@ -309,10 +309,6 @@ public class NccDhcpLeases {
                     "leaseIP=" + clientIP + " AND " +
                     condition);
 
-            logger.debug("SELECT id FROM nccDhcpLeases WHERE " +
-                    "leaseIP=" + clientIP + " AND " +
-                    condition);
-
             if (rs != null) {
                 try {
                     if (rs.next()) {

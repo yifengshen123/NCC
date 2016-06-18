@@ -1,5 +1,5 @@
-group 'ru.nccsystems'
-version '1.0-SNAPSHOT'
+group 'ru.ncbilling'
+version '1.0'
 
 apply plugin: 'java'
 apply plugin: 'application'
