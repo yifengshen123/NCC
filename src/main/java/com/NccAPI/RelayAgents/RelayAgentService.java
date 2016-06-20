@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public interface RelayAgentService {
     public ArrayList<NccRelayAgentData> getRelayAgent(String apiKey);
     public NccRelayAgentData getRelayAgent(String apiKey, Integer id);
+    public NccRelayAgentData getRelayAgentByIP(String apiKey, Long ip);
 
     public ArrayList<NccRelayAgentType> getRelayAgentTypes(String apiKey);
 

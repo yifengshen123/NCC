@@ -35,6 +35,19 @@ public class RelayAgentServiceImpl implements RelayAgentService {
         return null;
     }
 
+    public NccRelayAgentData getRelayAgentByIP(String apiKey, Long ip) {
+        if (!new NccAPI().checkKey(apiKey)) return null;
+
+        try {
+            NccRelayAgentData relayAgentData = new NccRelayAgent().getRelayAgentByIP(ip);
+            return relayAgentData;
+        } catch (NccRelayAgentException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public ArrayList<NccRelayAgentType> getRelayAgentTypes(String apiKey){
         if (!new NccAPI().checkKey(apiKey)) return null;
 

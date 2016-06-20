@@ -9,4 +9,7 @@ public class NccRelayAgentData {
     public Integer agentType;
     public String agentStreet;
     public String agentBuild;
+    public String agentLogin;
+    public String agentPassword;
+    public String agentEnablePassword;
 }

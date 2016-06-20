@@ -37,6 +37,9 @@ public class NccRelayAgent {
             relayAgentData.agentType = rs.getInt("agentType");
             relayAgentData.agentStreet = rs.getString("agentStreet");
             relayAgentData.agentBuild = rs.getString("agentBuild");
+            relayAgentData.agentLogin = rs.getString("agentLogin");
+            relayAgentData.agentPassword = rs.getString("agentPassword");
+            relayAgentData.agentEnablePassword = rs.getString("agentEnablePassword");
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
@@ -105,7 +108,7 @@ public class NccRelayAgent {
         return null;
     }
 
-    public NccRelayAgentData getRelayAgentByIP(Long ip) {
+    public NccRelayAgentData getRelayAgentByIP(Long ip) throws NccRelayAgentException {
 
         CachedRowSetImpl rs;
 

@@ -5,6 +5,7 @@ import com.NccPools.NccPoolData;
 import com.NccPools.NccPools;
 import com.NccRelayAgent.NccRelayAgent;
 import com.NccRelayAgent.NccRelayAgentData;
+import com.NccRelayAgent.NccRelayAgentException;
 import com.NccSystem.NccUtils;
 import org.apache.log4j.Logger;
 
@@ -216,44 +217,49 @@ public class NccDhcpServer {
                                         } else {
 
                                             try {
-                                                NccRelayAgentData agentData = new NccRelayAgent().getRelayAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
+                                                NccRelayAgentData agentData = null;
+                                                try {
+                                                    agentData = new NccRelayAgent().getRelayAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
 
+                                                    if (agentData != null) {
 
-                                                if (agentData != null) {
+                                                        Integer pool;
+                                                        Integer uid;
 
-                                                    Integer pool;
-                                                    Integer uid;
-
-                                                    if (bindData != null) {
-                                                        pool = agentData.agentPool;
-                                                        uid = bindData.uid;
-                                                    } else {
-                                                        pool = agentData.agentUnbindedPool;
-                                                        uid = 0;
-                                                    }
-
-                                                    NccPoolData poolData = new NccPools().getPool(pool);
-
-                                                    if (poolData != null) {
-                                                        leaseData = new NccDhcpLeases().allocateLease(uid, poolData, clientMAC, remoteID, circuitID, NccUtils.ip2long(agentIP.getHostAddress()), pkt.ba2int(pkt.dhcpTransID));
-
-                                                        if (leaseData != null) {
-                                                            sendReply(NccDhcpPacket.DHCP_MSG_TYPE_OFFER, NccUtils.ip2long(localIP.getHostAddress()), leaseData.leaseIP, leaseData.leaseNetmask, leaseData.leaseRouter, leaseData.leaseDNS1, leaseData.leaseDNS2, leaseData.leaseNextServer, poolData.poolLeaseTime);
-                                                            new NccDhcpLeases().renewLease(leaseData);
-                                                            return;
+                                                        if (bindData != null) {
+                                                            pool = agentData.agentPool;
+                                                            uid = bindData.uid;
                                                         } else {
-                                                            logger.error("Can't allocate lease");
+                                                            pool = agentData.agentUnbindedPool;
+                                                            uid = 0;
+                                                        }
+
+                                                        NccPoolData poolData = new NccPools().getPool(pool);
+
+                                                        if (poolData != null) {
+                                                            leaseData = new NccDhcpLeases().allocateLease(uid, poolData, clientMAC, remoteID, circuitID, NccUtils.ip2long(agentIP.getHostAddress()), pkt.ba2int(pkt.dhcpTransID));
+
+                                                            if (leaseData != null) {
+                                                                sendReply(NccDhcpPacket.DHCP_MSG_TYPE_OFFER, NccUtils.ip2long(localIP.getHostAddress()), leaseData.leaseIP, leaseData.leaseNetmask, leaseData.leaseRouter, leaseData.leaseDNS1, leaseData.leaseDNS2, leaseData.leaseNextServer, poolData.poolLeaseTime);
+                                                                new NccDhcpLeases().renewLease(leaseData);
+                                                                return;
+                                                            } else {
+                                                                logger.error("Can't allocate lease");
+                                                                sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
+                                                                return;
+                                                            }
+                                                        } else {
+                                                            logger.error("Pool for relay agent " + NccUtils.long2ip(relayAgent) + " not found");
                                                             sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
                                                             return;
                                                         }
                                                     } else {
-                                                        logger.error("Pool for relay agent " + NccUtils.long2ip(relayAgent) + " not found");
-                                                        sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
-                                                        return;
+                                                        logger.debug("Relay agent " + NccUtils.long2ip(relayAgent) + " not found");
                                                     }
-                                                } else {
-                                                    logger.debug("Relay agent " + NccUtils.long2ip(relayAgent) + " not found");
+                                                } catch (NccRelayAgentException e) {
+                                                    e.printStackTrace();
                                                 }
+
                                                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
                                                 return;
                                             } catch (UnknownHostException e) {
