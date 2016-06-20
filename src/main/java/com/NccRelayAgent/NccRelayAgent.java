@@ -105,30 +105,18 @@ public class NccRelayAgent {
         return null;
     }
 
-    public NccRelayAgentData getAgentByIP(Long ip) {
+    public NccRelayAgentData getRelayAgentByIP(Long ip) {
 
         CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT id, " +
-                    "agentName, " +
-                    "agentIP, " +
-                    "agentPool," +
-                    "agentUnbindedPool FROM nccDhcpRelayAgents WHERE agentIP=" + ip);
+            rs = query.selectQuery("SELECT * FROM nccDhcpRelayAgents WHERE agentIP=" + ip);
 
             if (rs != null) {
 
                 try {
                     if (rs.next()) {
-                        NccRelayAgentData agentData = new NccRelayAgentData();
-
-                        agentData.id = rs.getInt("id");
-                        agentData.agentName = rs.getString("agentName");
-                        agentData.agentIP = rs.getLong("agentIP");
-                        agentData.agentPool = rs.getInt("agentPool");
-                        agentData.agentUnbindedPool = rs.getInt("agentUnbindedPool");
-
-                        return agentData;
+                        return fillRelayAgentData(rs);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

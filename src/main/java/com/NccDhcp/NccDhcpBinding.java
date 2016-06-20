@@ -21,24 +21,48 @@ public class NccDhcpBinding {
         }
     }
 
-    public NccDhcpBindData getBindingByUID(Integer uid) {
+    private NccDhcpBindData fillBindData(CachedRowSetImpl rs){
+        NccDhcpBindData bindData = new NccDhcpBindData();
+
+        try {
+            bindData.id = rs.getInt("id");
+            bindData.uid = rs.getInt("uid");
+            bindData.remoteID = rs.getString("remoteID");
+            bindData.circuitID = rs.getString("circuitID");
+            bindData.clientMAC = rs.getString("clientMAC");
+            bindData.relayAgent = rs.getLong("relayAgent");
+
+            return bindData;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bindData;
+    }
+
+    public NccDhcpBindData getBinding(Integer uid) {
         CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT b.id, " +
-                    "b.uid, " +
-                    "b.remoteID, " +
-                    "b.circuitID, " +
-                    "b.clientMAC, " +
-                    "b.relayAgent, " +
-                    "a.agentStreet, " +
-                    "a.agentBuild, " +
-                    "a.agentIP, " +
-                    "a.agentName, " +
-                    "a.agentType " +
-                    "FROM nccDhcpBinding b " +
-                    "LEFT JOIN nccRelayAgents a ON a.agentIP=b.relayAgent " +
-                    "WHERE b.uid=" + uid);
+            rs = query.selectQuery("SELECT " +
+                    "id, " +
+                    "uid, " +
+                    "remoteID, " +
+                    "circuitID, " +
+                    "clientMAC, " +
+                    "relayAgent " +
+                    "FROM nccDhcpBinding " +
+                    "WHERE uid=" + uid);
+
+            if(rs!=null){
+                try {
+                    if(rs.next()){
+                        return fillBindData(rs);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
@@ -56,7 +80,14 @@ public class NccDhcpBinding {
         }
 
         try {
-            rs = query.selectQuery("SELECT id, uid, remoteID, circuitID, clientMAC, relayAgent FROM ncc_dhcp_user_binding WHERE " +
+            rs = query.selectQuery("SELECT " +
+                    "id, " +
+                    "uid, " +
+                    "remoteID, " +
+                    "circuitID, " +
+                    "clientMAC, " +
+                    "relayAgent " +
+                    "FROM nccDhcpBinding WHERE " +
                     "remoteID='" + remoteID + "' AND " +
                     "circuitID='" + circuitID + "' AND " +
                     whereMAC +
@@ -65,16 +96,7 @@ public class NccDhcpBinding {
             if (rs != null) {
                 try {
                     if (rs.next()) {
-                        NccDhcpBindData bindData = new NccDhcpBindData();
-
-                        bindData.id = rs.getInt("id");
-                        bindData.uid = rs.getInt("uid");
-                        bindData.remoteID = rs.getString("remoteID");
-                        bindData.circuitID = rs.getString("circuitID");
-                        bindData.clientMAC = rs.getString("clientMAC");
-                        bindData.relayAgent = rs.getLong("relayAgent");
-
-                        return bindData;
+                        return fillBindData(rs);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

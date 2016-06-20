@@ -216,7 +216,7 @@ public class NccDhcpServer {
                                         } else {
 
                                             try {
-                                                NccRelayAgentData agentData = new NccRelayAgent().getAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
+                                                NccRelayAgentData agentData = new NccRelayAgent().getRelayAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
 
 
                                                 if (agentData != null) {
