@@ -40,6 +40,7 @@ public class NccRelayAgent {
             relayAgentData.agentLogin = rs.getString("agentLogin");
             relayAgentData.agentPassword = rs.getString("agentPassword");
             relayAgentData.agentEnablePassword = rs.getString("agentEnablePassword");
+            relayAgentData.agentUnbindedPool = rs.getInt("agentUnbindedPool");
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
