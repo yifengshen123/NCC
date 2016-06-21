@@ -365,8 +365,6 @@ public class NccDhcpLeases {
     }
 
     public void cleanupLeases() {
-        Long cleanupTime = System.currentTimeMillis() / 1000L;
-
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpLeases WHERE leaseExpire<UNIX_TIMESTAMP(NOW())");
             if (ids != null) for (Integer id : ids) {

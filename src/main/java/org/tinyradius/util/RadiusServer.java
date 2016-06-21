@@ -292,7 +292,7 @@ public abstract class RadiusServer {
 	 * Listens on the passed socket, blocks until stop() is called.
 	 * @param s socket to listen on
 	 */
-	protected void listen(DatagramSocket s) {
+	public void listen(DatagramSocket s) {
 		DatagramPacket packetIn = new DatagramPacket(new byte[RadiusPacket.MAX_PACKET_LENGTH], RadiusPacket.MAX_PACKET_LENGTH);
 		while (true) {
 			try {
@@ -513,7 +513,7 @@ public abstract class RadiusServer {
 	private int socketTimeout = 3000;
 	private List receivedPackets = new LinkedList();
 	private long duplicateInterval = 30000; // 30 s
-	private boolean closing = false;
+	public boolean closing = false;
 	//private static Log logger = LogFactory.getLog(RadiusServer.class);
 	private static Logger logger = Logger.getLogger(RadiusServer.class);
 	

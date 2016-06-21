@@ -36,8 +36,7 @@ import org.tinyradius.util.RadiusException;
 import org.tinyradius.util.RadiusServer;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -154,6 +153,72 @@ public class NccRadius extends RadiusServer {
 
         setAuthPort(radAuthPort);
         setAcctPort(radAcctPort);
+    }
+
+    @Override
+    public void listen(DatagramSocket s) {
+        DatagramPacket packetIn = new DatagramPacket(new byte[RadiusPacket.MAX_PACKET_LENGTH], RadiusPacket.MAX_PACKET_LENGTH);
+        while (true) {
+            try {
+                // receive packet
+                try {
+                    logger.trace("about to call socket.receive()");
+                    s.receive(packetIn);
+                    if (logger.isDebugEnabled())
+                        logger.debug("receive buffer size = " + s.getReceiveBufferSize());
+                } catch (SocketException se) {
+                    if (closing) {
+                        // end thread
+                        logger.info("got closing signal - end listen thread");
+                        return;
+                    } else {
+                        // retry s.receive()
+                        logger.error("SocketException during s.receive() -> retry", se);
+                        continue;
+                    }
+                }
+
+                // check client
+                InetSocketAddress localAddress = (InetSocketAddress) s.getLocalSocketAddress();
+                InetSocketAddress remoteAddress = new InetSocketAddress(packetIn.getAddress(), packetIn.getPort());
+                String secret = getSharedSecret(remoteAddress);
+                if (secret == null) {
+                    if (logger.isInfoEnabled())
+                        logger.info("ignoring packet from unknown client " + remoteAddress + " received on local address " + localAddress);
+                    continue;
+                }
+
+                // parse packet
+                RadiusPacket request = makeRadiusPacket(packetIn, secret);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("received packet from " + remoteAddress + " on local address " + localAddress);
+                    if (Ncc.radiusLogPackets)
+                        logger.debug("RAW packet: " + request);
+                }
+
+                // handle packet
+                logger.trace("about to call RadiusServer.handlePacket()");
+                RadiusPacket response = handlePacket(localAddress, remoteAddress, request, secret);
+
+                // send response
+                if (response != null) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("send response: " + response);
+                    DatagramPacket packetOut = makeDatagramPacket(response, secret, remoteAddress.getAddress(), packetIn.getPort(), request);
+                    s.send(packetOut);
+                } else
+                    logger.debug("no response sent");
+            } catch (SocketTimeoutException ste) {
+                // this is expected behaviour
+                logger.trace("normal socket timeout");
+            } catch (IOException ioe) {
+                // error while reading/writing socket
+                logger.error("communication error", ioe);
+            } catch (RadiusException re) {
+                // malformed packet
+                logger.error("malformed Radius packet", re);
+            }
+        }
     }
 
     public RadiusPacket accountingRequestReceived(AccountingRequest accReq, InetSocketAddress accClient) {
@@ -369,8 +434,6 @@ public class NccRadius extends RadiusServer {
                                     acctInputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Input-Octets"));
                                     acctOutputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Output-Octets"));
 
-                                    logger.debug("In=" + acctInputOctets + " Out=" + acctOutputOctets);
-
                                     String attr = null;
 
                                     attr = accountingRequest.getAttributeValue("Acct-Input-Gigawords");
@@ -390,8 +453,6 @@ public class NccRadius extends RadiusServer {
                                     if (acctOutputGigawords > 0) {
                                         acctOutputOctets += acctOutputGigawords * 1073741824L;
                                     }
-
-                                    logger.debug("Acct-Input-Gigawords=" + acctInputGigawords + " acctInputOctets=" + acctInputOctets);
 
                                     acctSessionTime = accountingRequest.getAttributeValue("Acct-Session-Time");
 
@@ -768,7 +829,6 @@ public class NccRadius extends RadiusServer {
                 }
 
                 Timer radiusTimer = new Timer();
-                logger.debug("Starting radiusTimer with timeout=" + Ncc.radiusTimer);
                 radiusTimer.schedule(new NccRadiusTimer(), 1000, Ncc.radiusTimer * 1000);
             }
         });
