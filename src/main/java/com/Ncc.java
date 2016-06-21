@@ -29,6 +29,7 @@ public class Ncc {
     public static boolean logQuery = false;
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
+    public static Integer dhcpUnbindedCleanupTime = 10;
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -101,6 +102,7 @@ public class Ncc {
 
             logger.info("Starting DHCP");
             dhcpTimer = config.getInt("dhcp.timer");
+            dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time");
             nccDhcp = new NccDhcpServer();
             nccDhcp.start(localIP);
         }

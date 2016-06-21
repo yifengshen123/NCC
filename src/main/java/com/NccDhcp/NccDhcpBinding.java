@@ -1,5 +1,6 @@
 package com.NccDhcp;
 
+import com.Ncc;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
@@ -92,7 +93,7 @@ public class NccDhcpBinding {
                 try {
                     while (rs.next()) {
                         NccDhcpBindData bindData = fillBindData(rs);
-                        if(bindData!=null){
+                        if (bindData != null) {
                             bindings.add(bindData);
                         }
                     }
@@ -177,7 +178,7 @@ public class NccDhcpBinding {
                     while (rs.next()) {
                         NccDhcpUnbindedData unbindedData = fillUnbindedData(rs);
 
-                        if(unbindedData !=null){
+                        if (unbindedData != null) {
                             unbinded.add(unbindedData);
                         }
                     }
@@ -260,10 +261,11 @@ public class NccDhcpBinding {
     }
 
     public void cleanupBinding() {
-        Long cleanupTime = System.currentTimeMillis() / 1000L;
+
+        Integer cleanupTime = Ncc.dhcpUnbindedCleanupTime * 60;
 
         try {
-            ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpUnbinded WHERE lastSeen+120<" + cleanupTime);
+            ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpUnbinded WHERE lastSeen+" + cleanupTime + "<UNIX_TIMESTAMP(NOW())");
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
