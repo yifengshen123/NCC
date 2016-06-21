@@ -10,8 +10,8 @@ import com.NccAPI.NAS.NasService;
 import com.NccAPI.NAS.NasServiceImpl;
 import com.NccAPI.Pools.PoolsService;
 import com.NccAPI.Pools.PoolsServiceImpl;
-import com.NccAPI.RelayAgents.RelayAgentService;
-import com.NccAPI.RelayAgents.RelayAgentServiceImpl;
+import com.NccAPI.DhcpRelayAgents.DhcpRelayAgentService;
+import com.NccAPI.DhcpRelayAgents.DhcpRelayAgentServiceImpl;
 import com.NccAPI.Sessions.SessionsService;
 import com.NccAPI.Sessions.SessionsServiceImpl;
 import com.NccAPI.System.SystemService;
@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
 
 public class NccAPI {
 
@@ -114,7 +113,7 @@ public class NccAPI {
             private NasService nasService;
             private ViewsService viewsService;
             private AstraManagerService astraManagerService;
-            private RelayAgentService relayAgentService;
+            private DhcpRelayAgentService relayAgentService;
             private DhcpLeasesService dhcpLeasesService;
             private DhcpBindingService dhcpBindingService;
             private SystemService systemService;
@@ -129,7 +128,7 @@ public class NccAPI {
                 nasService = new NasServiceImpl();
                 viewsService = new ViewsServiceImpl();
                 astraManagerService = new AstraManagerImpl();
-                relayAgentService = new RelayAgentServiceImpl();
+                relayAgentService = new DhcpRelayAgentServiceImpl();
                 dhcpLeasesService = new DhcpLeasesServiceImpl();
                 dhcpBindingService = new DhcpBindingServiceImpl();
                 systemService = new SystemServiceImpl();
@@ -157,7 +156,7 @@ public class NccAPI {
                                 NasService.class,
                                 ViewsService.class,
                                 AstraManagerService.class,
-                                RelayAgentService.class,
+                                DhcpRelayAgentService.class,
                                 DhcpLeasesService.class,
                                 DhcpBindingService.class,
                                 SystemService.class

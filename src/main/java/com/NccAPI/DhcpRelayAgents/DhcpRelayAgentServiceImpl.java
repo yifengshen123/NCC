@@ -1,4 +1,4 @@
-package com.NccAPI.RelayAgents;
+package com.NccAPI.DhcpRelayAgents;
 
 import com.NccAPI.NccAPI;
 import com.NccRelayAgent.NccRelayAgent;
@@ -8,8 +8,8 @@ import com.NccRelayAgent.NccRelayAgentType;
 
 import java.util.ArrayList;
 
-public class RelayAgentServiceImpl implements RelayAgentService {
-    public ArrayList<NccRelayAgentData> getRelayAgent(String apiKey) {
+public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
+    public ArrayList<NccRelayAgentData> getDhcpRelayAgent(String apiKey) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
@@ -22,7 +22,7 @@ public class RelayAgentServiceImpl implements RelayAgentService {
         return null;
     }
 
-    public NccRelayAgentData getRelayAgent(String apiKey, Integer id) {
+    public NccRelayAgentData getDhcpRelayAgent(String apiKey, Integer id) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
@@ -35,7 +35,7 @@ public class RelayAgentServiceImpl implements RelayAgentService {
         return null;
     }
 
-    public NccRelayAgentData getRelayAgentByIP(String apiKey, Long ip) {
+    public NccRelayAgentData getDhcpRelayAgentByIP(String apiKey, Long ip) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
@@ -48,7 +48,7 @@ public class RelayAgentServiceImpl implements RelayAgentService {
         return null;
     }
 
-    public ArrayList<NccRelayAgentType> getRelayAgentTypes(String apiKey){
+    public ArrayList<NccRelayAgentType> getDhcpRelayAgentTypes(String apiKey){
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
@@ -62,7 +62,7 @@ public class RelayAgentServiceImpl implements RelayAgentService {
         return null;
     }
 
-    public Integer createRelayAgent(String apiKey, String agentName, Integer agentType, Long agentIP, Integer agentPool, String agentStreet, String agentBuild, Integer agentUnbindedPool){
+    public Integer createDhcpRelayAgent(String apiKey, String agentName, Integer agentType, Long agentIP, Integer agentPool, String agentStreet, String agentBuild, Integer agentUnbindedPool){
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         NccRelayAgentData relayAgentData = new NccRelayAgentData();
