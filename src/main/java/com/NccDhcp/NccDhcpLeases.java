@@ -1,5 +1,6 @@
 package com.NccDhcp;
 
+import com.Ncc;
 import com.NccPools.NccPoolData;
 import com.NccPools.NccPools;
 import com.NccSystem.SQL.NccQuery;
@@ -368,7 +369,7 @@ public class NccDhcpLeases {
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpLeases WHERE leaseExpire<UNIX_TIMESTAMP(NOW())");
             if (ids != null) for (Integer id : ids) {
-                logger.debug("Lease expired: " + id);
+                if (Ncc.dhcpLogLevel >= 6) logger.debug("Lease expired: " + id);
             }
         } catch (NccQueryException e) {
             e.printStackTrace();

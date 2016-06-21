@@ -30,7 +30,8 @@ public class Ncc {
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
     public static Integer dhcpUnbindedCleanupTime = 10;
-    public static boolean radiusLogPackets = false;
+    public static Integer radiusLogLevel = 0;
+    public static Integer dhcpLogLevel = 0;
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -94,7 +95,7 @@ public class Ncc {
         if (moduleRadius) {
             logger.info("Starting Radius");
             radiusTimer = config.getInt("radius.timer");
-            radiusLogPackets = config.getBoolean("radius.log.packets");
+            radiusLogLevel = config.getInt("radius.log.level");
             nccRadius = new NccRadius();
             nccRadius.startServer();
         }
@@ -105,6 +106,7 @@ public class Ncc {
             logger.info("Starting DHCP");
             dhcpTimer = config.getInt("dhcp.timer");
             dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time");
+            dhcpLogLevel = config.getInt("dhcp.log.level");
             nccDhcp = new NccDhcpServer();
             nccDhcp.start(localIP);
         }

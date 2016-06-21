@@ -165,7 +165,7 @@ public class NccRadius extends RadiusServer {
                     logger.trace("about to call socket.receive()");
                     s.receive(packetIn);
                     if (logger.isDebugEnabled())
-                        logger.debug("receive buffer size = " + s.getReceiveBufferSize());
+                        if (Ncc.radiusLogLevel >= 7) logger.debug("receive buffer size = " + s.getReceiveBufferSize());
                 } catch (SocketException se) {
                     if (closing) {
                         // end thread
@@ -190,9 +190,9 @@ public class NccRadius extends RadiusServer {
 
                 // parse packet
                 RadiusPacket request = makeRadiusPacket(packetIn, secret);
-                if (logger.isDebugEnabled()) {
+                if (logger.isDebugEnabled() && Ncc.radiusLogLevel >= 6) {
                     logger.debug("received packet from " + remoteAddress + " on local address " + localAddress);
-                    if (Ncc.radiusLogPackets)
+                    if (Ncc.radiusLogLevel >= 7)
                         logger.debug("RAW packet: " + request);
                 }
 
@@ -203,7 +203,7 @@ public class NccRadius extends RadiusServer {
                 // send response
                 if (response != null) {
                     if (logger.isDebugEnabled())
-                        logger.debug("send response: " + response);
+                        if (Ncc.radiusLogLevel >= 6) logger.debug("send response: " + response);
                     DatagramPacket packetOut = makeDatagramPacket(response, secret, remoteAddress.getAddress(), packetIn.getPort(), request);
                     s.send(packetOut);
                 } else
@@ -422,14 +422,14 @@ public class NccRadius extends RadiusServer {
 
                         } else if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_INTERIM_UPDATE) {
 
-                            logger.debug("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
+                            if (Ncc.radiusLogLevel >= 5) logger.debug("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
 
                             try {
                                 leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
 
                                 if (leaseData != null) {
 
-                                    logger.debug("Lease found: " + NccUtils.long2ip(leaseData.leaseIP));
+                                    if (Ncc.radiusLogLevel >= 6) logger.debug("Lease found: " + NccUtils.long2ip(leaseData.leaseIP));
 
                                     acctInputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Input-Octets"));
                                     acctOutputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Output-Octets"));
@@ -510,7 +510,7 @@ public class NccRadius extends RadiusServer {
                                             // TODO: 4/19/16 set correct Terminate-Cause
                                             sessionData.terminateCause = 0;
 
-                                            logger.debug("Session found: '" + sessionID + "'");
+                                            if (Ncc.radiusLogLevel >= 6) logger.debug("Session found: '" + sessionID + "'");
 
                                             //new NccSessions().stopSession(sessionData);
                                         } else {
@@ -572,7 +572,7 @@ public class NccRadius extends RadiusServer {
                 Integer reqPacketIdentifier = req.getPacketIdentifier();
                 String reqServiceType = req.getServiceType();
 
-                logger.debug("Access-Request '" + reqUserName + "' Service-Type '" + reqServiceType + "'");
+                if (Ncc.radiusLogLevel >= 6) logger.debug("Access-Request '" + reqUserName + "' Service-Type '" + reqServiceType + "'");
 
                 Integer packetType = RadiusPacket.ACCESS_REJECT;
 
@@ -732,7 +732,7 @@ public class NccRadius extends RadiusServer {
                 radiusPacket.setPacketIdentifier(reqPacketIdentifier);
                 radiusPacket.setPacketType(packetType);
 
-                logger.debug("Response time: " + new DecimalFormat("#.#########").format((double) (System.nanoTime() - startTime) / 1000000000) + " sec.");
+                if (Ncc.radiusLogLevel >= 6) logger.debug("Response time: " + new DecimalFormat("#.#########").format((double) (System.nanoTime() - startTime) / 1000000000) + " sec.");
 
             }
         }

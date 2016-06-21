@@ -178,16 +178,10 @@ public class NccNAS {
     public String getNasSecretByIP(Long nasIP) {
         try {
             NccNAS nas = new NccNAS();
-            try {
+            NccNasData nasData = nas.getNasByIP(nasIP);
 
-                logger.debug("Getting nasSecret for '" + NccUtils.long2ip(nasIP) + "'");
-                NccNasData nasData = nas.getNasByIP(nasIP);
-
-                if (nasData != null) {
-                    return nasData.nasSecret;
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+            if (nasData != null) {
+                return nasData.nasSecret;
             }
         } catch (NccNasException e) {
             try {
@@ -236,8 +230,8 @@ public class NccNAS {
                     "nasType=" + nasData.nasType + ", " +
                     "nasIP=" + nasData.nasIP + ", " +
                     "nasSecret='" + nasData.nasSecret + "', " +
-                    "nasInterimInterval="+nasData.nasInterimInterval+" " +
-                    "WHERE id="+nasData.id);
+                    "nasInterimInterval=" + nasData.nasInterimInterval + " " +
+                    "WHERE id=" + nasData.id);
 
             if (ids != null && ids.size() > 0) {
                 return ids.get(0);
