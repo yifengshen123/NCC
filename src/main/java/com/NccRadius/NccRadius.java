@@ -77,10 +77,12 @@ public class NccRadius extends RadiusServer {
             pkt.addAttribute("avpair", "subscriber:command=account-logoff");
 
             try {
-                logger.debug("Sending CoA to " + NccUtils.long2ip(nasData.nasIP) + " for " + sessionID + " and username " + userLogin);
+                if (Ncc.radiusLogLevel >= 3)
+                    logger.info("Sending CoA to " + NccUtils.long2ip(nasData.nasIP) + " for " + sessionID + " and username " + userLogin);
                 pkt = radiusClient.communicate(pkt, 1700);
                 pktId++;
-                logger.debug("CoA reply: " + pkt.getPacketTypeName());
+                if (Ncc.radiusLogLevel >= 3)
+                    logger.info("CoA reply: " + pkt.getPacketTypeName());
 
                 if (pkt.getPacketType() == RadiusPacket.COA_ACK) {
                     return;
@@ -191,9 +193,9 @@ public class NccRadius extends RadiusServer {
                 // parse packet
                 RadiusPacket request = makeRadiusPacket(packetIn, secret);
                 if (logger.isDebugEnabled() && Ncc.radiusLogLevel >= 6) {
-                    logger.debug("received packet from " + remoteAddress + " on local address " + localAddress);
+                    logger.info("received packet from " + remoteAddress + " on local address " + localAddress);
                     if (Ncc.radiusLogLevel >= 7)
-                        logger.debug("RAW packet: " + request);
+                        logger.info("RAW packet: " + request);
                 }
 
                 // handle packet
@@ -203,7 +205,7 @@ public class NccRadius extends RadiusServer {
                 // send response
                 if (response != null) {
                     if (logger.isDebugEnabled())
-                        if (Ncc.radiusLogLevel >= 6) logger.debug("send response: " + response);
+                        if (Ncc.radiusLogLevel >= 6) logger.info("send response: " + response);
                     DatagramPacket packetOut = makeDatagramPacket(response, secret, remoteAddress.getAddress(), packetIn.getPort(), request);
                     s.send(packetOut);
                 } else
@@ -423,7 +425,7 @@ public class NccRadius extends RadiusServer {
                         } else if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_INTERIM_UPDATE) {
 
                             if (Ncc.radiusLogLevel >= 5)
-                                logger.debug("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
+                                logger.info("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
 
                             try {
                                 leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
@@ -431,7 +433,7 @@ public class NccRadius extends RadiusServer {
                                 if (leaseData != null) {
 
                                     if (Ncc.radiusLogLevel >= 6)
-                                        logger.debug("Lease found: " + NccUtils.long2ip(leaseData.leaseIP));
+                                        logger.info("Lease found: " + NccUtils.long2ip(leaseData.leaseIP));
 
                                     acctInputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Input-Octets"));
                                     acctOutputOctets = Long.parseLong(accountingRequest.getAttributeValue("Acct-Output-Octets"));
@@ -494,7 +496,7 @@ public class NccRadius extends RadiusServer {
                                                     logger.info("Session '" + sessionID + "' resumed");
                                                 }
                                             } else {
-                                                logger.debug("No session to resume");
+                                                logger.info("No session to resume");
                                                 disconnectUser(nasIP, userLogin, sessionID);
                                             }
                                         } catch (NccSessionsException e) {
@@ -513,7 +515,7 @@ public class NccRadius extends RadiusServer {
                                             sessionData.terminateCause = 0;
 
                                             if (Ncc.radiusLogLevel >= 6)
-                                                logger.debug("Session found: '" + sessionID + "'");
+                                                logger.info("Session found: '" + sessionID + "'");
 
                                             //new NccSessions().stopSession(sessionData);
                                         } else {
@@ -576,7 +578,7 @@ public class NccRadius extends RadiusServer {
                 String reqServiceType = req.getServiceType();
 
                 if (Ncc.radiusLogLevel >= 6)
-                    logger.debug("Access-Request '" + reqUserName + "' Service-Type '" + reqServiceType + "'");
+                    logger.info("Access-Request '" + reqUserName + "' Service-Type '" + reqServiceType + "'");
 
                 Integer packetType = RadiusPacket.ACCESS_REJECT;
 
@@ -737,7 +739,7 @@ public class NccRadius extends RadiusServer {
                 radiusPacket.setPacketType(packetType);
 
                 if (Ncc.radiusLogLevel >= 6)
-                    logger.debug("Response time: " + new DecimalFormat("#.#########").format((double) (System.nanoTime() - startTime) / 1000000000) + " sec.");
+                    logger.info("Response time: " + new DecimalFormat("#.#########").format((double) (System.nanoTime() - startTime) / 1000000000) + " sec.");
 
             }
         }
@@ -772,7 +774,8 @@ public class NccRadius extends RadiusServer {
                                             Integer id = rs.getInt("id");
                                             String sessionId = rs.getString("sessionId");
 
-                                            logger.debug("Cleaning up session id=" + id + " sessionId=" + sessionId);
+                                            if (Ncc.radiusLogLevel >= 6)
+                                                logger.info("Cleaning up session id=" + id + " sessionId=" + sessionId);
 
                                             SessionData sessionData = new NccSessions().getSession(sessionId);
                                             if (sessionData != null) {
@@ -795,20 +798,21 @@ public class NccRadius extends RadiusServer {
 
                             for (SessionData sessionData : sessions) {
 
-                                if(Ncc.radiusLogLevel >=7 ) logger.debug("Checking session id=" + sessionData.id);
+                                if (Ncc.radiusLogLevel >= 7) logger.info("Checking session id=" + sessionData.id);
 
                                 try {
                                     NccUserData userData = new NccUsers().getUser(sessionData.userId);
 
                                     if (userData != null) {
 
-                                        if(Ncc.radiusLogLevel >= 7) logger.debug("User: " + userData.userLogin + " deposit=" + userData.userDeposit + " credit=" + userData.userCredit);
+                                        if (Ncc.radiusLogLevel >= 7)
+                                            logger.info("User: " + userData.userLogin + " deposit=" + userData.userDeposit + " credit=" + userData.userCredit);
 
                                         try {
                                             NccNasData nasData = new NccNAS().getNAS(sessionData.nasId);
 
                                             if (userData.userStatus == 0) {
-                                                logger.debug("Disconnecting user (user disabled): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
+                                                logger.info("Disconnecting user (user disabled): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
                                                 try {
                                                     disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
                                                 } catch (UnknownHostException e) {
@@ -817,7 +821,7 @@ public class NccRadius extends RadiusServer {
                                             }
 
                                             if (Math.floor(userData.userDeposit) <= -Math.floor(userData.userCredit)) {
-                                                logger.debug("Disconnecting user (low deposit): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
+                                                logger.info("Disconnecting user (low deposit): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
                                                 try {
                                                     disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
                                                 } catch (UnknownHostException e) {

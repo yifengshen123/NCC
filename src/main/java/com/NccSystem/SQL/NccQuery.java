@@ -17,7 +17,7 @@ public class NccQuery {
 
     public CachedRowSetImpl selectQuery(String query) throws NccQueryException {
 
-        if (Ncc.logQuery) logger.debug("SQL: '" + query + "'");
+        if (Ncc.logQuery) logger.info("SQL: '" + query + "'");
 
         try {
 
@@ -51,7 +51,7 @@ public class NccQuery {
 
     public ArrayList<Integer> updateQuery(String query) throws NccQueryException {
 
-        if (Ncc.logQuery) logger.debug("SQL: '" + query + "'");
+        if (Ncc.logQuery) logger.info("SQL: '" + query + "'");
 
         try {
 
