@@ -11,9 +11,9 @@ import com.NccNAS.NccNAS;
 import com.NccNAS.NccNasData;
 import com.NccNAS.NccNasException;
 import com.NccPools.NccPoolData;
+import com.NccSessions.NccSessionData;
 import com.NccSessions.NccSessions;
 import com.NccSessions.NccSessionsException;
-import com.NccSessions.SessionData;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
@@ -312,7 +312,7 @@ public class NccRadius extends RadiusServer {
                             e.printStackTrace();
                         }
 
-                        SessionData sessionData = new SessionData();
+                        NccSessionData sessionData = new NccSessionData();
                         NccDhcpLeaseData leaseData = null;
                         ArrayList<NccDhcpLeaseData> leases = null;
 
@@ -321,7 +321,7 @@ public class NccRadius extends RadiusServer {
                             logger.info("Session start: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP + " framedMAC=" + framedMAC);
 
                             try {
-                                SessionData checkSession = new NccSessions().getSession(sessionID);
+                                NccSessionData checkSession = new NccSessions().getSession(sessionID);
                                 if (checkSession != null) {
                                     logger.error("Duplicate session: '" + sessionID + "'");
                                     break;
@@ -480,7 +480,7 @@ public class NccRadius extends RadiusServer {
 
                                         logger.error("Session not found: '" + sessionID + "'");
                                         try {
-                                            SessionData resumeSession = new NccSessions().getSessionFromLog(sessionID);
+                                            NccSessionData resumeSession = new NccSessions().getSessionFromLog(sessionID);
 
                                             if (resumeSession != null) {
 
@@ -776,7 +776,7 @@ public class NccRadius extends RadiusServer {
                                             if (Ncc.radiusLogLevel >= 6)
                                                 logger.info("Cleaning up session id=" + id + " sessionId=" + sessionId);
 
-                                            SessionData sessionData = new NccSessions().getSession(sessionId);
+                                            NccSessionData sessionData = new NccSessions().getSession(sessionId);
                                             if (sessionData != null) {
                                                 try {
                                                     new NccSessions().stopSession(sessionData);
@@ -793,9 +793,9 @@ public class NccRadius extends RadiusServer {
                                 e.printStackTrace();
                             }
 
-                            ArrayList<SessionData> sessions = new NccSessions().getSessions();
+                            ArrayList<NccSessionData> sessions = new NccSessions().getSessions();
 
-                            for (SessionData sessionData : sessions) {
+                            for (NccSessionData sessionData : sessions) {
 
                                 if (Ncc.radiusLogLevel >= 7) logger.info("Checking session id=" + sessionData.id);
 

@@ -1,15 +1,15 @@
 package com.NccAPI.Sessions;
 
 import com.NccAPI.NccAPI;
+import com.NccSessions.NccSessionData;
 import com.NccSessions.NccSessions;
 import com.NccSessions.NccSessionsException;
-import com.NccSessions.SessionData;
 
 import java.util.ArrayList;
 
 public class SessionsServiceImpl implements SessionsService {
 
-    public ArrayList<SessionData> getSessions(String apiKey){
+    public ArrayList<NccSessionData> getSessions(String apiKey){
         if (!new NccAPI().checkKey(apiKey)) return null;
         try {
             return new NccSessions().getSessions();
@@ -19,7 +19,7 @@ public class SessionsServiceImpl implements SessionsService {
         return null;
     }
 
-    public SessionData getSessionByUID(String apiKey, Integer uid){
+    public NccSessionData getSessionByUID(String apiKey, Integer uid){
         if (!new NccAPI().checkKey(apiKey)) return null;
         try {
             return new NccSessions().getSession(uid);
@@ -29,7 +29,7 @@ public class SessionsServiceImpl implements SessionsService {
         return null;
     }
 
-    public SessionData getSession(String apiKey, String sessionId){
+    public NccSessionData getSession(String apiKey, String sessionId){
         if (!new NccAPI().checkKey(apiKey)) return null;
         try {
             return new NccSessions().getSession(sessionId);

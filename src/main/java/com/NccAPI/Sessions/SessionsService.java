@@ -1,12 +1,12 @@
 package com.NccAPI.Sessions;
 
-import com.NccSessions.SessionData;
+import com.NccSessions.NccSessionData;
 
 import java.util.ArrayList;
 
 public interface SessionsService {
 
-    public ArrayList<SessionData> getSessions(String apiKey);
-    public SessionData getSessionByUID(String apiKey, Integer uid);
-    public SessionData getSession(String apiKey, String sessionId);
+    public ArrayList<NccSessionData> getSessions(String apiKey);
+    public NccSessionData getSessionByUID(String apiKey, Integer uid);
+    public NccSessionData getSession(String apiKey, String sessionId);
 }
