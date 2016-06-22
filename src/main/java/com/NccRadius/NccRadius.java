@@ -55,7 +55,6 @@ public class NccRadius extends RadiusServer {
     private static String radSecret = "";
     private static NccUsers nccUsers;
     private static NccAccounts nccAccounts;
-    private static boolean dbg = true;
     private int pktId = 1;
 
     public void disconnectUser(String nasIP, String userLogin, String sessionID) {

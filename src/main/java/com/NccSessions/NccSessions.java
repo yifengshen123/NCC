@@ -394,7 +394,8 @@ public class NccSessions {
                     "framedRemoteId, " +
                     "lastAlive, " +
                     "sessionDuration, " +
-                    "sessionId FROM nccSessionsLog WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'");
+                    "sessionId," +
+                    "userTariff FROM nccSessionsLog WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'");
 
             if (rs != null) {
                 try {
