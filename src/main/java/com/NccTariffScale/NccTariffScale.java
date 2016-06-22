@@ -28,14 +28,6 @@ public class NccTariffScale {
 
         try {
 
-            logger.debug("SELECT " +
-                    "in_speed, " +
-                    "out_speed " +
-                    "FROM tarif_plans t " +
-                    "LEFT JOIN intervals i ON i.tp_id=t.tp_id " +
-                    "LEFT JOIN trafic_tarifs tt ON tt.interval_id=i.id " +
-                    "WHERE t.id=" + id);
-
             rs = query.selectQuery("SELECT " +
                     "in_speed, " +
                     "out_speed " +

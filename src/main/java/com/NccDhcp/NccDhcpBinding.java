@@ -6,7 +6,6 @@ import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -23,59 +22,11 @@ public class NccDhcpBinding {
         }
     }
 
-    private NccDhcpBindData fillBindData(CachedRowSetImpl rs) {
-        NccDhcpBindData bindData = new NccDhcpBindData();
-
-        try {
-            bindData.id = rs.getInt("id");
-            bindData.uid = rs.getInt("uid");
-            bindData.remoteID = rs.getString("remoteID");
-            bindData.circuitID = rs.getString("circuitID");
-            bindData.clientMAC = rs.getString("clientMAC");
-            bindData.relayAgent = rs.getLong("relayAgent");
-
-            return bindData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return bindData;
-    }
-
-    private NccDhcpUnbindedData fillUnbindedData(CachedRowSetImpl rs) {
-        NccDhcpUnbindedData unbindedData = new NccDhcpUnbindedData();
-
-        try {
-            unbindedData.id = rs.getInt("id");
-            unbindedData.remoteID = rs.getString("remoteID");
-            unbindedData.circuitID = rs.getString("circuitID");
-            unbindedData.clientMAC = rs.getString("clientMAC");
-            unbindedData.relayAgent = rs.getLong("relayAgent");
-
-            return unbindedData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return unbindedData;
-    }
-
     public NccDhcpBindData getBinding(Integer uid) {
-        CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpBinding WHERE uid=" + uid);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        return fillBindData(rs);
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpBindData(query.selectQuery("SELECT * FROM nccDhcpBinding WHERE uid=" + uid)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
         }
 
@@ -83,27 +34,10 @@ public class NccDhcpBinding {
     }
 
     public ArrayList<NccDhcpBindData> getBinding() {
-        CachedRowSetImpl rs;
-        ArrayList<NccDhcpBindData> bindings = new ArrayList<>();
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpBinding");
-
-            if (rs != null) {
-                try {
-                    while (rs.next()) {
-                        NccDhcpBindData bindData = fillBindData(rs);
-                        if (bindData != null) {
-                            bindings.add(bindData);
-                        }
-                    }
-
-                    return bindings;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpBindData(query.selectQuery("SELECT * FROM nccDhcpBinding")).getDataList();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
         }
 
@@ -112,7 +46,6 @@ public class NccDhcpBinding {
 
     public NccDhcpBindData getBinding(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
 
-        CachedRowSetImpl rs;
         String whereMAC = "";
 
         if (clientMAC != null) {
@@ -120,22 +53,12 @@ public class NccDhcpBinding {
         }
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpBinding WHERE " +
+            return new NccDhcpBindData(query.selectQuery("SELECT * FROM nccDhcpBinding WHERE " +
                     "remoteID='" + remoteID + "' AND " +
                     "circuitID='" + circuitID + "' AND " +
                     whereMAC +
-                    "relayAgent=" + relayAgent);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        return fillBindData(rs);
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+                    "relayAgent=" + relayAgent)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
         }
 
@@ -144,21 +67,9 @@ public class NccDhcpBinding {
 
     public NccDhcpUnbindedData getUnbinded(Integer id) {
 
-        CachedRowSetImpl rs;
-
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpUnbinded WHERE id=" + id);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        return fillUnbindedData(rs);
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpUnbindedData(query.selectQuery("SELECT * FROM nccDhcpUnbinded WHERE id=" + id)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
         }
 
@@ -167,28 +78,9 @@ public class NccDhcpBinding {
 
     public ArrayList<NccDhcpUnbindedData> getUnbinded() {
 
-        CachedRowSetImpl rs;
-        ArrayList<NccDhcpUnbindedData> unbinded = new ArrayList<>();
-
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpUnbinded");
-
-            if (rs != null) {
-                try {
-                    while (rs.next()) {
-                        NccDhcpUnbindedData unbindedData = fillUnbindedData(rs);
-
-                        if (unbindedData != null) {
-                            unbinded.add(unbindedData);
-                        }
-                    }
-
-                    return unbinded;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpUnbindedData(query.selectQuery("SELECT * FROM nccDhcpUnbinded")).getDataList();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
         }
 
