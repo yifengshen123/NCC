@@ -97,6 +97,16 @@ public class NccDhcpBinding {
         }
     }
 
+    public void clearUnbinded(Integer id){
+        ArrayList<Integer> ids;
+
+        try {
+            ids = query.updateQuery("DELETE FROM nccDhcpUnbinded WHERE id=" + id);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setUnbinded(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
 
         ArrayList<Integer> ids;

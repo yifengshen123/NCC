@@ -51,7 +51,7 @@ public class DhcpBindingServiceImpl implements DhcpBindingService {
     public void clearDhcpUnbinded(String apiKey, Integer id) {
         if (!new NccAPI().checkKey(apiKey)) return;
 
-        new NccDhcpBinding().getUnbinded(id);
+        new NccDhcpBinding().clearUnbinded(id);
     }
 
     public NccDhcpUnbindedData getDhcpUnbinded(String apiKey, Integer id) {
