@@ -23,87 +23,23 @@ public class NccDhcpLeases {
         }
     }
 
-    private NccDhcpLeaseData fillLeaseData(CachedRowSetImpl rs) {
-        NccDhcpLeaseData leaseData = new NccDhcpLeaseData();
-        if (rs != null) {
-            try {
-                leaseData.id = rs.getInt("id");
-                leaseData.leaseStart = rs.getLong("leaseStart");
-                leaseData.leaseExpire = rs.getLong("leaseExpire");
-                leaseData.leaseIP = rs.getLong("leaseIP");
-                leaseData.leaseRouter = rs.getLong("leaseRouter");
-                leaseData.leaseNetmask = rs.getLong("leaseNetmask");
-                leaseData.leaseDNS1 = rs.getLong("leaseDNS1");
-                leaseData.leaseDNS2 = rs.getLong("leaseDNS2");
-                leaseData.leaseNextServer = rs.getLong("leaseNextServer");
-                leaseData.leaseClientMAC = rs.getString("leaseClientMAC");
-                leaseData.leaseRemoteID = rs.getString("leaseRemoteID");
-                leaseData.leaseCircuitID = rs.getString("leaseCircuitID");
-                leaseData.leaseRelayAgent = rs.getLong("leaseRelayAgent");
-                leaseData.leasePool = rs.getInt("leasePool");
-                leaseData.leaseUID = rs.getInt("leaseUID");
-                leaseData.transId = rs.getInt("transId");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return leaseData;
-    }
-
     public ArrayList<NccDhcpLeaseData> getLeases() throws NccDhcpException {
-        CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpLeases");
-
-            if (rs != null) {
-                ArrayList<NccDhcpLeaseData> leases = new ArrayList<>();
-
-                try {
-                    while (rs.next()) {
-                        NccDhcpLeaseData leaseData = fillLeaseData(rs);
-
-                        if (leaseData != null) {
-                            leases.add(leaseData);
-                        }
-                    }
-
-                    return leases;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases")).getDataList();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
-            throw new NccDhcpException("SQL error: " + e.getMessage());
         }
 
         return null;
     }
 
     public NccDhcpLeaseData getLeases(Integer id) throws NccDhcpException {
-        CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpLeases WHERE id=" + id);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        NccDhcpLeaseData leaseData = fillLeaseData(rs);
-
-                        if (leaseData != null) {
-                            return leaseData;
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE id=" + id)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
-            throw new NccDhcpException("SQL error: " + e.getMessage());
         }
 
         return null;
@@ -208,59 +144,28 @@ public class NccDhcpLeases {
     }
 
     public NccDhcpLeaseData getLeaseByUid(Integer uid) throws NccDhcpException {
-        CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseUID=" + uid);
-
-            try {
-                if (rs.next()) {
-                    NccDhcpLeaseData leaseData = fillLeaseData(rs);
-
-                    if (leaseData != null) {
-                        return leaseData;
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseUID=" + uid)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
-            throw new NccDhcpException("SQL error: " + e.getMessage());
         }
 
         return null;
     }
 
     public NccDhcpLeaseData getLeaseByIP(Long ip) throws NccDhcpException {
-        CachedRowSetImpl rs;
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseIP=" + ip);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        NccDhcpLeaseData leaseData = fillLeaseData(rs);
-
-                        if (leaseData != null) {
-                            return leaseData;
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseIP=" + ip)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
-            throw new NccDhcpException("SQL error: " + e.getMessage());
         }
 
         return null;
     }
 
     public NccDhcpLeaseData getLeaseByMAC(Long relayAgent, String circuitID, String mac, Integer transId) {
-        CachedRowSetImpl rs;
         String relayAgentWhere = "";
         String circuitIDWhere = "";
 
@@ -273,22 +178,8 @@ public class NccDhcpLeases {
         }
 
         try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere + circuitIDWhere);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        NccDhcpLeaseData leaseData = fillLeaseData(rs);
-
-                        if (leaseData != null) {
-                            return leaseData;
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
+            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere + circuitIDWhere)).getData();
+        } catch (NccDhcpException | NccQueryException e) {
             e.printStackTrace();
         }
 
@@ -299,7 +190,6 @@ public class NccDhcpLeases {
 
         CachedRowSetImpl rs;
 
-        // TODO: 4/20/16 not needed to determine id of lease
         try {
             String condition = "leaseClientMAC='" + clientMAC + "' ";
 
