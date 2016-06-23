@@ -5,6 +5,7 @@ import com.NccRelayAgent.NccRelayAgent;
 import com.NccRelayAgent.NccRelayAgentData;
 import com.NccRelayAgent.NccRelayAgentException;
 import com.NccRelayAgent.NccRelayAgentType;
+import com.mysql.management.util.Str;
 
 import java.util.ArrayList;
 
@@ -64,7 +65,18 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         return null;
     }
 
-    public Integer createDhcpRelayAgent(String apiKey, String agentName, Integer agentType, Long agentIP, Integer agentPool, String agentStreet, String agentBuild, Integer agentUnbindedPool) {
+    public Integer createDhcpRelayAgent(
+            String apiKey,
+            String agentName,
+            Integer agentType,
+            Long agentIP,
+            Integer agentPool,
+            String agentStreet,
+            String agentBuild,
+            Integer agentUnbindedPool,
+            String agentLogin,
+            String agentPassword,
+            String agentEnablePassword) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         NccRelayAgentData relayAgentData = new NccRelayAgentData();
@@ -75,6 +87,9 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         relayAgentData.agentPool = agentPool;
         relayAgentData.agentStreet = agentStreet;
         relayAgentData.agentBuild = agentBuild;
+        relayAgentData.agentLogin = agentLogin;
+        relayAgentData.agentPassword = agentPassword;
+        relayAgentData.agentEnablePassword = agentEnablePassword;
         relayAgentData.agentUnbindedPool = agentUnbindedPool;
 
         try {

@@ -86,6 +86,9 @@ public class NccRelayAgent {
                     "agentPool, " +
                     "agentStreet, " +
                     "agentBuild, " +
+                    "agentLogin, " +
+                    "agentPassword, " +
+                    "agentEnablePassword, " +
                     "agentUnbindedPool) VALUES(" +
                     "'" + relayAgentData.agentName + "', " +
                     relayAgentData.agentType + ", " +
@@ -93,6 +96,9 @@ public class NccRelayAgent {
                     relayAgentData.agentPool + ", " +
                     "'" + relayAgentData.agentStreet + "', " +
                     "'" + relayAgentData.agentBuild + "', " +
+                    "'" + relayAgentData.agentLogin + "', " +
+                    "'" + relayAgentData.agentPassword + "', " +
+                    "'" + relayAgentData.agentEnablePassword + "', " +
                     relayAgentData.agentUnbindedPool + ")");
 
             if (ids != null && ids.size() > 0) {

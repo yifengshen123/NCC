@@ -12,5 +12,16 @@ public interface DhcpRelayAgentService {
 
     public ArrayList<NccRelayAgentType> getDhcpRelayAgentTypes(String apiKey);
 
-    public Integer createDhcpRelayAgent(String apiKey, String agentName, Integer agentType, Long agentIP, Integer agentPool, String agentStreet, String agentBuild, Integer agentUnbindedPool);
+    public Integer createDhcpRelayAgent(
+            String apiKey,
+            String agentName,
+            Integer agentType,
+            Long agentIP,
+            Integer agentPool,
+            String agentStreet,
+            String agentBuild,
+            Integer agentUnbindedPool,
+            String agentLogin,
+            String agentPassword,
+            String agentEnablePassword);
 }
