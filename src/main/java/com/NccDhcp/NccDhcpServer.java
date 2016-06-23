@@ -140,6 +140,12 @@ public class NccDhcpServer {
                                 try {
                                     NccDhcpPacket pkt = new NccDhcpPacket(recv, inPkt.getLength());
 
+                                    if(Ncc.dhcpIgnoreBroadcast && inPkt.getAddress().getHostAddress().equals("0.0.0.0")){
+                                        if(Ncc.dhcpLogLevel >=6)
+                                            logger.info("DHCP broadcast packet ignored");
+                                        return;
+                                    }
+
                                     Long nullIP = null;
                                     try {
                                         nullIP = NccUtils.ip2long("0.0.0.0");

@@ -32,6 +32,7 @@ public class Ncc {
     public static Integer dhcpUnbindedCleanupTime = 10;
     public static Integer radiusLogLevel = 0;
     public static Integer dhcpLogLevel = 0;
+    public static boolean dhcpIgnoreBroadcast = true;
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -107,6 +108,7 @@ public class Ncc {
             dhcpTimer = config.getInt("dhcp.timer");
             dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time");
             dhcpLogLevel = config.getInt("dhcp.log.level");
+            dhcpIgnoreBroadcast = config.getBoolean("dhcp.ignore.broadcast");
             nccDhcp = new NccDhcpServer();
             nccDhcp.start(localIP);
         }
