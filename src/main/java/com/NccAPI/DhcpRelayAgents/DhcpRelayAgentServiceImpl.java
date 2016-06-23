@@ -138,4 +138,14 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
 
         return null;
     }
+
+    public Integer deleteDhcpRelayAgent(String apiKey, Integer id){
+        try {
+            return new NccRelayAgent().deleteRelayAgent(id);
+        } catch (NccRelayAgentException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

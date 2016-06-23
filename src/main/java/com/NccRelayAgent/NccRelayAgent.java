@@ -139,4 +139,18 @@ public class NccRelayAgent {
 
         return null;
     }
+
+    public Integer deleteRelayAgent(Integer id) throws NccRelayAgentException {
+        try {
+            ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpRelayAgents WHERE id=" + id);
+
+            if (ids != null && ids.size() > 0) {
+                return ids.get(0);
+            }
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

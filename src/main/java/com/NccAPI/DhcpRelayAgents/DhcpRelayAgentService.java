@@ -38,4 +38,6 @@ public interface DhcpRelayAgentService {
             String agentLogin,
             String agentPassword,
             String agentEnablePassword);
+
+    public Integer deleteDhcpRelayAgent(String apiKey, Integer id);
 }
