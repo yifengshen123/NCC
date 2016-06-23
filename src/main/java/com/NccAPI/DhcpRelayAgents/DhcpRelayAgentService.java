@@ -24,4 +24,18 @@ public interface DhcpRelayAgentService {
             String agentLogin,
             String agentPassword,
             String agentEnablePassword);
+
+    public Integer updateDhcpRelayAgent(
+            String apiKey,
+            Integer id,
+            String agentName,
+            Integer agentType,
+            Long agentIP,
+            Integer agentPool,
+            String agentStreet,
+            String agentBuild,
+            Integer agentUnbindedPool,
+            String agentLogin,
+            String agentPassword,
+            String agentEnablePassword);
 }

@@ -111,4 +111,32 @@ public class NccRelayAgent {
 
         return null;
     }
+
+    public Integer updateRelayAgent(NccRelayAgentData relayAgentData) throws NccRelayAgentException {
+
+        try {
+            ArrayList<Integer> ids = query.updateQuery("UPDATE nccDhcpRelayAgents SET " +
+                    "agentName='" + relayAgentData.agentName + "', " +
+                    "agentType=" + relayAgentData.agentType + ", " +
+                    "agentIP=" + relayAgentData.agentIP + ", " +
+                    "agentPool=" + relayAgentData.agentPool + ", " +
+                    "agentStreet='" + relayAgentData.agentStreet + "', " +
+                    "agentBuild='" + relayAgentData.agentBuild + "', " +
+                    "agentLogin='" + relayAgentData.agentLogin + "', " +
+                    "agentPassword='" + relayAgentData.agentPassword + "', " +
+                    "agentEnablePassword='" + relayAgentData.agentEnablePassword + "', " +
+                    "agentUnbindedPool=" + relayAgentData.agentUnbindedPool + " " +
+                    "WHERE id=" + relayAgentData.id
+            );
+
+            if (ids != null && ids.size() > 0) {
+                return ids.get(0);
+            }
+
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

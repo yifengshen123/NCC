@@ -93,9 +93,45 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         relayAgentData.agentUnbindedPool = agentUnbindedPool;
 
         try {
-            Integer id = new NccRelayAgent().createRelayAgent(relayAgentData);
+            return new NccRelayAgent().createRelayAgent(relayAgentData);
+        } catch (NccRelayAgentException e) {
+            e.printStackTrace();
+        }
 
-            return id;
+        return null;
+    }
+
+    public Integer updateDhcpRelayAgent(
+            String apiKey,
+            Integer id,
+            String agentName,
+            Integer agentType,
+            Long agentIP,
+            Integer agentPool,
+            String agentStreet,
+            String agentBuild,
+            Integer agentUnbindedPool,
+            String agentLogin,
+            String agentPassword,
+            String agentEnablePassword) {
+        if (!new NccAPI().checkKey(apiKey)) return null;
+
+        NccRelayAgentData relayAgentData = new NccRelayAgentData();
+
+        relayAgentData.id = id;
+        relayAgentData.agentName = agentName;
+        relayAgentData.agentType = agentType;
+        relayAgentData.agentIP = agentIP;
+        relayAgentData.agentPool = agentPool;
+        relayAgentData.agentStreet = agentStreet;
+        relayAgentData.agentBuild = agentBuild;
+        relayAgentData.agentLogin = agentLogin;
+        relayAgentData.agentPassword = agentPassword;
+        relayAgentData.agentEnablePassword = agentEnablePassword;
+        relayAgentData.agentUnbindedPool = agentUnbindedPool;
+
+        try {
+            return new NccRelayAgent().updateRelayAgent(relayAgentData);
         } catch (NccRelayAgentException e) {
             e.printStackTrace();
         }
