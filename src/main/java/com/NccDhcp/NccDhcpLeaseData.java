@@ -1,11 +1,9 @@
 package com.NccDhcp;
 
-import com.sun.rowset.CachedRowSetImpl;
-
+import com.NccSystem.NccAbstractData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-public class NccDhcpLeaseData {
+public class NccDhcpLeaseData extends NccAbstractData<NccDhcpLeaseData> {
     public Integer id;
     public Long leaseStart;
     public Long leaseExpire;
@@ -23,65 +21,33 @@ public class NccDhcpLeaseData {
     public Integer leaseUID;
     public Integer transId;
 
-    private CachedRowSetImpl rs;
+    @Override
+    public NccDhcpLeaseData fillData(){
+        NccDhcpLeaseData leaseData = new NccDhcpLeaseData();
 
-    NccDhcpLeaseData() {
-    }
-
-    NccDhcpLeaseData(CachedRowSetImpl rs) throws NccDhcpException {
-        this.rs = rs;
-        if (rs == null) {
-            throw new NccDhcpException("rs is null");
-        }
-    }
-
-    private NccDhcpLeaseData fillData() throws NccDhcpException {
         try {
-            this.id = this.rs.getInt("id");
-            this.leaseStart = this.rs.getLong("leaseStart");
-            this.leaseExpire = this.rs.getLong("leaseExpire");
-            this.leaseIP = this.rs.getLong("leaseIP");
-            this.leaseRouter = this.rs.getLong("leaseRouter");
-            this.leaseNetmask = this.rs.getLong("leaseNetmask");
-            this.leaseDNS1 = this.rs.getLong("leaseDNS1");
-            this.leaseDNS2 = this.rs.getLong("leaseDNS2");
-            this.leaseNextServer = this.rs.getLong("leaseNextServer");
-            this.leaseClientMAC = this.rs.getString("leaseClientMAC");
-            this.leaseRemoteID = this.rs.getString("leaseRemoteID");
-            this.leaseCircuitID = this.rs.getString("leaseCircuitID");
-            this.leaseRelayAgent = this.rs.getLong("leaseRelayAgent");
-            this.leasePool = this.rs.getInt("leasePool");
-            this.leaseUID = this.rs.getInt("leaseUID");
-            this.transId = this.rs.getInt("transId");
-            return this;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new NccDhcpException("rs.get error");
-        }
-    }
+            leaseData.id = rs.getInt("id");
+            leaseData.leaseStart = rs.getLong("leaseStart");
+            leaseData.leaseExpire = rs.getLong("leaseExpire");
+            leaseData.leaseIP = rs.getLong("leaseIP");
+            leaseData.leaseRouter = rs.getLong("leaseRouter");
+            leaseData.leaseNetmask = rs.getLong("leaseNetmask");
+            leaseData.leaseDNS1 = rs.getLong("leaseDNS1");
+            leaseData.leaseDNS2 = rs.getLong("leaseDNS2");
+            leaseData.leaseNextServer = rs.getLong("leaseNextServer");
+            leaseData.leaseClientMAC = rs.getString("leaseClientMAC");
+            leaseData.leaseRemoteID = rs.getString("leaseRemoteID");
+            leaseData.leaseCircuitID = rs.getString("leaseCircuitID");
+            leaseData.leaseRelayAgent = rs.getLong("leaseRelayAgent");
+            leaseData.leasePool = rs.getInt("leasePool");
+            leaseData.leaseUID = rs.getInt("leaseUID");
+            leaseData.transId = rs.getInt("transId");
 
-    NccDhcpLeaseData getData() throws NccDhcpException {
-        try {
-            if (this.rs.next()) {
-                return fillData();
-            }
+            return leaseData;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
-    }
 
-    ArrayList<NccDhcpLeaseData> getDataList() throws NccDhcpException {
-        ArrayList<NccDhcpLeaseData> leaseDatas = new ArrayList<>();
-
-        try {
-            while (this.rs.next()) {
-                leaseDatas.add(fillData());
-            }
-            return leaseDatas;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return leaseData;
     }
 }

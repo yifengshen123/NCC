@@ -1,59 +1,24 @@
 package com.NccNAS;
 
-import com.sun.rowset.CachedRowSetImpl;
-
+import com.NccSystem.NccAbstractData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-public class NccNasType {
+public class NccNasType extends NccAbstractData<NccNasType> {
     public Integer id;
     public String typeName;
 
-    private CachedRowSetImpl rs;
+    public NccNasType fillData(){
+        NccNasType nasType = new NccNasType();
 
-    NccNasType() {
-    }
-
-    NccNasType(CachedRowSetImpl rs) throws NccNasException {
-        this.rs = rs;
-        if (rs == null) {
-            throw new NccNasException("rs is null");
-        }
-    }
-
-    private NccNasType fillData() throws NccNasException {
         try {
-            this.id = this.rs.getInt("id");
-            this.typeName = this.rs.getString("typeName");
-            return this;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new NccNasException("rs.get error");
-        }
-    }
+            nasType.id = rs.getInt("id");
+            nasType.typeName = rs.getString("typeName");
 
-    NccNasType getData() throws NccNasException {
-        try {
-            if (this.rs.next()) {
-                return fillData();
-            }
+            return nasType;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
-    }
 
-    ArrayList<NccNasType> getDataList() throws NccNasException {
-        ArrayList<NccNasType> nasTypes = new ArrayList<>();
-
-        try {
-            while (this.rs.next()) {
-                nasTypes.add(fillData());
-            }
-            return nasTypes;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return nasType;
     }
 }

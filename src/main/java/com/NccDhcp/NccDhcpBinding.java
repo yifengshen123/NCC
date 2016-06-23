@@ -3,10 +3,8 @@ package com.NccDhcp;
 import com.Ncc;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
-import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class NccDhcpBinding {
@@ -24,24 +22,12 @@ public class NccDhcpBinding {
 
     public NccDhcpBindData getBinding(Integer uid) {
 
-        try {
-            return new NccDhcpBindData(query.selectQuery("SELECT * FROM nccDhcpBinding WHERE uid=" + uid)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpBindData().getData("SELECT * FROM nccDhcpBinding WHERE uid=" + uid);
     }
 
     public ArrayList<NccDhcpBindData> getBinding() {
 
-        try {
-            return new NccDhcpBindData(query.selectQuery("SELECT * FROM nccDhcpBinding")).getDataList();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpBindData().getDataList("SELECT * FROM nccDhcpBinding");
     }
 
     public NccDhcpBindData getBinding(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
@@ -52,39 +38,21 @@ public class NccDhcpBinding {
             whereMAC = "clientMAC='" + clientMAC + "' AND ";
         }
 
-        try {
-            return new NccDhcpBindData(query.selectQuery("SELECT * FROM nccDhcpBinding WHERE " +
-                    "remoteID='" + remoteID + "' AND " +
-                    "circuitID='" + circuitID + "' AND " +
-                    whereMAC +
-                    "relayAgent=" + relayAgent)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpBindData().getData("SELECT * FROM nccDhcpBinding WHERE " +
+                "remoteID='" + remoteID + "' AND " +
+                "circuitID='" + circuitID + "' AND " +
+                whereMAC +
+                "relayAgent=" + relayAgent);
     }
 
     public NccDhcpUnbindedData getUnbinded(Integer id) {
 
-        try {
-            return new NccDhcpUnbindedData(query.selectQuery("SELECT * FROM nccDhcpUnbinded WHERE id=" + id)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpUnbindedData().getData("SELECT * FROM nccDhcpUnbinded WHERE id=" + id);
     }
 
     public ArrayList<NccDhcpUnbindedData> getUnbinded() {
 
-        try {
-            return new NccDhcpUnbindedData(query.selectQuery("SELECT * FROM nccDhcpUnbinded")).getDataList();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpUnbindedData().getDataList("SELECT * FROM nccDhcpUnbinded");
     }
 
     public void clearBinding(Integer uid) {
@@ -97,7 +65,7 @@ public class NccDhcpBinding {
         }
     }
 
-    public void clearUnbinded(Integer id){
+    public void clearUnbinded(Integer id) {
         ArrayList<Integer> ids;
 
         try {

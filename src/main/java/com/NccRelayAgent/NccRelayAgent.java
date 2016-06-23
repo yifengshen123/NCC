@@ -1,6 +1,5 @@
 package com.NccRelayAgent;
 
-import com.NccRelayAgent.NccRelayAgentData;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
@@ -25,30 +24,6 @@ public class NccRelayAgent {
         return relayAgentType;
     }
 
-    private NccRelayAgentData fillRelayAgentData(CachedRowSetImpl rs) {
-
-        NccRelayAgentData relayAgentData = new NccRelayAgentData();
-
-        try {
-            relayAgentData.id = rs.getInt("id");
-            relayAgentData.agentName = rs.getString("agentName");
-            relayAgentData.agentIP = rs.getLong("agentIP");
-            relayAgentData.agentPool = rs.getInt("agentPool");
-            relayAgentData.agentType = rs.getInt("agentType");
-            relayAgentData.agentStreet = rs.getString("agentStreet");
-            relayAgentData.agentBuild = rs.getString("agentBuild");
-            relayAgentData.agentLogin = rs.getString("agentLogin");
-            relayAgentData.agentPassword = rs.getString("agentPassword");
-            relayAgentData.agentEnablePassword = rs.getString("agentEnablePassword");
-            relayAgentData.agentUnbindedPool = rs.getInt("agentUnbindedPool");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        return relayAgentData;
-    }
-
     public NccRelayAgent() {
         try {
             query = new NccQuery();
@@ -58,82 +33,22 @@ public class NccRelayAgent {
     }
 
     public ArrayList<NccRelayAgentData> getRelayAgent() throws NccRelayAgentException {
-        CachedRowSetImpl rs;
 
-        try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpRelayAgents");
-
-            if (rs != null) {
-                ArrayList<NccRelayAgentData> agents = new ArrayList<>();
-                try {
-                    while (rs.next()) {
-                        NccRelayAgentData agentData = fillRelayAgentData(rs);
-                        if (agentData != null) {
-                            agents.add(agentData);
-                        }
-                    }
-                    return agents;
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccRelayAgentData().getDataList("SELECT * FROM nccDhcpRelayAgents");
     }
 
     public NccRelayAgentData getRelayAgent(Integer id) throws NccRelayAgentException {
-        CachedRowSetImpl rs;
 
-        try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpRelayAgents WHERE id=" + id);
-
-            if (rs != null) {
-                try {
-                    if (rs.next()) {
-                        NccRelayAgentData agentData = fillRelayAgentData(rs);
-                        if (agentData != null) {
-                            return agentData;
-                        }
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccRelayAgentData().getData("SELECT * FROM nccDhcpRelayAgents WHERE id=" + id);
     }
 
     public NccRelayAgentData getRelayAgentByIP(Long ip) throws NccRelayAgentException {
 
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccDhcpRelayAgents WHERE agentIP=" + ip);
-
-            if (rs != null) {
-
-                try {
-                    if (rs.next()) {
-                        return fillRelayAgentData(rs);
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccRelayAgentData().getData("SELECT * FROM nccDhcpRelayAgents WHERE agentIP=" + ip);
     }
 
     public ArrayList<NccRelayAgentType> getRelayAgentTypes() throws NccRelayAgentException {
+
         CachedRowSetImpl rs;
 
         try {

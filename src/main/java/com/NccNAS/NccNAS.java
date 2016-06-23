@@ -3,14 +3,9 @@ package com.NccNAS;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
-import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
-
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class NccNAS {
 
@@ -28,46 +23,22 @@ public class NccNAS {
 
     public NccNasData getNAS(Integer id) throws NccNasException {
 
-        try {
-            return new NccNasData(query.selectQuery("SELECT * FROM nccNAS WHERE id=" + id)).getData();
-        } catch (NccNasException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccNasData().getData("SELECT * FROM nccNAS WHERE id=" + id);
     }
 
     public ArrayList<NccNasData> getNAS() throws NccNasException {
 
-        try {
-            return new NccNasData(query.selectQuery("SELECT * FROM nccNAS")).getDataList();
-        } catch (NccNasException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccNasData().getDataList("SELECT * FROM nccNAS");
     }
 
     public ArrayList<NccNasType> getNASTypes() throws NccNasException {
 
-        try {
-            return new NccNasType(query.selectQuery("SELECT * FROM nccNASTypes")).getDataList();
-        } catch (NccNasException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccNasType().getDataList("SELECT * FROM nccNASTypes");
     }
 
     public NccNasData getNasByIP(Long nasIP) throws NccNasException {
 
-        try {
-            return new NccNasData(query.selectQuery("SELECT * FROM nccNAS WHERE nasIP=" + nasIP)).getData();
-        } catch (NccNasException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccNasData().getData("SELECT * FROM nccNAS WHERE nasIP=" + nasIP);
     }
 
     public String getNasSecretByIP(Long nasIP) {

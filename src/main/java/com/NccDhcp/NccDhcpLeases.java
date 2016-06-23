@@ -25,24 +25,12 @@ public class NccDhcpLeases {
 
     public ArrayList<NccDhcpLeaseData> getLeases() throws NccDhcpException {
 
-        try {
-            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases")).getDataList();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpLeaseData().getDataList("SELECT * FROM nccDhcpLeases");
     }
 
     public NccDhcpLeaseData getLeases(Integer id) throws NccDhcpException {
 
-        try {
-            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE id=" + id)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE id=" + id);
     }
 
     public NccDhcpLeaseData allocateLease(Integer uid, NccPoolData poolData, String clientMAC, String remoteID, String circuitID, Long RelayAgent, Integer transId) throws NccDhcpException {
@@ -145,24 +133,12 @@ public class NccDhcpLeases {
 
     public NccDhcpLeaseData getLeaseByUid(Integer uid) throws NccDhcpException {
 
-        try {
-            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseUID=" + uid)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseUID=" + uid);
     }
 
     public NccDhcpLeaseData getLeaseByIP(Long ip) throws NccDhcpException {
 
-        try {
-            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseIP=" + ip)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseIP=" + ip);
     }
 
     public NccDhcpLeaseData getLeaseByMAC(Long relayAgent, String circuitID, String mac, Integer transId) {
@@ -177,13 +153,7 @@ public class NccDhcpLeases {
             relayAgentWhere = " AND leaseCircuitID='" + circuitID + "'";
         }
 
-        try {
-            return new NccDhcpLeaseData(query.selectQuery("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere + circuitIDWhere)).getData();
-        } catch (NccDhcpException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere + circuitIDWhere);
     }
 
     public NccDhcpLeaseData acceptLease(Long clientIP, String clientMAC, String remoteID, String circuitID, Integer transId) {

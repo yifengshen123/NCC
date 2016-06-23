@@ -58,35 +58,17 @@ public class NccSessions {
 
     public NccSessionData getSession(String sessionID) throws NccSessionsException {
 
-        try {
-            return new NccSessionData(query.selectQuery("SELECT * FROM nccSessions WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'")).getData();
-        } catch (NccSessionsException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccSessionData().getData("SELECT * FROM nccSessions WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'");
     }
 
     public NccSessionData getSession(Integer uid) throws NccSessionsException {
 
-        try {
-            return new NccSessionData(query.selectQuery("SELECT * FROM nccSessions WHERE userId=" + uid + " ORDER BY id DESC")).getData();
-        } catch (NccSessionsException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccSessionData().getData("SELECT * FROM nccSessions WHERE userId=" + uid + " ORDER BY id DESC");
     }
 
     public ArrayList<NccSessionData> getSessions() throws NccSessionsException {
 
-        try {
-            return new NccSessionData(query.selectQuery("SELECT * FROM nccSessions")).getDataList();
-        } catch (NccSessionsException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccSessionData().getDataList("SELECT * FROM nccSessions");
     }
 
     public ArrayList<Integer> startSession(NccSessionData sessionData) {
@@ -207,13 +189,7 @@ public class NccSessions {
 
     public NccSessionData getSessionFromLog(String sessionID) {
 
-        try {
-            return new NccSessionData(query.selectQuery("SELECT * FROM nccSessionsLog WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'"));
-        } catch (NccSessionsException | NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccSessionData().getData("SELECT * FROM nccSessionsLog WHERE sessionId='" + StringEscapeUtils.escapeSql(sessionID) + "'");
     }
 
     public ArrayList<Integer> resumeSession(NccSessionData sessionData) {
@@ -247,7 +223,6 @@ public class NccSessions {
             for (NccSessionData session : sessions) {
                 if (session.lastAlive < cleanupTime) {
                     System.out.println("Dead session: " + session.sessionId + " lastAlive: " + session.lastAlive);
-                    //stopSession(session);
                 }
             }
 

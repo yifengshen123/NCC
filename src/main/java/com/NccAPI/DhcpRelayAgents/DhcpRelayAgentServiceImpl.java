@@ -14,6 +14,7 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
 
         try {
             ArrayList<NccRelayAgentData> agents = new NccRelayAgent().getRelayAgent();
+
             return agents;
         } catch (NccRelayAgentException e) {
             e.printStackTrace();
@@ -27,6 +28,7 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
 
         try {
             NccRelayAgentData relayAgentData = new NccRelayAgent().getRelayAgent(id);
+
             return relayAgentData;
         } catch (NccRelayAgentException e) {
             e.printStackTrace();
@@ -48,7 +50,7 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         return null;
     }
 
-    public ArrayList<NccRelayAgentType> getDhcpRelayAgentTypes(String apiKey){
+    public ArrayList<NccRelayAgentType> getDhcpRelayAgentTypes(String apiKey) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
@@ -62,7 +64,7 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         return null;
     }
 
-    public Integer createDhcpRelayAgent(String apiKey, String agentName, Integer agentType, Long agentIP, Integer agentPool, String agentStreet, String agentBuild, Integer agentUnbindedPool){
+    public Integer createDhcpRelayAgent(String apiKey, String agentName, Integer agentType, Long agentIP, Integer agentPool, String agentStreet, String agentBuild, Integer agentUnbindedPool) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         NccRelayAgentData relayAgentData = new NccRelayAgentData();
