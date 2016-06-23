@@ -1,4 +1,4 @@
-package com.NccRelayAgent;
+package com.NccDhcp;
 
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
@@ -7,12 +7,12 @@ import com.sun.rowset.CachedRowSetImpl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class NccRelayAgent {
+public class NccDhcpRelayAgent {
 
     private NccQuery query;
 
-    private NccRelayAgentType fillRelayAgentType(CachedRowSetImpl rs) {
-        NccRelayAgentType relayAgentType = new NccRelayAgentType();
+    private NccDhcpRelayAgentType fillRelayAgentType(CachedRowSetImpl rs) {
+        NccDhcpRelayAgentType relayAgentType = new NccDhcpRelayAgentType();
 
         try {
             relayAgentType.id = rs.getInt("id");
@@ -24,7 +24,7 @@ public class NccRelayAgent {
         return relayAgentType;
     }
 
-    public NccRelayAgent() {
+    public NccDhcpRelayAgent() {
         try {
             query = new NccQuery();
         } catch (NccQueryException e) {
@@ -32,22 +32,22 @@ public class NccRelayAgent {
         }
     }
 
-    public ArrayList<NccRelayAgentData> getRelayAgent() throws NccRelayAgentException {
+    public ArrayList<NccDhcpRelayAgentData> getRelayAgent() throws NccDhcpRelayAgentException {
 
-        return new NccRelayAgentData().getDataList("SELECT * FROM nccDhcpRelayAgents");
+        return new NccDhcpRelayAgentData().getDataList("SELECT * FROM nccDhcpRelayAgents");
     }
 
-    public NccRelayAgentData getRelayAgent(Integer id) throws NccRelayAgentException {
+    public NccDhcpRelayAgentData getRelayAgent(Integer id) throws NccDhcpRelayAgentException {
 
-        return new NccRelayAgentData().getData("SELECT * FROM nccDhcpRelayAgents WHERE id=" + id);
+        return new NccDhcpRelayAgentData().getData("SELECT * FROM nccDhcpRelayAgents WHERE id=" + id);
     }
 
-    public NccRelayAgentData getRelayAgentByIP(Long ip) throws NccRelayAgentException {
+    public NccDhcpRelayAgentData getRelayAgentByIP(Long ip) throws NccDhcpRelayAgentException {
 
-        return new NccRelayAgentData().getData("SELECT * FROM nccDhcpRelayAgents WHERE agentIP=" + ip);
+        return new NccDhcpRelayAgentData().getData("SELECT * FROM nccDhcpRelayAgents WHERE agentIP=" + ip);
     }
 
-    public ArrayList<NccRelayAgentType> getRelayAgentTypes() throws NccRelayAgentException {
+    public ArrayList<NccDhcpRelayAgentType> getRelayAgentTypes() throws NccDhcpRelayAgentException {
 
         CachedRowSetImpl rs;
 
@@ -55,10 +55,10 @@ public class NccRelayAgent {
             rs = query.selectQuery("SELECT * FROM nccDhcpRelayAgentTypes");
 
             if (rs != null) {
-                ArrayList<NccRelayAgentType> types = new ArrayList<>();
+                ArrayList<NccDhcpRelayAgentType> types = new ArrayList<>();
                 try {
                     while (rs.next()) {
-                        NccRelayAgentType relayAgentType = fillRelayAgentType(rs);
+                        NccDhcpRelayAgentType relayAgentType = fillRelayAgentType(rs);
 
                         if (relayAgentType != null) {
                             types.add(relayAgentType);
@@ -76,7 +76,7 @@ public class NccRelayAgent {
         return null;
     }
 
-    public Integer createRelayAgent(NccRelayAgentData relayAgentData) throws NccRelayAgentException {
+    public Integer createRelayAgent(NccDhcpRelayAgentData relayAgentData) throws NccDhcpRelayAgentException {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("INSERT INTO nccDhcpRelayAgents (" +
@@ -112,7 +112,7 @@ public class NccRelayAgent {
         return null;
     }
 
-    public Integer updateRelayAgent(NccRelayAgentData relayAgentData) throws NccRelayAgentException {
+    public Integer updateRelayAgent(NccDhcpRelayAgentData relayAgentData) throws NccDhcpRelayAgentException {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("UPDATE nccDhcpRelayAgents SET " +
@@ -140,7 +140,7 @@ public class NccRelayAgent {
         return null;
     }
 
-    public Integer deleteRelayAgent(Integer id) throws NccRelayAgentException {
+    public Integer deleteRelayAgent(Integer id) throws NccDhcpRelayAgentException {
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpRelayAgents WHERE id=" + id);
 

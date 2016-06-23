@@ -1,9 +1,9 @@
-package com.NccRelayAgent;
+package com.NccDhcp;
 
-public class NccRelayAgentException extends Exception {
+public class NccDhcpRelayAgentException extends Exception {
     private String message;
 
-    public NccRelayAgentException(String message) {
+    public NccDhcpRelayAgentException(String message) {
         super(message);
         this.message = message;
     }

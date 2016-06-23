@@ -1,63 +1,62 @@
 package com.NccAPI.DhcpRelayAgents;
 
 import com.NccAPI.NccAPI;
-import com.NccRelayAgent.NccRelayAgent;
-import com.NccRelayAgent.NccRelayAgentData;
-import com.NccRelayAgent.NccRelayAgentException;
-import com.NccRelayAgent.NccRelayAgentType;
-import com.mysql.management.util.Str;
+import com.NccDhcp.NccDhcpRelayAgent;
+import com.NccDhcp.NccDhcpRelayAgentData;
+import com.NccDhcp.NccDhcpRelayAgentException;
+import com.NccDhcp.NccDhcpRelayAgentType;
 
 import java.util.ArrayList;
 
 public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
-    public ArrayList<NccRelayAgentData> getDhcpRelayAgent(String apiKey) {
+    public ArrayList<NccDhcpRelayAgentData> getDhcpRelayAgent(String apiKey) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
-            ArrayList<NccRelayAgentData> agents = new NccRelayAgent().getRelayAgent();
+            ArrayList<NccDhcpRelayAgentData> agents = new NccDhcpRelayAgent().getRelayAgent();
 
             return agents;
-        } catch (NccRelayAgentException e) {
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public NccRelayAgentData getDhcpRelayAgent(String apiKey, Integer id) {
+    public NccDhcpRelayAgentData getDhcpRelayAgent(String apiKey, Integer id) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
-            NccRelayAgentData relayAgentData = new NccRelayAgent().getRelayAgent(id);
+            NccDhcpRelayAgentData relayAgentData = new NccDhcpRelayAgent().getRelayAgent(id);
 
             return relayAgentData;
-        } catch (NccRelayAgentException e) {
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public NccRelayAgentData getDhcpRelayAgentByIP(String apiKey, Long ip) {
+    public NccDhcpRelayAgentData getDhcpRelayAgentByIP(String apiKey, Long ip) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
-            NccRelayAgentData relayAgentData = new NccRelayAgent().getRelayAgentByIP(ip);
+            NccDhcpRelayAgentData relayAgentData = new NccDhcpRelayAgent().getRelayAgentByIP(ip);
             return relayAgentData;
-        } catch (NccRelayAgentException e) {
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public ArrayList<NccRelayAgentType> getDhcpRelayAgentTypes(String apiKey) {
+    public ArrayList<NccDhcpRelayAgentType> getDhcpRelayAgentTypes(String apiKey) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         try {
-            ArrayList<NccRelayAgentType> types = new NccRelayAgent().getRelayAgentTypes();
+            ArrayList<NccDhcpRelayAgentType> types = new NccDhcpRelayAgent().getRelayAgentTypes();
             return types;
-        } catch (NccRelayAgentException e) {
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 
@@ -79,7 +78,7 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
             String agentEnablePassword) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
-        NccRelayAgentData relayAgentData = new NccRelayAgentData();
+        NccDhcpRelayAgentData relayAgentData = new NccDhcpRelayAgentData();
 
         relayAgentData.agentName = agentName;
         relayAgentData.agentType = agentType;
@@ -93,8 +92,8 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         relayAgentData.agentUnbindedPool = agentUnbindedPool;
 
         try {
-            return new NccRelayAgent().createRelayAgent(relayAgentData);
-        } catch (NccRelayAgentException e) {
+            return new NccDhcpRelayAgent().createRelayAgent(relayAgentData);
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 
@@ -116,7 +115,7 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
             String agentEnablePassword) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
-        NccRelayAgentData relayAgentData = new NccRelayAgentData();
+        NccDhcpRelayAgentData relayAgentData = new NccDhcpRelayAgentData();
 
         relayAgentData.id = id;
         relayAgentData.agentName = agentName;
@@ -131,8 +130,8 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
         relayAgentData.agentUnbindedPool = agentUnbindedPool;
 
         try {
-            return new NccRelayAgent().updateRelayAgent(relayAgentData);
-        } catch (NccRelayAgentException e) {
+            return new NccDhcpRelayAgent().updateRelayAgent(relayAgentData);
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 
@@ -141,8 +140,8 @@ public class DhcpRelayAgentServiceImpl implements DhcpRelayAgentService {
 
     public Integer deleteDhcpRelayAgent(String apiKey, Integer id){
         try {
-            return new NccRelayAgent().deleteRelayAgent(id);
-        } catch (NccRelayAgentException e) {
+            return new NccDhcpRelayAgent().deleteRelayAgent(id);
+        } catch (NccDhcpRelayAgentException e) {
             e.printStackTrace();
         }
 

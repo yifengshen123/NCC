@@ -1,9 +1,9 @@
-package com.NccRelayAgent;
+package com.NccDhcp;
 
 import com.NccSystem.NccAbstractData;
 import java.sql.SQLException;
 
-public class NccRelayAgentData extends NccAbstractData<NccRelayAgentData> {
+public class NccDhcpRelayAgentData extends NccAbstractData<NccDhcpRelayAgentData> {
     public Integer id;
     public String agentName;
     public Long agentIP;
@@ -17,8 +17,8 @@ public class NccRelayAgentData extends NccAbstractData<NccRelayAgentData> {
     public Integer agentUnbindedPool;
 
     @Override
-    public NccRelayAgentData fillData() {
-        NccRelayAgentData agentData = new NccRelayAgentData();
+    public NccDhcpRelayAgentData fillData() {
+        NccDhcpRelayAgentData agentData = new NccDhcpRelayAgentData();
         try {
 
             agentData.id = rs.getInt("id");

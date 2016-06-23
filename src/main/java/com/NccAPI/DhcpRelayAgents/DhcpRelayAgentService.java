@@ -1,16 +1,16 @@
 package com.NccAPI.DhcpRelayAgents;
 
-import com.NccRelayAgent.NccRelayAgentData;
-import com.NccRelayAgent.NccRelayAgentType;
+import com.NccDhcp.NccDhcpRelayAgentData;
+import com.NccDhcp.NccDhcpRelayAgentType;
 
 import java.util.ArrayList;
 
 public interface DhcpRelayAgentService {
-    public ArrayList<NccRelayAgentData> getDhcpRelayAgent(String apiKey);
-    public NccRelayAgentData getDhcpRelayAgent(String apiKey, Integer id);
-    public NccRelayAgentData getDhcpRelayAgentByIP(String apiKey, Long ip);
+    public ArrayList<NccDhcpRelayAgentData> getDhcpRelayAgent(String apiKey);
+    public NccDhcpRelayAgentData getDhcpRelayAgent(String apiKey, Integer id);
+    public NccDhcpRelayAgentData getDhcpRelayAgentByIP(String apiKey, Long ip);
 
-    public ArrayList<NccRelayAgentType> getDhcpRelayAgentTypes(String apiKey);
+    public ArrayList<NccDhcpRelayAgentType> getDhcpRelayAgentTypes(String apiKey);
 
     public Integer createDhcpRelayAgent(
             String apiKey,

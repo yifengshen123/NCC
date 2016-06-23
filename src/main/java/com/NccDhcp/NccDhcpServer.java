@@ -3,9 +3,6 @@ package com.NccDhcp;
 import com.Ncc;
 import com.NccPools.NccPoolData;
 import com.NccPools.NccPools;
-import com.NccRelayAgent.NccRelayAgent;
-import com.NccRelayAgent.NccRelayAgentData;
-import com.NccRelayAgent.NccRelayAgentException;
 import com.NccSystem.NccUtils;
 import org.apache.log4j.Logger;
 
@@ -215,9 +212,9 @@ public class NccDhcpServer {
                                         } else {
 
                                             try {
-                                                NccRelayAgentData agentData = null;
+                                                NccDhcpRelayAgentData agentData = null;
                                                 try {
-                                                    agentData = new NccRelayAgent().getRelayAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
+                                                    agentData = new NccDhcpRelayAgent().getRelayAgentByIP(NccUtils.ip2long(agentIP.getHostAddress()));
 
                                                     if (agentData != null) {
 
@@ -254,7 +251,7 @@ public class NccDhcpServer {
                                                     } else {
                                                         logger.error("Relay agent " + NccUtils.long2ip(relayAgent) + " not found");
                                                     }
-                                                } catch (NccRelayAgentException e) {
+                                                } catch (NccDhcpRelayAgentException e) {
                                                     e.printStackTrace();
                                                 }
 
