@@ -153,7 +153,7 @@ public class NccDhcpServer {
                                     if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_INFORM) {
                                         if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("DHCPINFORM from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
-                                        if (Ncc.dhcpLogLevel >= 6)
+                                        if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
                                     }
 
@@ -162,7 +162,7 @@ public class NccDhcpServer {
                                         if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("DHCPDISCOVER from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
 
-                                        if (Ncc.dhcpLogLevel >= 6)
+                                        if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
 
                                         // TODO: 4/20/16 set real local IP of outgoing iface
@@ -271,7 +271,7 @@ public class NccDhcpServer {
                                         if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("DHCPREQUEST from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
 
-                                        if (Ncc.dhcpLogLevel >= 6)
+                                        if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
 
                                         InetAddress agentIP = pkt.getRelayAgent();
@@ -280,7 +280,7 @@ public class NccDhcpServer {
                                         String circuitID = pkt.getOpt82CircuitID();
 
                                         if (remoteID.equals("")) {
-                                            if (Ncc.dhcpLogLevel >= 7)
+                                            if (Ncc.dhcpLogLevel >= 6)
                                                 logger.info("Empty remoteID clientMAC: " + pkt.getClientID());
                                         }
                                         // TODO: 4/20/16 set real local IP of outgoing iface
@@ -392,7 +392,7 @@ public class NccDhcpServer {
 
                                         if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("DHCPRELEASE from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
-                                        if (Ncc.dhcpLogLevel >= 6)
+                                        if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
                                     }
                                 } catch (NccDhcpException e) {
