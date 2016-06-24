@@ -3,6 +3,7 @@ package com;
 import com.NccAPI.NccAPI;
 import com.NccDhcp.NccDhcpServer;
 import com.NccRadius.NccRadius;
+import com.NccSystem.CLI.NccCLI;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccSQLPool;
 import org.apache.commons.configuration.*;
@@ -26,6 +27,7 @@ public class Ncc {
     public static String logFile = "NCC.log";
     private static boolean moduleRadius = true;
     private static boolean moduleDHCP = true;
+    private static boolean moduleCLI = true;
     public static boolean logQuery = false;
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
@@ -33,6 +35,7 @@ public class Ncc {
     public static Integer radiusLogLevel = 0;
     public static Integer dhcpLogLevel = 0;
     public static boolean dhcpIgnoreBroadcast = true;
+    public static Integer cliSshPort = 3270;
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -55,8 +58,8 @@ public class Ncc {
             logQuery = Boolean.valueOf(config.getString("log.query"));
 
             moduleRadius = Boolean.valueOf(config.getString("module.radius"));
-
             moduleDHCP = Boolean.valueOf(config.getString("module.dhcp"));
+            moduleCLI = Boolean.valueOf(config.getString("module.cli"));
 
             logger.setLevel(Level.toLevel(logLevel));
 
@@ -116,14 +119,22 @@ public class Ncc {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 logger.info("Stopping NCC server...");
-                if(moduleRadius) nccRadius.stop();
+                if (moduleRadius) nccRadius.stop();
                 nccAPI.stop();
                 sqlPool.close();
             }
         });
 
+        if (moduleCLI) {
+            cliSshPort = config.getInt("cli.ssh.port");
+            logger.info("Starting CLI on port " + cliSshPort);
+            NccCLI nccCLI = new NccCLI(cliSshPort);
+            nccCLI.start();
+        }
+
         logger.info("Starting API");
         nccAPI = new NccAPI();
         nccAPI.start();
+
     }
 }
