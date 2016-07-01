@@ -23,6 +23,7 @@ public class NccShellFactory extends ProcessShellFactory {
         private static final String SHELL_CMD_EXIT = "exit";
         private static final String SHELL_CMD_VERSION = "version";
         private static final String SHELL_CMD_HELP = "help";
+        private static final String SHELL_CMD_SET = "set";
         private static final String SHELL_CMD_SHOW = "show";
         private static final String SHELL_CMD_CLEAR = "clear";
 
@@ -97,7 +98,7 @@ public class NccShellFactory extends ProcessShellFactory {
                 reader.setPrompt(SHELL_PROMPT);
                 reader.addCompleter(new StringsCompleter(SHELL_CMD_QUIT,
                         SHELL_CMD_EXIT, SHELL_CMD_VERSION, SHELL_CMD_HELP,
-                        SHELL_CMD_SHOW, SHELL_CMD_CLEAR));
+                        SHELL_CMD_SHOW, SHELL_CMD_CLEAR, SHELL_CMD_SET));
                 writer = new PrintWriter(reader.getOutput(), true);
 
                 String line;

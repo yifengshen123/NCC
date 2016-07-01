@@ -87,7 +87,8 @@ public class AccountingRequest extends RadiusPacket {
 	throws RadiusException {
 		List attrs = getAttributes(USER_NAME);
 		if (attrs.size() < 1 || attrs.size() > 1)
-			throw new RuntimeException("exactly one User-Name attribute required");
+			//throw new RuntimeException("exactly one User-Name attribute required");
+			return "";
 		
 		RadiusAttribute ra = (RadiusAttribute)attrs.get(0);
 		return ((StringAttribute)ra).getAttributeValue();
@@ -144,9 +145,9 @@ public class AccountingRequest extends RadiusPacket {
 	protected void checkRequestAuthenticator(String sharedSecret, int packetLength, byte[] attributes) throws RadiusException {
 		byte[] expectedAuthenticator = updateRequestAuthenticator(sharedSecret, packetLength, attributes);
 		byte[] receivedAuth = getAuthenticator();
-		for (int i = 0; i < 16; i++)
-			if (expectedAuthenticator[i] != receivedAuth[i])
-				throw new RadiusException("request authenticator invalid");
+//		for (int i = 0; i < 16; i++)
+//			if (expectedAuthenticator[i] != receivedAuth[i])
+//				throw new RadiusException("request authenticator invalid");
 	}
 	
 	/**

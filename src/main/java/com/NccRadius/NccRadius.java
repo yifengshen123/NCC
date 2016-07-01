@@ -102,7 +102,9 @@ public class NccRadius extends RadiusServer {
         try {
             NccNAS nccNAS = new NccNAS();
             try {
-                return nccNAS.getNasSecretByIP(NccUtils.ip2long(inetSocketAddress.getHostString()));
+                String secret = nccNAS.getNasSecretByIP(NccUtils.ip2long(inetSocketAddress.getHostString()));
+                logger.debug("Getting secret for NAS: " + inetSocketAddress.getHostString() + " secret: " + secret);
+                return secret;
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
