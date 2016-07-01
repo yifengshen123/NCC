@@ -81,8 +81,29 @@ public class NccDhcpServer {
                                     } catch (UnknownHostException e) {
                                         e.printStackTrace();
                                     }
-                                    if (!remoteID.equals(""))
-                                        new NccDhcpBinding().setUnbinded(remoteID, circuitID, clientMAC, relayAgent);
+
+                                    try {
+                                        NccDhcpRelayAgentData agent = new NccDhcpRelayAgent().getRelayAgentByIP(relayAgent);
+
+                                        if (agent == null) {
+                                            if (Ncc.dhcpLogLevel >= 5) {
+                                                try {
+                                                    logger.info("Request from unknown RelayAgent: " + NccUtils.long2ip(relayAgent));
+                                                } catch (UnknownHostException e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                                return null;
+                                            }
+                                        }
+
+                                        if (!remoteID.equals(""))
+                                            new NccDhcpBinding().setUnbinded(remoteID, circuitID, clientMAC, relayAgent);
+
+                                    } catch (NccDhcpRelayAgentException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     return null;
                                 }
                             }
@@ -140,8 +161,8 @@ public class NccDhcpServer {
                                 try {
                                     NccDhcpPacket pkt = new NccDhcpPacket(recv, inPkt.getLength());
 
-                                    if(Ncc.dhcpIgnoreBroadcast && inPkt.getAddress().getHostAddress().equals("0.0.0.0")){
-                                        if(Ncc.dhcpLogLevel >=6)
+                                    if (Ncc.dhcpIgnoreBroadcast && inPkt.getAddress().getHostAddress().equals("0.0.0.0")) {
+                                        if (Ncc.dhcpLogLevel >= 6)
                                             logger.info("DHCP broadcast packet ignored");
                                         return;
                                     }
