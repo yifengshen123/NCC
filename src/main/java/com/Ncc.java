@@ -32,6 +32,7 @@ public class Ncc {
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
     public static Integer dhcpUnbindedCleanupTime = 10;
+    public static Integer dhcpDuplicatePort = 0;
     public static Integer radiusLogLevel = 0;
     public static Integer dhcpLogLevel = 0;
     public static boolean dhcpIgnoreBroadcast = true;
@@ -112,6 +113,10 @@ public class Ncc {
             dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time");
             dhcpLogLevel = config.getInt("dhcp.log.level");
             dhcpIgnoreBroadcast = config.getBoolean("dhcp.ignore.broadcast");
+            try {
+                dhcpDuplicatePort = config.getInt("dhcp.duplucate.reply.to.alternate.port");
+            } catch (Exception e) {
+            }
             nccDhcp = new NccDhcpServer();
             nccDhcp.start(localIP);
         }

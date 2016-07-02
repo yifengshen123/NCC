@@ -147,6 +147,10 @@ public class NccDhcpServer {
                                     DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), 67);
                                     dhcpSocket.send(outPkt);
 
+                                    if(Ncc.dhcpDuplicatePort>0){
+                                        outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), Ncc.dhcpDuplicatePort);
+                                        dhcpSocket.send(outPkt);
+                                    }
                                     return outPkt;
                                 } catch (IOException e) {
                                     e.printStackTrace();
