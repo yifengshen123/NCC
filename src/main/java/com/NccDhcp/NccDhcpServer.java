@@ -17,6 +17,8 @@ public class NccDhcpServer {
 
     private static DatagramSocket dhcpSocket;
 
+    private static Long requestProcessed = 0L;
+
     public NccDhcpServer() {
         try {
             this.dhcpSocket = new DatagramSocket(67);
@@ -40,6 +42,10 @@ public class NccDhcpServer {
                         NccDhcpBinding binding = new NccDhcpBinding();
                         leases.cleanupLeases();
                         binding.cleanupBinding();
+
+                        if (Ncc.dhcpLogLevel >= 6)
+                            logger.info("Request rate: " + requestProcessed + " req/sec");
+                        requestProcessed = 0L;
                     }
                 }
 
@@ -144,12 +150,14 @@ public class NccDhcpServer {
                                     logger.info("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC: " + pkt.getClientID() + " IP=" + ip.getHostAddress() + " localIP=" + this.localIP.getHostAddress());
 
                                 try {
-                                    DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), 67);
+                                    DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), inPkt.getPort());
                                     dhcpSocket.send(outPkt);
 
-                                    if(Ncc.dhcpDuplicatePort>0){
+                                    requestProcessed++;
+
+                                    if (Ncc.dhcpDuplicatePort > 0) {
                                         outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), Ncc.dhcpDuplicatePort);
-                                        dhcpSocket.send(outPkt);
+                                        //dhcpSocket.send(outPkt);
                                     }
                                     return outPkt;
                                 } catch (IOException e) {
