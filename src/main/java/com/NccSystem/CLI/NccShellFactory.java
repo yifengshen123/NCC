@@ -95,15 +95,54 @@ public class NccShellFactory extends ProcessShellFactory {
                         }
                     }
                 });
-                reader.setPrompt(SHELL_PROMPT);
-                reader.addCompleter(new StringsCompleter(SHELL_CMD_QUIT,
-                        SHELL_CMD_EXIT, SHELL_CMD_VERSION, SHELL_CMD_HELP,
-                        SHELL_CMD_SHOW, SHELL_CMD_CLEAR, SHELL_CMD_SET));
+
                 writer = new PrintWriter(reader.getOutput(), true);
 
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    handleUserInput(line.trim());
+                writer.println("NCC CLI v1.0 ready.\r");
+
+                writer.print("#");
+                writer.flush();
+                String line = "";
+                while (true) {
+                    Integer ch = reader.readCharacter();
+                    System.out.println("ch=" + ch);
+
+                    if (ch == 13) {     // enter
+                        writer.println("\r");
+                        writer.println("command: " + line + "\r");
+                        writer.print("#");
+                        writer.flush();
+                        line = "";
+                        continue;
+                    }
+
+                    if (ch == 127) {    // backspace
+                        if (line.length() >= 1) {
+                            line = line.substring(0, line.length() - 1);
+                            writer.print("\b \b");
+                            writer.flush();
+                        }
+                        continue;
+                    }
+
+                    if (ch == 63) { // ?
+                        continue;
+                    }
+
+                    if (ch == 9) {  // tab
+                        continue;
+                    }
+
+                    if (ch == 27) { // escape
+                        writer.println("\r");
+                        writer.println("Exitting from CLI...\r");
+                        writer.flush();
+                        break;
+                    }
+
+                    line += String.valueOf(Character.toChars(ch));
+                    writer.print(String.valueOf(Character.toChars(ch)));
+                    writer.flush();
                 }
 
             } catch (InterruptedIOException e) {
@@ -115,34 +154,6 @@ public class NccShellFactory extends ProcessShellFactory {
             }
         }
 
-        private void handleUserInput(String line) throws InterruptedIOException {
-
-            if (line.equalsIgnoreCase(SHELL_CMD_QUIT)
-                    || line.equalsIgnoreCase(SHELL_CMD_EXIT)) {
-                writer.println("\rExitting\r");
-                throw new InterruptedIOException();
-            }
-
-            String response;
-            if (line.equalsIgnoreCase(SHELL_CMD_VERSION))
-                response = "\rNCC kernel version 1.0\r\n";
-            else if (line.equalsIgnoreCase(SHELL_CMD_HELP))
-                response = "\r" +
-                        "Console commands: \r\n" +
-                        "exit\t\texit CLI\r\n" +
-                        "help\t\tthis help\r\n" +
-                        "quit\t\texit CLI\r\n";
-            else if (line.equalsIgnoreCase(SHELL_CMD_SHOW)) {
-                response = "\r";
-            } else if (line.equalsIgnoreCase(SHELL_CMD_CLEAR)) {
-                response = "\r";
-            } else if (line.equalsIgnoreCase(""))
-                response = "\r";
-            else
-                response = "\rUnknown command\r\n";
-
-            writer.print(response);
-        }
     }
 
     public Command create() {
