@@ -72,24 +72,41 @@ public class NccShellFactory extends ProcessShellFactory {
             nccCommands.add(new NccCommand("shutdown", "Gracefully shutdown NCC system", false, null));
         }
 
-        private NccCommand getCommand(String line) {
-
+        private String autoComplete(String line) {
             StringTokenizer st = new StringTokenizer(line);
 
             while (st.hasMoreElements()) {
                 String token = st.nextToken();
+                ArrayList<NccCommand> foundCommands = new ArrayList<>();
 
                 for (NccCommand cmd : nccCommands) {
                     if (cmd.fullName.substring(0, token.length()).equals(token)) {
-                        cmd.autoComplete = cmd.fullName.substring(token.length());
-                        return cmd;
+                        foundCommands.add(cmd);
                     }
                 }
 
-                return null;
+                if (foundCommands.size() > 1) {
+                    StringBuilder sb = new StringBuilder();
+
+                    writer.println("\r");
+                    writer.flush();
+                    for (NccCommand cmd : foundCommands) {
+                        Formatter formatter = new Formatter(sb, Locale.US);
+                        writer.println(formatter.format("%-20s%-30s\r", cmd.fullName, cmd.desc));
+                        writer.flush();
+                    }
+
+                } else if (foundCommands.size() == 1) {
+                    NccCommand cmd = foundCommands.get(0);
+                    cmd.autoComplete = cmd.fullName.substring(token.length()) + " ";
+                    writer.print(cmd.autoComplete);
+                    writer.flush();
+
+                    return cmd.autoComplete;
+                }
             }
 
-            return null;
+            return "";
         }
 
         private void help(String cmd) {
@@ -209,14 +226,9 @@ public class NccShellFactory extends ProcessShellFactory {
                     }
 
                     if (ch == 9) {  // tab
-                        NccCommand cmd = getCommand(line);
-
-                        if (cmd != null) {
-                            line += cmd.autoComplete + " ";
-                            writer.print(cmd.autoComplete + " ");
-                            writer.flush();
-                        }
-
+                        line += autoComplete(line);
+                        writer.print("\r#" + line);
+                        writer.flush();
                         continue;
                     }
 
