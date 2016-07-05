@@ -1,6 +1,8 @@
 package com.NccSystem.CLI;
 
+import com.mysql.management.util.Str;
 import jline.console.ConsoleReader;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
@@ -76,6 +78,7 @@ public class NccShellFactory extends ProcessShellFactory {
             subs = new ArrayList<>();
             ArrayList<NccCommand> dhcpSubs = new ArrayList<>();
             dhcpSubs.add(new NccCommand("binding", "Show active leases", true, null, "showDhcpLeases"));
+            dhcpSubs.add(new NccCommand("bindings", "Show all active leases", false, null, "showDhcpLeases"));
             dhcpSubs.add(new NccCommand("unbinded", "Show unbinded users", false, null, "showDhcpUnbinded"));
             subs.add(new NccCommand("dhcp", "Show dhcp-related information", true, dhcpSubs, null));
             subs.add(new NccCommand("radius", "Show radius-related information", true, null, null));
@@ -86,14 +89,16 @@ public class NccShellFactory extends ProcessShellFactory {
 
         private ArrayList<String> executeCommand(String line) {
             StringTokenizer st = new StringTokenizer(line);
+            ArrayList<NccCommand> commands = nccCommands;
 
             while (st.hasMoreElements()) {
                 String token = st.nextToken();
                 ArrayList<NccCommand> foundCommands = new ArrayList<>();
 
-                for (NccCommand cmd : nccCommands) {
+                for (NccCommand cmd : commands) {
+                    System.out.println("Processing: '" + cmd.fullName + "'");
                     if (token.trim().length() > cmd.fullName.length()) continue;
-                    if (cmd.fullName.substring(0, token.trim().length()).equals(token)) {
+                    if (cmd.fullName.equals(token)) {
                         foundCommands.add(cmd);
                     }
                 }
@@ -106,14 +111,22 @@ public class NccShellFactory extends ProcessShellFactory {
 
                 NccCommand cmd = foundCommands.get(0);
 
+                if (st.hasMoreElements() && cmd.subCommands != null) {
+                    System.out.println("Found next: '" + cmd.fullName + "'");
+                    commands = cmd.subCommands;
+                    continue;
+                }
+
                 if (cmd.subCommands == null) {
+                    System.out.println("No subCommands in '" + cmd.fullName + "'");
                     if (!cmd.hasArgs) {
                         NccCLICommands cliCommands = new NccCLICommandsImpl();
 
+                        if (cmd.execMethod == null) continue;
                         try {
-                            Method m = cliCommands.getClass().getMethod(cmd.execMethod, new Class[] {});
+                            Method m = cliCommands.getClass().getMethod(cmd.execMethod, new Class[]{});
                             try {
-                                m.invoke(cliCommands, new Object[] {});
+                                m.invoke(cliCommands, new Object[]{});
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
                             } catch (InvocationTargetException e) {
@@ -122,11 +135,33 @@ public class NccShellFactory extends ProcessShellFactory {
                         } catch (NoSuchMethodException e) {
                             e.printStackTrace();
                         }
+                    } else {
+                        if(!st.hasMoreElements()){
+                            writer.println("Argument missing\r");
+                            writer.flush();
+                            return null;
+                        }
                     }
+                } else {
+
                 }
             }
 
             return null;
+        }
+
+        private String maxMatch(String str1, String str2) {
+            String result = "";
+            char[] c1 = str1.toCharArray();
+            char[] c2 = str2.toCharArray();
+
+            int len = (str1.length() > str2.length()) ? str2.length() : str1.length();
+
+            for (int i = 0; i < len; i++) {
+                if (c1[i] == c2[i]) result += c1[i];
+            }
+
+            return result;
         }
 
         private String autoComplete(String line) {
@@ -204,6 +239,8 @@ public class NccShellFactory extends ProcessShellFactory {
 
                 if (foundCommands.size() > 1) {
                     StringBuilder sb = new StringBuilder();
+                    String lastToken = foundCommands.get(0).fullName;
+                    String longestMatch = "";
 
                     writer.println("\r");
                     writer.flush();
@@ -211,7 +248,16 @@ public class NccShellFactory extends ProcessShellFactory {
                         Formatter formatter = new Formatter(sb, Locale.US);
                         writer.println(formatter.format("%-20s%-30s\r", cmd.fullName, cmd.desc));
                         writer.flush();
+
+                        longestMatch = maxMatch(lastToken, cmd.fullName);
+                        lastToken = cmd.fullName;
                     }
+
+                    System.out.println("longestMatch='" + longestMatch + "'");
+                    writer.print(longestMatch.substring(token.trim().length()));
+                    writer.flush();
+
+                    return longestMatch.substring(token.trim().length());
 
                 } else if (foundCommands.size() == 1) {
 
