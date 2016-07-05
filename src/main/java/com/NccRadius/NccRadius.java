@@ -44,9 +44,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-// TODO: 27.01.2016 acctInputGigawords support
-// TODO: 27.01.2016 Concurrent sessions control
-
 public class NccRadius extends RadiusServer {
 
     private static Logger logger = Logger.getLogger(NccRadius.class);

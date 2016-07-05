@@ -96,7 +96,6 @@ public class NccShellFactory extends ProcessShellFactory {
                 ArrayList<NccCommand> foundCommands = new ArrayList<>();
 
                 for (NccCommand cmd : commands) {
-                    System.out.println("Processing: '" + cmd.fullName + "'");
                     if (token.trim().length() > cmd.fullName.length()) continue;
                     if (cmd.fullName.equals(token)) {
                         foundCommands.add(cmd);
@@ -112,13 +111,11 @@ public class NccShellFactory extends ProcessShellFactory {
                 NccCommand cmd = foundCommands.get(0);
 
                 if (st.hasMoreElements() && cmd.subCommands != null) {
-                    System.out.println("Found next: '" + cmd.fullName + "'");
                     commands = cmd.subCommands;
                     continue;
                 }
 
                 if (cmd.subCommands == null) {
-                    System.out.println("No subCommands in '" + cmd.fullName + "'");
                     if (!cmd.hasArgs) {
                         NccCLICommands cliCommands = new NccCLICommandsImpl();
 
@@ -178,16 +175,12 @@ public class NccShellFactory extends ProcessShellFactory {
                 }
 
                 if (st.hasMoreElements()) {
-                    //nextToken = st.nextToken();
-
-                    System.out.println("Has next");
 
                     foundCommands = new ArrayList<>();
                     for (NccCommand cmd : commands) {
                         if (token.trim().length() > cmd.fullName.length()) continue;
                         if (cmd.fullName.substring(0, token.trim().length()).equals(token)) {
                             foundCommands.add(cmd);
-                            System.out.println("Found: '" + cmd.fullName + "'");
                         }
                     }
 
@@ -204,35 +197,23 @@ public class NccShellFactory extends ProcessShellFactory {
 
                     } else if (foundCommands.size() == 1) {
                         NccCommand cmd = foundCommands.get(0);
-                        System.out.println("Found 1: '" + cmd.fullName + "' token '" + token + "' sub: " + cmd.subCommands.toString());
                         if (cmd.subCommands != null) {
-                            System.out.println("Has subCommands");
                             commands = cmd.subCommands;
                             for (NccCommand c : commands) {
-                                System.out.println("subCommand: '" + c.fullName + "'");
                             }
                             if (st.hasMoreElements()) {
-                                System.out.println("Get next token");
                                 continue;
                             }
                         } else {
                             commands = new ArrayList<>();
                         }
                     }
-
-                    //System.out.println("Token '" + token + "' has next token: '" + nextToken + "'");
-                    //if (st.hasMoreElements()) continue;
-                    //token = nextToken;
                 }
-
-                System.out.println("Out from IF token: '" + token + "'");
 
                 foundCommands = new ArrayList<>();
                 for (NccCommand cmd : commands) {
-                    System.out.println("Compare '" + token + "' with '" + cmd.fullName + "'");
                     if (token.trim().length() > cmd.fullName.length()) continue;
                     if (cmd.fullName.substring(0, token.trim().length()).equals(token)) {
-                        System.out.println("Equals");
                         foundCommands.add(cmd);
                     }
                 }
@@ -253,7 +234,6 @@ public class NccShellFactory extends ProcessShellFactory {
                         lastToken = cmd.fullName;
                     }
 
-                    System.out.println("longestMatch='" + longestMatch + "'");
                     writer.print(longestMatch.substring(token.trim().length()));
                     writer.flush();
 
@@ -262,8 +242,6 @@ public class NccShellFactory extends ProcessShellFactory {
                 } else if (foundCommands.size() == 1) {
 
                     NccCommand cmd = foundCommands.get(0);
-
-                    System.out.println("Completing: '" + token.trim() + "' to '" + cmd.fullName + "'");
 
                     if (token.trim().equals(cmd.fullName) && (cmd.subCommands != null)) {
                         StringBuilder sb = new StringBuilder();
@@ -383,7 +361,6 @@ public class NccShellFactory extends ProcessShellFactory {
 
                             switch (ch) {
                                 case 65:    // up
-                                    System.out.println("History up");
                                     if (!history.isEmpty()) {
                                         historyIndex--;
                                         if (historyIndex < 0) historyIndex = 0;
@@ -397,7 +374,6 @@ public class NccShellFactory extends ProcessShellFactory {
                                     }
                                     break;
                                 case 66:    // down
-                                    System.out.println("History down");
                                     if (!history.isEmpty()) {
                                         historyIndex++;
                                         if (historyIndex >= history.size()) historyIndex = history.size() - 1;

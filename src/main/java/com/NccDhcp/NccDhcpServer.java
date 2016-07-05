@@ -147,7 +147,7 @@ public class NccDhcpServer {
                                 dhcpReply = pkt.buildReply(type, this.localIP, ip, netmask, router, dns1, dns2, nextserver, leaseTime);
 
                                 if (Ncc.dhcpLogLevel >= 5)
-                                    logger.info("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC: " + pkt.getClientID() + " IP=" + ip.getHostAddress() + " localIP=" + this.localIP.getHostAddress());
+                                    logger.info("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC: " + pkt.getClientMAC() + " IP=" + ip.getHostAddress() + " localIP=" + this.localIP.getHostAddress());
 
                                 try {
                                     DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), inPkt.getPort());
@@ -188,7 +188,7 @@ public class NccDhcpServer {
 
                                     if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_INFORM) {
                                         if (Ncc.dhcpLogLevel >= 5)
-                                            logger.info("DHCPINFORM from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
+                                            logger.info("DHCPINFORM from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientMAC());
                                         if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
                                     }
@@ -196,10 +196,10 @@ public class NccDhcpServer {
                                     if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_DISCOVER) {
 
                                         if (Ncc.dhcpLogLevel >= 5)
-                                            logger.info("DHCPDISCOVER from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
+                                            logger.info("DHCPDISCOVER from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientMAC());
 
                                         if (Ncc.dhcpLogLevel >= 5)
-                                            logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
+                                            logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientMAC: " + pkt.getClientMAC());
 
                                         // TODO: 4/20/16 set real local IP of outgoing iface
                                         InetAddress localIP = null;
@@ -222,7 +222,7 @@ public class NccDhcpServer {
 
                                         if (remoteID.equals("")) {
                                             if (Ncc.dhcpLogLevel >= 6)
-                                                logger.info("Empty remoteID in DHCPDISCOVER clientMAC: " + pkt.getClientID());
+                                                logger.info("Empty remoteID in DHCPDISCOVER clientMAC: " + pkt.getClientMAC());
                                             try {
                                                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, NccUtils.ip2long(localIP.getHostAddress()), nullIP, nullIP, nullIP, nullIP, nullIP, nullIP, 0);
                                             } catch (UnknownHostException e) {
@@ -249,6 +249,10 @@ public class NccDhcpServer {
                                                 e.printStackTrace();
                                             }
                                         } else {
+
+                                            if (Ncc.dhcpLogLevel >= 6) {
+                                                logger.info("Lease not found for clientMAC=" + clientMAC);
+                                            }
 
                                             try {
                                                 NccDhcpRelayAgentData agentData = null;
@@ -305,7 +309,7 @@ public class NccDhcpServer {
                                     if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_REQUEST) {
 
                                         if (Ncc.dhcpLogLevel >= 5)
-                                            logger.info("DHCPREQUEST from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
+                                            logger.info("DHCPREQUEST from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientMAC());
 
                                         if (Ncc.dhcpLogLevel >= 5)
                                             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
