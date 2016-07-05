@@ -136,7 +136,7 @@ public class NccShellFactory extends ProcessShellFactory {
                             e.printStackTrace();
                         }
                     } else {
-                        if(!st.hasMoreElements()){
+                        if (!st.hasMoreElements()) {
                             writer.println("Argument missing\r");
                             writer.flush();
                             return null;
@@ -369,13 +369,68 @@ public class NccShellFactory extends ProcessShellFactory {
                 writer.flush();
                 String line = "";
 
+                ArrayList<String> history = new ArrayList<>();
+                Integer historyIndex = 0;
+
                 while (true) {
                     Integer ch = reader.readCharacter();
+
+                    if (ch == 27) { // escape seq
+                        ch = reader.readCharacter();
+
+                        if (ch == 91) {
+                            ch = reader.readCharacter();
+
+                            switch (ch) {
+                                case 65:    // up
+                                    System.out.println("History up");
+                                    if (!history.isEmpty()) {
+                                        historyIndex--;
+                                        if (historyIndex < 0) historyIndex = 0;
+                                        line = history.get(historyIndex);
+                                        for(int i=0; i<80; i++){
+                                            writer.print(" ");
+                                            writer.flush();
+                                        }
+                                        writer.print("\r#" + line.trim());
+                                        writer.flush();
+                                    }
+                                    break;
+                                case 66:    // down
+                                    System.out.println("History down");
+                                    if (!history.isEmpty()) {
+                                        historyIndex++;
+                                        if (historyIndex >= history.size()) historyIndex = history.size() - 1;
+                                        line = history.get(historyIndex);
+                                        for(int i=0; i<80; i++){
+                                            writer.print(" ");
+                                            writer.flush();
+                                        }
+                                        writer.print("\r#" + line.trim());
+                                        writer.flush();
+                                    }
+                                    break;
+                                case 67:    // right
+                                    break;
+                                case 68:    // left
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        continue;
+                    }
 
                     if (ch == 13) {     // enter
                         writer.println("\r");
                         writer.println("command: " + line + "\r");
                         writer.flush();
+
+                        if(!line.equals("")) {
+                            history.add(line);
+                            historyIndex = history.size();
+                        }
 
                         executeCommand(line);
 
@@ -414,13 +469,6 @@ public class NccShellFactory extends ProcessShellFactory {
                         writer.print("\r#" + line);
                         writer.flush();
                         continue;
-                    }
-
-                    if (ch == 27) { // escape
-                        writer.println("\r");
-                        writer.println("Exitting from CLI...\r");
-                        writer.flush();
-                        break;
                     }
 
                     line += String.valueOf(Character.toChars(ch));
