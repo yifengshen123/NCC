@@ -48,7 +48,7 @@ public class NccShellFactory extends ProcessShellFactory {
         private static final String SHELL_CMD_SHOW = "show";
         private static final String SHELL_CMD_CLEAR = "clear";
 
-        private static ArrayList<NccCommand> nccCommands = new ArrayList<>();
+        private ArrayList<NccCommand> nccCommands = new ArrayList<>();
 
         private InputStream in;
         private OutputStream out;
@@ -62,25 +62,97 @@ public class NccShellFactory extends ProcessShellFactory {
         public NccShell() {
             super();
 
+            ArrayList<NccCommand> subs;
+
+            subs = new ArrayList<>();
+            subs.add(new NccCommand("dhcp", "Clear dhcp leases", true, null));
+            subs.add(new NccCommand("session", "Clear sessions", true, null));
+            nccCommands.add(new NccCommand("clear", "Clear commands", false, subs));
+
             nccCommands.add(new NccCommand("exit", "Exit from CLI", false, null));
+
             nccCommands.add(new NccCommand("quit", "Same as exit", false, null));
 
-            ArrayList<NccCommand> subs = new ArrayList<>();
-            subs.add(new NccCommand("dhcp", "", true, null));
-            subs.add(new NccCommand("radius", "", true, null));
+            subs = new ArrayList<>();
+            ArrayList<NccCommand> dhcpSubs = new ArrayList<>();
+            dhcpSubs.add(new NccCommand("binding", "Show active leases", true, null));
+            dhcpSubs.add(new NccCommand("unbinded", "Show unbinded users", false, null));
+            subs.add(new NccCommand("dhcp", "Show dhcp-related information", true, dhcpSubs));
+            subs.add(new NccCommand("radius", "Show radius-related information", true, null));
             nccCommands.add(new NccCommand("show", "Show various options", false, subs));
+
             nccCommands.add(new NccCommand("shutdown", "Gracefully shutdown NCC system", false, null));
         }
 
         private String autoComplete(String line) {
             StringTokenizer st = new StringTokenizer(line);
+            String token = null, nextToken = null;
+            ArrayList<NccCommand> commands = nccCommands;
+            ArrayList<NccCommand> foundCommands = new ArrayList<>();
 
             while (st.hasMoreElements()) {
-                String token = st.nextToken();
-                ArrayList<NccCommand> foundCommands = new ArrayList<>();
+                if (nextToken != null) {
+                    token = nextToken;
+                } else {
+                    token = st.nextToken();
+                }
 
-                for (NccCommand cmd : nccCommands) {
-                    if (cmd.fullName.substring(0, token.length()).equals(token)) {
+                if (st.hasMoreElements()) {
+                    //nextToken = st.nextToken();
+
+                    System.out.println("Has next");
+
+                    foundCommands = new ArrayList<>();
+                    for (NccCommand cmd : commands) {
+                        if (token.trim().length() > cmd.fullName.length()) continue;
+                        if (cmd.fullName.substring(0, token.trim().length()).equals(token)) {
+                            foundCommands.add(cmd);
+                            System.out.println("Found: '" + cmd.fullName + "'");
+                        }
+                    }
+
+                    if (foundCommands.size() > 1) {
+                        StringBuilder sb = new StringBuilder();
+
+                        writer.println("\r");
+                        writer.flush();
+                        for (NccCommand cmd : foundCommands) {
+                            Formatter formatter = new Formatter(sb, Locale.US);
+                            writer.println(formatter.format("%-20s%-30s\r", cmd.fullName, cmd.desc));
+                            writer.flush();
+                        }
+
+                    } else if (foundCommands.size() == 1) {
+                        NccCommand cmd = foundCommands.get(0);
+                        System.out.println("Found 1: '" + cmd.fullName + "' token '" + token + "' sub: " + cmd.subCommands.toString());
+                        if (cmd.subCommands != null) {
+                            System.out.println("Has subCommands");
+                            commands = cmd.subCommands;
+                            for (NccCommand c : commands) {
+                                System.out.println("subCommand: '" + c.fullName + "'");
+                            }
+                            if (st.hasMoreElements()) {
+                                System.out.println("Get next token");
+                                continue;
+                            }
+                        } else {
+                            commands = new ArrayList<>();
+                        }
+                    }
+
+                    //System.out.println("Token '" + token + "' has next token: '" + nextToken + "'");
+                    //if (st.hasMoreElements()) continue;
+                    //token = nextToken;
+                }
+
+                System.out.println("Out from IF token: '" + token + "'");
+
+                foundCommands = new ArrayList<>();
+                for (NccCommand cmd : commands) {
+                    System.out.println("Compare '" + token + "' with '" + cmd.fullName + "'");
+                    if (token.trim().length() > cmd.fullName.length()) continue;
+                    if (cmd.fullName.substring(0, token.trim().length()).equals(token)) {
+                        System.out.println("Equals");
                         foundCommands.add(cmd);
                     }
                 }
@@ -97,8 +169,25 @@ public class NccShellFactory extends ProcessShellFactory {
                     }
 
                 } else if (foundCommands.size() == 1) {
+
                     NccCommand cmd = foundCommands.get(0);
-                    cmd.autoComplete = cmd.fullName.substring(token.length()) + " ";
+
+                    System.out.println("Completing: '"+token.trim()+"' to '" + cmd.fullName + "'");
+
+                    if (token.trim().equals(cmd.fullName) && (cmd.subCommands != null)) {
+                        StringBuilder sb = new StringBuilder();
+
+                        writer.println("\r");
+                        writer.flush();
+                        for (NccCommand sub : cmd.subCommands) {
+                            Formatter formatter = new Formatter(sb, Locale.US);
+                            writer.println(formatter.format("%-20s%-30s\r", sub.fullName, sub.desc));
+                            writer.flush();
+                        }
+                    }
+
+                    if (token.trim().equals(cmd.fullName)) return "";
+                    cmd.autoComplete = cmd.fullName.substring(token.trim().length()) + " ";
                     writer.print(cmd.autoComplete);
                     writer.flush();
 
