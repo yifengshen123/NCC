@@ -1,16 +1,14 @@
 package com.NccSystem.CLI;
 
-import com.Ncc;
-import com.mysql.management.util.Str;
 import jline.console.ConsoleReader;
-import jline.console.completer.StringsCompleter;
 import org.apache.sshd.server.Command;
-import org.apache.sshd.server.CommandFactory;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
 import org.apache.sshd.server.shell.ProcessShellFactory;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Locale;
@@ -23,13 +21,15 @@ public class NccShellFactory extends ProcessShellFactory {
         String desc;
         boolean hasArgs;
         String autoComplete;
+        String execMethod;
         ArrayList<NccCommand> subCommands;
 
-        public NccCommand(String fullName, String desc, boolean hasArgs, ArrayList<NccCommand> subCommands) {
+        public NccCommand(String fullName, String desc, boolean hasArgs, ArrayList<NccCommand> subCommands, String execMethod) {
             this.fullName = fullName;
             this.desc = desc;
             this.hasArgs = hasArgs;
             this.subCommands = subCommands;
+            this.execMethod = execMethod;
         }
     }
 
@@ -65,23 +65,68 @@ public class NccShellFactory extends ProcessShellFactory {
             ArrayList<NccCommand> subs;
 
             subs = new ArrayList<>();
-            subs.add(new NccCommand("dhcp", "Clear dhcp leases", true, null));
-            subs.add(new NccCommand("session", "Clear sessions", true, null));
-            nccCommands.add(new NccCommand("clear", "Clear commands", false, subs));
+            subs.add(new NccCommand("dhcp", "Clear dhcp leases", true, null, "clearDhcpLeases"));
+            subs.add(new NccCommand("session", "Clear sessions", true, null, "clearDhcpSessions"));
+            nccCommands.add(new NccCommand("clear", "Clear commands", false, subs, null));
 
-            nccCommands.add(new NccCommand("exit", "Exit from CLI", false, null));
+            nccCommands.add(new NccCommand("exit", "Exit from CLI", false, null, null));
 
-            nccCommands.add(new NccCommand("quit", "Same as exit", false, null));
+            nccCommands.add(new NccCommand("quit", "Same as exit", false, null, null));
 
             subs = new ArrayList<>();
             ArrayList<NccCommand> dhcpSubs = new ArrayList<>();
-            dhcpSubs.add(new NccCommand("binding", "Show active leases", true, null));
-            dhcpSubs.add(new NccCommand("unbinded", "Show unbinded users", false, null));
-            subs.add(new NccCommand("dhcp", "Show dhcp-related information", true, dhcpSubs));
-            subs.add(new NccCommand("radius", "Show radius-related information", true, null));
-            nccCommands.add(new NccCommand("show", "Show various options", false, subs));
+            dhcpSubs.add(new NccCommand("binding", "Show active leases", true, null, "showDhcpLeases"));
+            dhcpSubs.add(new NccCommand("unbinded", "Show unbinded users", false, null, "showDhcpUnbinded"));
+            subs.add(new NccCommand("dhcp", "Show dhcp-related information", true, dhcpSubs, null));
+            subs.add(new NccCommand("radius", "Show radius-related information", true, null, null));
+            nccCommands.add(new NccCommand("show", "Show various options", false, subs, null));
 
-            nccCommands.add(new NccCommand("shutdown", "Gracefully shutdown NCC system", false, null));
+            nccCommands.add(new NccCommand("shutdown", "Gracefully shutdown NCC system", false, null, "sysShutdown"));
+        }
+
+        private ArrayList<String> executeCommand(String line) {
+            StringTokenizer st = new StringTokenizer(line);
+
+            while (st.hasMoreElements()) {
+                String token = st.nextToken();
+                ArrayList<NccCommand> foundCommands = new ArrayList<>();
+
+                for (NccCommand cmd : nccCommands) {
+                    if (token.trim().length() > cmd.fullName.length()) continue;
+                    if (cmd.fullName.substring(0, token.trim().length()).equals(token)) {
+                        foundCommands.add(cmd);
+                    }
+                }
+
+                if (foundCommands.size() != 1) {
+                    writer.println("Error in command\r");
+                    writer.flush();
+                    return null;
+                }
+
+                NccCommand cmd = foundCommands.get(0);
+
+                if (cmd.subCommands == null) {
+                    if (!cmd.hasArgs) {
+                        NccCLICommands cliCommands = new NccCLICommandsImpl();
+
+                        try {
+                            Method m = cliCommands.getClass().getMethod(cmd.execMethod, new Class[] {});
+                            try {
+                                m.invoke(cliCommands, new Object[] {});
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
+                            } catch (InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         private String autoComplete(String line) {
@@ -172,7 +217,7 @@ public class NccShellFactory extends ProcessShellFactory {
 
                     NccCommand cmd = foundCommands.get(0);
 
-                    System.out.println("Completing: '"+token.trim()+"' to '" + cmd.fullName + "'");
+                    System.out.println("Completing: '" + token.trim() + "' to '" + cmd.fullName + "'");
 
                     if (token.trim().equals(cmd.fullName) && (cmd.subCommands != null)) {
                         StringBuilder sb = new StringBuilder();
@@ -284,6 +329,10 @@ public class NccShellFactory extends ProcessShellFactory {
                     if (ch == 13) {     // enter
                         writer.println("\r");
                         writer.println("command: " + line + "\r");
+                        writer.flush();
+
+                        executeCommand(line);
+
                         writer.print("#");
                         writer.flush();
                         line = "";
