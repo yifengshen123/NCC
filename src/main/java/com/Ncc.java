@@ -113,12 +113,8 @@ public class Ncc {
             dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time");
             dhcpLogLevel = config.getInt("dhcp.log.level");
             dhcpIgnoreBroadcast = config.getBoolean("dhcp.ignore.broadcast");
-            try {
-                dhcpDuplicatePort = config.getInt("dhcp.duplucate.reply.to.alternate.port");
-            } catch (Exception e) {
-            }
-            nccDhcp = new NccDhcpServer();
-            nccDhcp.start(localIP);
+            nccDhcp = new NccDhcpServer(localIP, 67);
+            nccDhcp.start();
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
