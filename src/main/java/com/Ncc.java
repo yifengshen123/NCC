@@ -32,11 +32,11 @@ public class Ncc {
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
     public static Integer dhcpUnbindedCleanupTime = 10;
-    public static Integer dhcpDuplicatePort = 0;
     public static Integer radiusLogLevel = 0;
     public static Integer dhcpLogLevel = 0;
     public static boolean dhcpIgnoreBroadcast = true;
     public static Integer cliSshPort = 3270;
+    public static boolean nccForceGC = false;
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -96,6 +96,7 @@ public class Ncc {
             System.exit(-1);
         }
 
+        nccForceGC = config.getBoolean("ncc.global.gc_forced");
 
         if (moduleRadius) {
             logger.info("Starting Radius");

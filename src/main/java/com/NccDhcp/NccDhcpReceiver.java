@@ -139,14 +139,6 @@ class NccDhcpReceiver extends Thread {
         if (Ncc.dhcpLogLevel >= 5)
             logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientMAC: " + pkt.getClientMAC());
 
-        // TODO: 4/20/16 set real local IP of outgoing iface
-        InetAddress localIP = null;
-        try {
-            localIP = InetAddress.getByName("151.0.48.86");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-
         InetAddress agentIP = pkt.getRelayAgent();
         String clientMAC = pkt.getClientMAC();
         String remoteID = pkt.getOpt82RemoteID();
@@ -405,6 +397,7 @@ class NccDhcpReceiver extends Thread {
             if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_RELEASE) {
                 requestRelease(pkt);
             }
+
         } catch (NccDhcpException e) {
             e.printStackTrace();
         }

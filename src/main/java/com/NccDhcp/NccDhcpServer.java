@@ -52,6 +52,11 @@ public class NccDhcpServer {
                         if (Ncc.dhcpLogLevel >= 6)
                             logger.info("Request rate: " + requestProcessed + " req/sec");
                         requestProcessed = 0L;
+
+                        if(Ncc.nccForceGC){
+                            System.gc();
+                        }
+
                     }
                 }
 
