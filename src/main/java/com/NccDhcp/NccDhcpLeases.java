@@ -51,8 +51,6 @@ public class NccDhcpLeases {
 
                 if (allocated > 0) {
                     NccDhcpLeaseData newLease = new NccDhcpLeaseData();
-                    Long leaseStart = System.currentTimeMillis() / 1000L;
-                    Long leaseExpire = leaseStart + poolData.poolLeaseTime;
 
                     try {
                         ArrayList<Integer> id = query.updateQuery("INSERT INTO nccDhcpLeases (" +
@@ -72,8 +70,8 @@ public class NccDhcpLeases {
                                 "leaseUID, " +
                                 "leasePool, " +
                                 "transId) VALUES (" +
-                                leaseStart + ", " +
-                                leaseExpire + ", " +
+                                "UNIX_TIMESTAMP(NOW()), " +
+                                "UNIX_TIMESTAMP(NOW())+" + poolData.poolLeaseTime + ", " +
                                 allocated + ", " +
                                 poolData.poolRouter + ", " +
                                 poolData.poolNetmask + ", " +
@@ -92,8 +90,6 @@ public class NccDhcpLeases {
 
                         if (id.get(0) > 0) {
                             newLease.id = id.get(0);
-                            newLease.leaseStart = leaseStart;
-                            newLease.leaseExpire = leaseExpire;
                             newLease.leaseIP = allocated;
                             newLease.leaseRouter = poolData.poolRouter;
                             newLease.leaseNetmask = poolData.poolNetmask;
@@ -144,6 +140,7 @@ public class NccDhcpLeases {
     public NccDhcpLeaseData getLeaseByRequest(NccDhcpRequest request) {
         String relayAgentWhere = "";
         String circuitIDWhere = "";
+        String clientIPWhere = "";
 
         if (request.getRelayAgent() > 0) {
             relayAgentWhere = " AND leaseRelayAgent=" + request.getRelayAgent();
@@ -153,7 +150,11 @@ public class NccDhcpLeases {
             relayAgentWhere = " AND leaseCircuitID='" + request.getCircuitID() + "'";
         }
 
-        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + request.getClientMAC() + "'" + relayAgentWhere + circuitIDWhere);
+        if (request.getClientIP() > 0) {
+            clientIPWhere = " AND leaseIP=" + request.getClientIP();
+        }
+
+        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + request.getClientMAC() + "'" + relayAgentWhere + circuitIDWhere + clientIPWhere);
     }
 
     public NccDhcpLeaseData acceptLease(NccDhcpRequest request) {
@@ -180,8 +181,6 @@ public class NccDhcpLeases {
                             if (lease != null) {
                                 NccPoolData poolData = new NccPools().getPool(lease.leasePool);
 
-                                Long leaseStart = System.currentTimeMillis() / 1000L;
-                                Long leaseExpire = leaseStart + poolData.poolLeaseTime;
                                 Integer interim = poolData.poolLeaseTime + Math.round(poolData.poolLeaseTime / 3);
 
                                 query.updateQuery("UPDATE nccDhcpLeases SET leaseStatus=1, leaseStart=UNIX_TIMESTAMP(NOW()), leaseExpire=UNIX_TIMESTAMP(NOW())+" + interim + " WHERE id=" + id);
@@ -227,7 +226,9 @@ public class NccDhcpLeases {
 
     public void cleanupLeases() {
         try {
-            ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpLeases WHERE leaseExpire<UNIX_TIMESTAMP(NOW())");
+            query.updateQuery("DELETE FROM nccDhcpLeases WHERE (UNIX_TIMESTAMP(NOW())-leaseStart)>10 AND leaseStatus=0");
+
+            ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccDhcpLeases WHERE leaseExpire<UNIX_TIMESTAMP(NOW()) AND leaseStatus=1");
             if (ids != null) for (Integer id : ids) {
                 if (Ncc.dhcpLogLevel >= 6) logger.debug("Lease expired: " + id);
             }

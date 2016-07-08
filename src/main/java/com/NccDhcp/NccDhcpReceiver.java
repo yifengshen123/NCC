@@ -101,7 +101,7 @@ class NccDhcpReceiver extends Thread {
         dhcpReply = pkt.buildReply(type, this.localIP, ip, netmask, router, dns1, dns2, nextserver, leaseTime);
 
         if (Ncc.dhcpLogLevel >= 5)
-            logger.info("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC: " + pkt.getClientMAC() + " IP=" + ip.getHostAddress() + " localIP=" + this.localIP.getHostAddress());
+            logger.info("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC='" + pkt.getClientMAC() + "' IP='" + ip.getHostAddress() + "' localIP='" + this.localIP.getHostAddress() + "'");
 
         try {
             DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), inPkt.getPort());
@@ -137,7 +137,12 @@ class NccDhcpReceiver extends Thread {
                 break;
         }
         logger.info(type + " from '" + inPkt.getAddress().getHostAddress() + "' clientMAC='" + pkt.getClientMAC() + "'");
-        logger.info("RelayAgent='" + pkt.getRelayAgent().getHostAddress() + "' remoteID='" + pkt.getOpt82RemoteID() + "' circuitID='" + pkt.getOpt82CircuitID() + "' clientID='" + pkt.getClientID() + "'");
+        logger.info(
+                "RelayAgent='" + pkt.getRelayAgent().getHostAddress() + "' " +
+                        "remoteID='" + pkt.getOpt82RemoteID() + "' " +
+                        "circuitID='" + pkt.getOpt82CircuitID() + "' " +
+                        "clientID='" + pkt.getClientID() + "' " +
+                        "clientIP='" + pkt.getClientIPAddress().getHostAddress() + "'");
     }
 
     private void requestInform(NccDhcpPacket pkt) {
@@ -205,7 +210,7 @@ class NccDhcpReceiver extends Thread {
 
                         if (leaseData != null) {
                             sendReply(NccDhcpPacket.DHCP_MSG_TYPE_OFFER, leaseData, poolData.poolLeaseTime);
-                            new NccDhcpLeases().renewLease(leaseData);
+                            //new NccDhcpLeases().renewLease(leaseData);
                             return;
                         } else {
                             logger.error("Can't allocate lease");
@@ -239,14 +244,12 @@ class NccDhcpReceiver extends Thread {
                 logger.info("Empty remoteID clientMAC='" + pkt.getClientID() + "'");
         }
 
-        NccDhcpLeaseData leaseData = null;
-
         if (!NccUtils.long2ip(request.getClientIP()).equals("0.0.0.0")) {     // renew lease
 
             if (Ncc.dhcpLogLevel >= 6)
                 logger.info("Lease RENEW clientMAC='" + pkt.getClientID() + "'");
 
-            leaseData = new NccDhcpLeases().getLeaseByRequest(request);
+            NccDhcpLeaseData leaseData = new NccDhcpLeases().getLeaseByRequest(request);
 
             if (leaseData != null) {
                 if (Ncc.dhcpLogLevel >= 6)
@@ -276,7 +279,7 @@ class NccDhcpReceiver extends Thread {
             if (Ncc.dhcpLogLevel >= 6)
                 logger.info("Lease ACCEPT clientMAC='" + pkt.getClientID() + "'");
 
-            leaseData = new NccDhcpLeases().acceptLease(request);
+            NccDhcpLeaseData leaseData = new NccDhcpLeases().acceptLease(request);
 
             if (leaseData != null) {
 
