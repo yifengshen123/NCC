@@ -3,6 +3,7 @@
     <properties maven-id="jline:jline:2.11" />
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/jline-2.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jline-2.11.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

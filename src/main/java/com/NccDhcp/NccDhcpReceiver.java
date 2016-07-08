@@ -43,14 +43,14 @@ class NccDhcpReceiver extends Thread {
             return bindData;
         } else {
             if (Ncc.dhcpLogLevel >= 5)
-                logger.info("Unbinded user: remoteID=" + request.getRemoteID() + " circuitID=" + request.getCircuitID() + " clientMAC=" + request.getClientMAC() + " relayAgent=" + request.getRelayAgentName());
+                logger.info("Unbinded user: remoteID='" + request.getRemoteID() + "' circuitID='" + request.getCircuitID() + "' clientMAC='" + request.getClientMAC() + "' relayAgent='" + request.getRelayAgentName() + "'");
 
             try {
                 NccDhcpRelayAgentData agent = new NccDhcpRelayAgent().getRelayAgentByIP(request.getRelayAgent());
 
                 if (agent == null) {
                     if (Ncc.dhcpLogLevel >= 5) {
-                        logger.info("Request from unknown RelayAgent: " + request.getRelayAgentName());
+                        logger.info("Request from unknown relayAgent='" + request.getRelayAgentName() + "'");
                         return null;
                     }
                 }
@@ -117,26 +117,42 @@ class NccDhcpReceiver extends Thread {
         return null;
     }
 
+    private void logRequest(NccDhcpPacket pkt) {
+        String type = "";
+
+        switch (pkt.getType()) {
+            case NccDhcpPacket.DHCP_MSG_TYPE_DISCOVER:
+                type = "DHCPDISCOVER";
+                break;
+            case NccDhcpPacket.DHCP_MSG_TYPE_REQUEST:
+                type = "DHCPREQUEST";
+                break;
+            case NccDhcpPacket.DHCP_MSG_TYPE_INFORM:
+                type = "DHCPINFORM";
+                break;
+            case NccDhcpPacket.DHCP_MSG_TYPE_RELEASE:
+                type = "DHCPRELEASE";
+                break;
+            default:
+                break;
+        }
+        logger.info(type + " from '" + inPkt.getAddress().getHostAddress() + "' clientMAC='" + pkt.getClientMAC() + "'");
+        logger.info("RelayAgent='" + pkt.getRelayAgent().getHostAddress() + "' remoteID='" + pkt.getOpt82RemoteID() + "' circuitID='" + pkt.getOpt82CircuitID() + "' clientID='" + pkt.getClientID() + "'");
+    }
+
     private void requestInform(NccDhcpPacket pkt) {
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("DHCPINFORM from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientMAC());
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
+        if (Ncc.dhcpLogLevel >= 5) logRequest(pkt);
     }
 
     private void requestDiscover(NccDhcpPacket pkt) {
 
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("DHCPDISCOVER from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientMAC());
-
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientMAC: " + pkt.getClientMAC());
+        if (Ncc.dhcpLogLevel >= 5) logRequest(pkt);
 
         NccDhcpRequest request = new NccDhcpRequest(pkt);
 
         if (request.getRemoteID().equals("")) {
             if (Ncc.dhcpLogLevel >= 6)
-                logger.info("Empty remoteID in DHCPDISCOVER clientMAC: " + pkt.getClientMAC());
+                logger.info("Empty remoteID in DHCPDISCOVER clientMAC='" + pkt.getClientMAC() + "'");
 
             sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, null, 0);
             return;
@@ -149,7 +165,7 @@ class NccDhcpReceiver extends Thread {
         if (leaseData != null) {
 
             if (Ncc.dhcpLogLevel >= 6)
-                logger.info("Found lease for " + request.getRelayAgentName() + " clientMAC=" + request.getClientMAC());
+                logger.info("Found lease for relayAgent='" + request.getRelayAgentName() + "' clientMAC='" + request.getClientMAC() + "'");
 
             NccPoolData poolData = new NccPools().getPool(leaseData.leasePool);
 
@@ -159,13 +175,11 @@ class NccDhcpReceiver extends Thread {
         } else {
 
             if (Ncc.dhcpLogLevel >= 6) {
-                logger.info("Lease not found for clientMAC=" + request.getClientMAC());
+                logger.info("Lease not found for clientMAC='" + request.getClientMAC() + "'");
             }
 
             try {
-                NccDhcpRelayAgentData agentData = null;
-
-                agentData = new NccDhcpRelayAgent().getRelayAgentByIP(request.getRelayAgent());
+                NccDhcpRelayAgentData agentData = new NccDhcpRelayAgent().getRelayAgentByIP(request.getRelayAgent());
 
                 if (agentData != null) {
 
@@ -199,12 +213,12 @@ class NccDhcpReceiver extends Thread {
                             return;
                         }
                     } else {
-                        logger.error("Pool for relay agent " + request.getRelayAgentName() + " not found");
+                        logger.error("Pool for relayAgent='" + request.getRelayAgentName() + "' not found");
                         sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, null, 0);
                         return;
                     }
                 } else {
-                    logger.error("Relay agent " + request.getRelayAgentName() + " not found");
+                    logger.error("relayAgent='" + request.getRelayAgentName() + "' not found");
                 }
             } catch (NccDhcpRelayAgentException e) {
                 e.printStackTrace();
@@ -216,17 +230,13 @@ class NccDhcpReceiver extends Thread {
     }
 
     private void requestRequest(NccDhcpPacket pkt) {
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("DHCPREQUEST from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientMAC());
-
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
+        if (Ncc.dhcpLogLevel >= 5) logRequest(pkt);
 
         NccDhcpRequest request = new NccDhcpRequest(pkt);
 
         if (request.getRemoteID().equals("")) {
             if (Ncc.dhcpLogLevel >= 6)
-                logger.info("Empty remoteID clientMAC: " + pkt.getClientID());
+                logger.info("Empty remoteID clientMAC='" + pkt.getClientID() + "'");
         }
 
         NccDhcpLeaseData leaseData = null;
@@ -234,13 +244,13 @@ class NccDhcpReceiver extends Thread {
         if (!NccUtils.long2ip(request.getClientIP()).equals("0.0.0.0")) {     // renew lease
 
             if (Ncc.dhcpLogLevel >= 6)
-                logger.info("Lease RENEW clientMAC: " + pkt.getClientID());
+                logger.info("Lease RENEW clientMAC='" + pkt.getClientID() + "'");
 
             leaseData = new NccDhcpLeases().getLeaseByRequest(request);
 
             if (leaseData != null) {
                 if (Ncc.dhcpLogLevel >= 6)
-                    logger.info("Found lease for " + request.getRelayAgentName() + " clientMAC=" + request.getClientMAC());
+                    logger.info("Found lease for relayAgent='" + request.getRelayAgentName() + "' clientMAC='" + request.getClientMAC() + "'");
 
                 NccPoolData poolData = new NccPools().getPool(leaseData.leasePool);
 
@@ -257,16 +267,14 @@ class NccDhcpReceiver extends Thread {
                 }
 
             } else {
-                logger.error("Lease for " + request.getClientMAC() + " not found");
+                logger.error("Lease for clientMAC='" + request.getClientMAC() + "' not found");
                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, null, 0);
                 return;
             }
         } else if (request.getRequestIP() != null) { // accept new lease
 
             if (Ncc.dhcpLogLevel >= 6)
-                logger.info("Lease ACCEPT clientMAC: " + pkt.getClientID());
-
-            NccDhcpBindData bindData = checkBind(request);
+                logger.info("Lease ACCEPT clientMAC='" + pkt.getClientID() + "'");
 
             leaseData = new NccDhcpLeases().acceptLease(request);
 
@@ -277,7 +285,7 @@ class NccDhcpReceiver extends Thread {
                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_ACK, leaseData, poolData.poolLeaseTime);
                 return;
             } else {
-                logger.error("Lease not found for " + request.getClientMAC());
+                logger.error("Lease not found for clientMAC='" + request.getClientMAC() + "'");
                 sendReply(NccDhcpPacket.DHCP_MSG_TYPE_NAK, null, 0);
                 return;
             }
@@ -286,10 +294,7 @@ class NccDhcpReceiver extends Thread {
     }
 
     private void requestRelease(NccDhcpPacket pkt) {
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("DHCPRELEASE from " + inPkt.getAddress().getHostAddress() + " clientMAC: " + pkt.getClientID());
-        if (Ncc.dhcpLogLevel >= 5)
-            logger.info("RelayAgent: " + pkt.getRelayAgent().getHostAddress() + " remoteID: " + pkt.getOpt82RemoteID() + " circuitID: " + pkt.getOpt82CircuitID() + " clientID: " + pkt.getClientID());
+        if (Ncc.dhcpLogLevel >= 5) logRequest(pkt);
     }
 
     @Override
@@ -306,20 +311,21 @@ class NccDhcpReceiver extends Thread {
                 return;
             }
 
-            if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_INFORM) {
-                requestInform(pkt);
-            }
-
-            if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_DISCOVER) {
-                requestDiscover(pkt);
-            }
-
-            if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_REQUEST) {
-                requestRequest(pkt);
-            }
-
-            if (pkt.getType() == NccDhcpPacket.DHCP_MSG_TYPE_RELEASE) {
-                requestRelease(pkt);
+            switch (pkt.getType()) {
+                case NccDhcpPacket.DHCP_MSG_TYPE_INFORM:
+                    requestInform(pkt);
+                    break;
+                case NccDhcpPacket.DHCP_MSG_TYPE_DISCOVER:
+                    requestDiscover(pkt);
+                    break;
+                case NccDhcpPacket.DHCP_MSG_TYPE_REQUEST:
+                    requestRequest(pkt);
+                    break;
+                case NccDhcpPacket.DHCP_MSG_TYPE_RELEASE:
+                    requestRelease(pkt);
+                    break;
+                default:
+                    break;
             }
 
         } catch (NccDhcpException e) {

@@ -18,5 +18,9 @@
         <processorPath useClasspath="true" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="NCC_main" target="1.7" />
+      <module name="NCC_test" target="1.7" />
+    </bytecodeTargetLevel>
   </component>
 </project>
