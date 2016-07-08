@@ -4,6 +4,7 @@ import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import org.apache.log4j.Logger;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -50,11 +51,7 @@ public class NccNAS {
                 return nasData.nasSecret;
             }
         } catch (NccNasException e) {
-            try {
-                logger.error("NAS error for '" + NccUtils.long2ip(nasIP) + "': " + e.getMessage());
-            } catch (UnknownHostException e1) {
-                e1.printStackTrace();
-            }
+            logger.error("NAS error for '" + NccUtils.long2ip(nasIP) + "': " + e.getMessage());
         }
 
         return null;

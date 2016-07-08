@@ -58,12 +58,8 @@ public class NccRadius extends RadiusServer {
         try {
             NccNasData nasData = null;
             RadiusClient radiusClient = null;
-            try {
-                nasData = new NccNAS().getNasByIP(NccUtils.ip2long(nasIP));
-                radiusClient = new RadiusClient(NccUtils.long2ip(nasData.nasIP), nasData.nasSecret);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            nasData = new NccNAS().getNasByIP(NccUtils.ip2long(nasIP));
+            radiusClient = new RadiusClient(NccUtils.long2ip(nasData.nasIP), nasData.nasSecret);
             RadiusPacket pkt = new RadiusPacket();
 
             pkt.setPacketType(RadiusPacket.COA_REQUEST);
@@ -98,13 +94,9 @@ public class NccRadius extends RadiusServer {
     public String getSharedSecret(InetSocketAddress inetSocketAddress) {
         try {
             NccNAS nccNAS = new NccNAS();
-            try {
-                String secret = nccNAS.getNasSecretByIP(NccUtils.ip2long(inetSocketAddress.getHostString()));
-                logger.debug("Getting secret for NAS: " + inetSocketAddress.getHostString() + " secret: " + secret);
-                return secret;
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            String secret = nccNAS.getNasSecretByIP(NccUtils.ip2long(inetSocketAddress.getHostString()));
+            logger.debug("Getting secret for NAS: " + inetSocketAddress.getHostString() + " secret: " + secret);
+            return secret;
         } catch (NccNasException e) {
             e.printStackTrace();
         }
@@ -297,15 +289,11 @@ public class NccRadius extends RadiusServer {
 
                         NccNasData nasData = null;
                         try {
-                            try {
-                                nasData = new NccNAS().getNasByIP(NccUtils.ip2long(nasIP));
+                            nasData = new NccNAS().getNasByIP(NccUtils.ip2long(nasIP));
 
-                                if (nasData == null) {
-                                    logger.error("NAS not found: " + nasIP);
-                                    return;
-                                }
-                            } catch (UnknownHostException e) {
-                                e.printStackTrace();
+                            if (nasData == null) {
+                                logger.error("NAS not found: " + nasIP);
+                                return;
                             }
                         } catch (NccNasException e) {
                             e.printStackTrace();
@@ -331,11 +319,7 @@ public class NccRadius extends RadiusServer {
 
                             sessionData.nasId = nasData.id;
 
-                            try {
-                                sessionData.framedIP = NccUtils.ip2long(framedIP);
-                            } catch (UnknownHostException e) {
-                                e.printStackTrace();
-                            }
+                            sessionData.framedIP = NccUtils.ip2long(framedIP);
                             sessionData.framedMAC = framedMAC;
                             sessionData.acctInputOctets = 0L;
                             sessionData.acctOutputOctets = 0L;
@@ -376,8 +360,6 @@ public class NccRadius extends RadiusServer {
                                     logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
                                 }
                             } catch (NccDhcpException e) {
-                                e.printStackTrace();
-                            } catch (UnknownHostException e) {
                                 e.printStackTrace();
                             }
 
@@ -528,8 +510,6 @@ public class NccRadius extends RadiusServer {
                                 }
                             } catch (NccDhcpException e) {
                                 e.printStackTrace();
-                            } catch (UnknownHostException e) {
-                                e.printStackTrace();
                             }
 
                         }
@@ -580,14 +560,8 @@ public class NccRadius extends RadiusServer {
 
                 Integer packetType = RadiusPacket.ACCESS_REJECT;
 
-                NccNasData nasData = new NccNasData();
-                Long nasIP = null;
-
-                try {
-                    nasIP = NccUtils.ip2long(addr.getHostString());
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                NccNasData nasData;
+                Long nasIP = NccUtils.ip2long(addr.getHostString());
 
                 try {
                     NccNAS nccNAS = new NccNAS();
@@ -669,8 +643,6 @@ public class NccRadius extends RadiusServer {
 
                     } catch (NccDhcpException e) {
                         e.printStackTrace();
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
                     }
 
                     radiusPacket.setPacketIdentifier(reqPacketIdentifier);
@@ -703,13 +675,9 @@ public class NccRadius extends RadiusServer {
 
                                             Long framedIP = new NccSessions().getIPFromPool(pools);
 
-                                            try {
-                                                radiusPacket.addAttribute("Framed-IP-Address", NccUtils.long2ip(framedIP));
-                                                radiusPacket.addAttribute("Framed-IP-Netmask", "255.255.255.255");
-                                                radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
-                                            } catch (UnknownHostException e) {
-                                                e.printStackTrace();
-                                            }
+                                            radiusPacket.addAttribute("Framed-IP-Address", NccUtils.long2ip(framedIP));
+                                            radiusPacket.addAttribute("Framed-IP-Netmask", "255.255.255.255");
+                                            radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
                                         } catch (NccSessionsException e) {
                                             logger.info("Login FAIL: no enough IP in pools");
                                         }
@@ -811,20 +779,12 @@ public class NccRadius extends RadiusServer {
 
                                             if (userData.userStatus == 0) {
                                                 logger.info("Disconnecting user (user disabled): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
-                                                try {
-                                                    disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
-                                                } catch (UnknownHostException e) {
-                                                    e.printStackTrace();
-                                                }
+                                                disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
                                             }
 
                                             if (Math.floor(userData.userDeposit) <= -Math.floor(userData.userCredit)) {
                                                 logger.info("Disconnecting user (low deposit): " + userData.userLogin + " sessionId: " + sessionData.sessionId);
-                                                try {
-                                                    disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
-                                                } catch (UnknownHostException e) {
-                                                    e.printStackTrace();
-                                                }
+                                                disconnectUser(NccUtils.long2ip(nasData.nasIP), NccUtils.long2ip(sessionData.framedIP), sessionData.sessionId);
                                             }
                                         } catch (NccNasException e) {
                                             e.printStackTrace();

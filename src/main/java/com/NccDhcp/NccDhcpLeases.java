@@ -33,7 +33,7 @@ public class NccDhcpLeases {
         return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE id=" + id);
     }
 
-    public NccDhcpLeaseData allocateLease(Integer uid, NccPoolData poolData, String clientMAC, String remoteID, String circuitID, Long RelayAgent, Integer transId) throws NccDhcpException {
+    public NccDhcpLeaseData allocateLease(Integer uid, NccPoolData poolData, NccDhcpRequest request) throws NccDhcpException {
 
         try {
             ArrayList<NccDhcpLeaseData> leases = getLeases();
@@ -80,10 +80,10 @@ public class NccDhcpLeases {
                                 poolData.poolDNS1 + ", " +
                                 poolData.poolDNS2 + ", " +
                                 poolData.poolNextServer + ", " +
-                                "'" + clientMAC + "', " +
-                                "'" + remoteID + "', " +
-                                "'" + circuitID + "', " +
-                                RelayAgent + ", " +
+                                "'" + request.getClientMAC() + "', " +
+                                "'" + request.getRemoteID() + "', " +
+                                "'" + request.getCircuitID() + "', " +
+                                request.getRelayAgent() + ", " +
                                 "0, " +
                                 uid + ", " +
                                 poolData.id + ", " +
@@ -106,12 +106,12 @@ public class NccDhcpLeases {
                             if (poolData.poolNextServer > 0) {
                                 newLease.leaseNextServer = poolData.poolNextServer;
                             } else newLease.leaseNextServer = null;
-                            newLease.leaseClientMAC = clientMAC;
-                            newLease.leaseRemoteID = remoteID;
-                            newLease.leaseCircuitID = circuitID;
-                            newLease.leaseRelayAgent = RelayAgent;
+                            newLease.leaseClientMAC = request.getClientMAC();
+                            newLease.leaseRemoteID = request.getRemoteID();
+                            newLease.leaseCircuitID = request.getCircuitID();
+                            newLease.leaseRelayAgent = request.getRelayAgent();
                             newLease.leasePool = poolData.id;
-                            newLease.transId = transId;
+                            newLease.transId = request.getTransID();
 
                             return newLease;
                         }
@@ -141,33 +141,33 @@ public class NccDhcpLeases {
         return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseIP=" + ip);
     }
 
-    public NccDhcpLeaseData getLeaseByMAC(Long relayAgent, String circuitID, String mac, Integer transId) {
+    public NccDhcpLeaseData getLeaseByRequest(NccDhcpRequest request) {
         String relayAgentWhere = "";
         String circuitIDWhere = "";
 
-        if (relayAgent > 0) {
-            relayAgentWhere = " AND leaseRelayAgent=" + relayAgent;
+        if (request.getRelayAgent() > 0) {
+            relayAgentWhere = " AND leaseRelayAgent=" + request.getRelayAgent();
         }
 
-        if (!circuitID.equals("")) {
-            relayAgentWhere = " AND leaseCircuitID='" + circuitID + "'";
+        if (!request.getCircuitID().equals("")) {
+            relayAgentWhere = " AND leaseCircuitID='" + request.getCircuitID() + "'";
         }
 
-        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + mac + "'" + relayAgentWhere + circuitIDWhere);
+        return new NccDhcpLeaseData().getData("SELECT * FROM nccDhcpLeases WHERE leaseClientMAC='" + request.getClientMAC() + "'" + relayAgentWhere + circuitIDWhere);
     }
 
-    public NccDhcpLeaseData acceptLease(Long clientIP, String clientMAC, String remoteID, String circuitID, Integer transId) {
+    public NccDhcpLeaseData acceptLease(NccDhcpRequest request) {
 
         CachedRowSetImpl rs;
 
         try {
-            String condition = "leaseClientMAC='" + clientMAC + "' ";
+            String condition = "leaseClientMAC='" + request.getClientMAC() + "' ";
 
-            if (!remoteID.equals("")) condition += "AND leaseRemoteID='" + remoteID + "' ";
-            if (!circuitID.equals("")) condition += "AND leaseCircuitID='" + circuitID + "' ";
+            if (!request.getRemoteID().equals("")) condition += "AND leaseRemoteID='" + request.getRemoteID() + "' ";
+            if (!request.getCircuitID().equals("")) condition += "AND leaseCircuitID='" + request.getCircuitID() + "' ";
 
             rs = query.selectQuery("SELECT id FROM nccDhcpLeases WHERE " +
-                    "leaseIP=" + clientIP + " AND " +
+                    "leaseIP=" + request.getClientIP() + " AND " +
                     condition);
 
             if (rs != null) {

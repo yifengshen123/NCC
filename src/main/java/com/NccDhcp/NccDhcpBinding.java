@@ -30,19 +30,19 @@ public class NccDhcpBinding {
         return new NccDhcpBindData().getDataList("SELECT * FROM nccDhcpBinding");
     }
 
-    public NccDhcpBindData getBinding(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
+    public NccDhcpBindData getBinding(NccDhcpRequest request) {
 
         String whereMAC = "";
 
-        if (clientMAC != null) {
-            whereMAC = "clientMAC='" + clientMAC + "' AND ";
+        if (request.getClientMAC() != null) {
+            whereMAC = "clientMAC='" + request.getClientMAC() + "' AND ";
         }
 
         return new NccDhcpBindData().getData("SELECT * FROM nccDhcpBinding WHERE " +
-                "remoteID='" + remoteID + "' AND " +
-                "circuitID='" + circuitID + "' AND " +
+                "remoteID='" + request.getRemoteID() + "' AND " +
+                "circuitID='" + request.getCircuitID() + "' AND " +
                 whereMAC +
-                "relayAgent=" + relayAgent);
+                "relayAgent=" + request.getRelayAgent());
     }
 
     public NccDhcpUnbindedData getUnbinded(Integer id) {
@@ -75,16 +75,16 @@ public class NccDhcpBinding {
         }
     }
 
-    public void setUnbinded(String remoteID, String circuitID, String clientMAC, Long relayAgent) {
+    public void setUnbinded(NccDhcpRequest request) {
 
         ArrayList<Integer> ids;
         Long lastSeen = System.currentTimeMillis() / 1000L;
 
         try {
-            ids = query.updateQuery("UPDATE nccDhcpUnbinded SET lastSeen=" + lastSeen + ", clientMAC='" + clientMAC + "' WHERE " +
-                    "remoteID='" + remoteID + "' AND " +
-                    "circuitID='" + circuitID + "' AND " +
-                    "relayAgent=" + relayAgent);
+            ids = query.updateQuery("UPDATE nccDhcpUnbinded SET lastSeen=" + lastSeen + ", clientMAC='" + request.getClientMAC() + "' WHERE " +
+                    "remoteID='" + request.getRemoteID() + "' AND " +
+                    "circuitID='" + request.getCircuitID() + "' AND " +
+                    "relayAgent=" + request.getRelayAgent());
 
             if (ids == null) ids = query.updateQuery("INSERT INTO nccDhcpUnbinded (" +
                     "lastSeen, " +
@@ -93,10 +93,10 @@ public class NccDhcpBinding {
                     "clientMAC, " +
                     "relayAgent) VALUES (" +
                     lastSeen + ", " +
-                    "'" + remoteID + "', " +
-                    "'" + circuitID + "', " +
-                    "'" + clientMAC + "', " +
-                    relayAgent + ")");
+                    "'" + request.getRemoteID() + "', " +
+                    "'" + request.getCircuitID() + "', " +
+                    "'" + request.getClientMAC() + "', " +
+                    request.getRelayAgent() + ")");
 
         } catch (NccQueryException e) {
             e.printStackTrace();

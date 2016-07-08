@@ -1,10 +1,7 @@
 package com.NccAPI.DhcpBinding;
 
 import com.NccAPI.NccAPI;
-import com.NccDhcp.NccDhcpBindData;
-import com.NccDhcp.NccDhcpBinding;
-import com.NccDhcp.NccDhcpServer;
-import com.NccDhcp.NccDhcpUnbindedData;
+import com.NccDhcp.*;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -81,7 +78,9 @@ public class DhcpBindingServiceImpl implements DhcpBindingService {
     public void setDhcpUnbinded(String apiKey, String remoteID, String circuitID, String clientMAC, Long relayAgent) {
         if (!new NccAPI().checkKey(apiKey)) return;
 
-        new NccDhcpBinding().setUnbinded(remoteID, circuitID, clientMAC, relayAgent);
+        NccDhcpRequest request = new NccDhcpRequest(remoteID, circuitID, clientMAC, relayAgent);
+
+        new NccDhcpBinding().setUnbinded(request);
     }
 
     public void clearDhcpBinding(String apiKey, Integer uid) {
