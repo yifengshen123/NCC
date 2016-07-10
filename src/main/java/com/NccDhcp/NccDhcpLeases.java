@@ -220,8 +220,13 @@ public class NccDhcpLeases {
         }
     }
 
-    public void releaseLease() {
-
+    public void releaseLease(NccDhcpLeaseData leaseData) {
+        try {
+            query.updateQuery("DELETE FROM nccDhcpLeases WHERE " +
+                    "id=" + leaseData.id);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
     }
 
     public void cleanupLeases() {

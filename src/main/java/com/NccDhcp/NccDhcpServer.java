@@ -49,7 +49,7 @@ public class NccDhcpServer {
                         leases.cleanupLeases();
                         binding.cleanupBinding();
 
-                        if (Ncc.dhcpLogLevel >= 6)
+                        if (Ncc.dhcpLogLevel >= 7)
                             logger.info("Request rate: " + requestProcessed + " req/sec");
                         requestProcessed = 0L;
 
