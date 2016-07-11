@@ -307,6 +307,12 @@ public class NccRadius extends RadiusServer {
 
                             logger.info("Session start: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP + " framedMAC=" + framedMAC);
 
+                            if (userLogin.equals("")) {
+                                if (Ncc.radiusLogLevel >= 5)
+                                    logger.error("Empty User-Name session: '" + sessionID + "'");
+                                break;
+                            }
+
                             try {
                                 NccSessionData checkSession = new NccSessions().getSession(sessionID);
                                 if (checkSession != null) {
@@ -367,6 +373,12 @@ public class NccRadius extends RadiusServer {
 
                             logger.info("Session stop: '" + userLogin + "' sessionId='" + sessionID + "' nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
 
+                            if (userLogin.equals("")) {
+                                if (Ncc.radiusLogLevel >= 5)
+                                    logger.error("Empty User-Name session: '" + sessionID + "'");
+                                break;
+                            }
+
                             String terminateCause = accountingRequest.getAttributeValue("Acct-Terminate-Cause");
 
                             try {
@@ -405,7 +417,13 @@ public class NccRadius extends RadiusServer {
                         } else if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_INTERIM_UPDATE) {
 
                             if (Ncc.radiusLogLevel >= 5)
-                                logger.info("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP);
+                                logger.info("Session update: '" + userLogin + "' sessionId=" + sessionID + " nasIP=" + nasIP + " nasPort=" + nasPort + " framedIP=" + framedIP + " framedMAC=" + framedMAC);
+
+                            if (userLogin.equals("")) {
+                                if (Ncc.radiusLogLevel >= 5)
+                                    logger.error("Empty User-Name session: '" + sessionID + "'");
+                                break;
+                            }
 
                             try {
                                 leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
@@ -447,6 +465,8 @@ public class NccRadius extends RadiusServer {
                                     }
 
                                     if (sessionData != null) {
+                                        sessionData.userId = leaseData.leaseUID;
+                                        sessionData.framedMAC = leaseData.leaseClientMAC;
                                         sessionData.acctInputOctets = acctInputOctets;
                                         sessionData.acctOutputOctets = acctOutputOctets;
                                         sessionData.lastAlive = System.currentTimeMillis() / 1000L;

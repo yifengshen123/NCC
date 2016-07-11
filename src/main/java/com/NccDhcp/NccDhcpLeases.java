@@ -168,7 +168,7 @@ public class NccDhcpLeases {
             if (!request.getCircuitID().equals("")) condition += "AND leaseCircuitID='" + request.getCircuitID() + "' ";
 
             rs = query.selectQuery("SELECT id FROM nccDhcpLeases WHERE " +
-                    "leaseIP=" + request.getClientIP() + " AND " +
+                    "leaseIP=" + request.getRequestIP() + " AND " +
                     condition);
 
             if (rs != null) {
@@ -212,9 +212,7 @@ public class NccDhcpLeases {
             query.updateQuery("UPDATE nccDhcpLeases SET " +
                     "leaseStatus=1, " +
                     "leaseExpire=UNIX_TIMESTAMP(NOW())+" + interim + " " +
-                    "WHERE " +
-                    "leaseRelayAgent=" + leaseData.leaseRelayAgent + " AND " +
-                    "leaseClientMAC='" + leaseData.leaseClientMAC + "'");
+                    "WHERE id=" + leaseData.id);
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
