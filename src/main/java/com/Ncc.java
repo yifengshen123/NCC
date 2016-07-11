@@ -14,8 +14,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.*;
 
-// TODO: 15.01.2016 override class RadiusServer to serve BindException exceptions
-
 public class Ncc {
 
     private static NccRadius nccRadius;
@@ -54,13 +52,13 @@ public class Ncc {
             config.addConfiguration(new SystemConfiguration());
             config.addConfiguration(new PropertiesConfiguration("config.properties"));
 
-            logLevel = config.getString("log.level");
-            logFile = config.getString("log.file");
-            logQuery = Boolean.valueOf(config.getString("log.query"));
+            logLevel = config.getString("log.level", "INFO");
+            logFile = config.getString("log.file", "NCC.log");
+            logQuery = config.getBoolean("log.query", false);
 
-            moduleRadius = Boolean.valueOf(config.getString("module.radius"));
-            moduleDHCP = Boolean.valueOf(config.getString("module.dhcp"));
-            moduleCLI = Boolean.valueOf(config.getString("module.cli"));
+            moduleRadius = config.getBoolean("module.radius", false);
+            moduleDHCP = config.getBoolean("module.dhcp", false);
+            moduleCLI = config.getBoolean("module.cli", true);
 
             logger.setLevel(Level.toLevel(logLevel));
 
@@ -75,11 +73,11 @@ public class Ncc {
 
             logger.info("NCC system loading...");
 
-            dbHost = config.getString("db.host");
-            dbPort = config.getInt("db.port");
-            dbUser = config.getString("db.user");
-            dbPassword = config.getString("db.password");
-            dbDbname = config.getString("db.dbname");
+            dbHost = config.getString("db.host", "localhost");
+            dbPort = config.getInt("db.port", 3306);
+            dbUser = config.getString("db.user", "ncc");
+            dbPassword = config.getString("db.password", "ncc");
+            dbDbname = config.getString("db.dbname", "ncc");
 
             logger.debug("Got SQL config");
 
@@ -96,25 +94,26 @@ public class Ncc {
             System.exit(-1);
         }
 
-        nccForceGC = config.getBoolean("ncc.global.gc_forced");
+        nccForceGC = config.getBoolean("ncc.global.gc_forced", false);
 
         if (moduleRadius) {
             logger.info("Starting Radius");
-            radiusTimer = config.getInt("radius.timer");
-            radiusLogLevel = config.getInt("radius.log.level");
+            radiusTimer = config.getInt("radius.timer", 15);
+            radiusLogLevel = config.getInt("radius.log.level", 5);
             nccRadius = new NccRadius();
             nccRadius.startServer();
         }
 
         if (moduleDHCP) {
             InetAddress localIP = InetAddress.getByName(config.getString("dhcp.server"));
+            Integer port = config.getInt("dhcp.server.port", 67);
 
             logger.info("Starting DHCP");
-            dhcpTimer = config.getInt("dhcp.timer");
-            dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time");
-            dhcpLogLevel = config.getInt("dhcp.log.level");
-            dhcpIgnoreBroadcast = config.getBoolean("dhcp.ignore.broadcast");
-            nccDhcp = new NccDhcpServer(localIP, 67);
+            dhcpTimer = config.getInt("dhcp.timer", 1);
+            dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time", 20);
+            dhcpLogLevel = config.getInt("dhcp.log.level", 5);
+            dhcpIgnoreBroadcast = config.getBoolean("dhcp.ignore.broadcast", true);
+            nccDhcp = new NccDhcpServer(localIP, port);
             nccDhcp.start();
         }
 
