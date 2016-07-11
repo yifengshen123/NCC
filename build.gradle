@@ -1,24 +1,32 @@
-group 'ru.ncbilling'
-version '1.0'
+apply plugin: "java"
+apply plugin: "application"
 
-apply plugin: 'java'
-apply plugin: 'application'
+mainClassName = "com.Ncc"
 
-sourceCompatibility = 7
+repositories {
+    mavenCentral()
+}
 
 dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar')
+    compile "com.github.briandilley.jsonrpc4j:jsonrpc4j:1.2.0"
+    compile "commons-codec:commons-codec:1.10"
+    compile "commons-configuration:commons-configuration:1.10"
+    compile "commons-lang:commons-lang:2.6"
+    compile "javax.portlet:portlet-api:2.0"
+    compile "jline:jline:2.11"
+    compile "junit:junit:4.12"
+    compile "log4j:log4j:1.2.17"
+    compile "mysql:mysql-connector-java:5.1.17"
+    compile "org.apache.commons:commons-dbcp2:2.1.1"
+    compile "org.apache.sshd:sshd-core:0.9.0"
+    compile "org.eclipse.jetty:jetty-servlets:7.6.0.RC5"
+    compile "org.eclipse.jetty.aggregate:jetty-server:7.6.0.RC5"
 }
 
 jar {
-    manifest {
-        attributes(
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'com.Ncc'
-        )
-    }
-
-    from configurations.compile.collect { entry -> zipTree(entry) }
+    manifest.attributes("Main-Class": mainClassName)
 }
 
-mainClassName = 'com.Ncc'
+task wrapper(type: Wrapper){
+    gradleVersion = '2.10'
+}
