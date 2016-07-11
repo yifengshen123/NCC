@@ -467,6 +467,8 @@ public class NccRadius extends RadiusServer {
                                     if (sessionData != null) {
                                         sessionData.userId = leaseData.leaseUID;
                                         sessionData.framedMAC = leaseData.leaseClientMAC;
+                                        sessionData.framedRemoteId = leaseData.leaseRemoteID;
+                                        sessionData.framedCircuitId = leaseData.leaseCircuitID;
                                         sessionData.acctInputOctets = acctInputOctets;
                                         sessionData.acctOutputOctets = acctOutputOctets;
                                         sessionData.lastAlive = System.currentTimeMillis() / 1000L;
