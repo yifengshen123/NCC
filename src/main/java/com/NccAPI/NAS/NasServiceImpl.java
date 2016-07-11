@@ -5,7 +5,6 @@ import com.NccNAS.NccNAS;
 import com.NccNAS.NccNasData;
 import com.NccNAS.NccNasException;
 import com.NccNAS.NccNasType;
-import com.mysql.management.util.Str;
 
 import java.util.ArrayList;
 

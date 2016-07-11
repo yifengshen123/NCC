@@ -1,11 +1,8 @@
 package com.NccAstraManager;
 
-import com.NccAPI.NccAPI;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
-import com.mysql.management.util.Str;
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 

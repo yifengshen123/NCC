@@ -7,12 +7,8 @@
  */
 package org.tinyradius.attribute;
 
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.UnsignedInteger;
 import org.tinyradius.dictionary.AttributeType;
 import org.tinyradius.util.RadiusException;
-
-import java.nio.ByteBuffer;
 
 /**
  * This class represents a Radius attribute which only
