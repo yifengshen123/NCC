@@ -44,6 +44,10 @@ public class NccAPI {
 
     public NccAPI() {
 
+    }
+
+    public NccAPI(Integer port) {
+
         class NccAPIHandler extends AbstractHandler {
 
             class CompositeServer extends JsonRpcServer {
@@ -88,7 +92,12 @@ public class NccAPI {
 
                     // service the request
                     //fix to set HTTP status correctly
-                    int result = handle(input, output);
+                    int result = 0;
+                    try {
+                        result = handle(input, output);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     if (result != 0) {
                         if (result == -32700 || result == -32602 || result == -32603
                                 || (result <= -32000 && result >= -32099)) {
@@ -179,7 +188,7 @@ public class NccAPI {
             }
         }
 
-        apiServer = new Server(8032);
+        apiServer = new Server(port);
         apiServer.setHandler(new NccAPIHandler());
     }
 
@@ -210,6 +219,8 @@ public class NccAPI {
         String password = "CtrhtnysqGfhjkm";
 
         String hash = DigestUtils.md5Hex(DigestUtils.md5Hex(login).concat(password));
+
+        System.out.println("Checking api key=" + apiKey + " with " + hash);
 
         if (apiKey.equals(hash)) return true;
 

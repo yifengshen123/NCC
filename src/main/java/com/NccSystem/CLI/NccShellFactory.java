@@ -81,6 +81,10 @@ public class NccShellFactory extends ProcessShellFactory {
             dhcpSubs.add(new NccCommand("unbinded", "Show unbinded users", false, null, "showDhcpUnbinded"));
             subs.add(new NccCommand("dhcp", "Show dhcp-related information", true, dhcpSubs, null));
             subs.add(new NccCommand("radius", "Show radius-related information", true, null, null));
+
+            ArrayList<NccCommand> astraSubs = new ArrayList<>();
+            astraSubs.add(new NccCommand("transponders", "Show transponder list", false, null, "getAstraTransponders"));
+            subs.add(new NccCommand("astra", "AstraManager related info", true, astraSubs, null));
             nccCommands.add(new NccCommand("show", "Show various options", false, subs, null));
 
             nccCommands.add(new NccCommand("shutdown", "Gracefully shutdown NCC system", false, null, "sysShutdown"));
@@ -116,7 +120,7 @@ public class NccShellFactory extends ProcessShellFactory {
 
                 if (cmd.subCommands == null) {
                     if (!cmd.hasArgs) {
-                        NccCLICommands cliCommands = new NccCLICommandsImpl();
+                        NccCLICommands cliCommands = new NccCLICommandsImpl(writer);
 
                         if (cmd.execMethod == null) continue;
                         try {
@@ -364,7 +368,7 @@ public class NccShellFactory extends ProcessShellFactory {
                                         historyIndex--;
                                         if (historyIndex < 0) historyIndex = 0;
                                         line = history.get(historyIndex);
-                                        for(int i=0; i<80; i++){
+                                        for (int i = 0; i < 80; i++) {
                                             writer.print(" ");
                                             writer.flush();
                                         }
@@ -377,7 +381,7 @@ public class NccShellFactory extends ProcessShellFactory {
                                         historyIndex++;
                                         if (historyIndex >= history.size()) historyIndex = history.size() - 1;
                                         line = history.get(historyIndex);
-                                        for(int i=0; i<80; i++){
+                                        for (int i = 0; i < 80; i++) {
                                             writer.print(" ");
                                             writer.flush();
                                         }
@@ -402,7 +406,7 @@ public class NccShellFactory extends ProcessShellFactory {
                         writer.println("command: " + line + "\r");
                         writer.flush();
 
-                        if(!line.equals("")) {
+                        if (!line.equals("")) {
                             history.add(line);
                             historyIndex = history.size();
                         }

@@ -26,6 +26,7 @@ public class Ncc {
     private static boolean moduleRadius = true;
     private static boolean moduleDHCP = true;
     private static boolean moduleCLI = true;
+    private static boolean moduleAPI = true;
     public static boolean logQuery = false;
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
@@ -59,6 +60,7 @@ public class Ncc {
             moduleRadius = config.getBoolean("module.radius", false);
             moduleDHCP = config.getBoolean("module.dhcp", false);
             moduleCLI = config.getBoolean("module.cli", true);
+            moduleAPI = config.getBoolean("module.api", true);
 
             logger.setLevel(Level.toLevel(logLevel));
 
@@ -133,9 +135,12 @@ public class Ncc {
             nccCLI.start();
         }
 
-        logger.info("Starting API");
-        nccAPI = new NccAPI();
-        nccAPI.start();
+        if (moduleAPI) {
+            Integer port = config.getInt("api.port", 8032);
 
+            logger.info("Starting API on port " + port);
+            nccAPI = new NccAPI(port);
+            nccAPI.start();
+        }
     }
 }
