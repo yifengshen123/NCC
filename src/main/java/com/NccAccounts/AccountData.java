@@ -36,6 +36,7 @@ public class AccountData extends NccAbstractData<AccountData> {
             accountData.accCredit = rs.getDouble("accCredit");
             accountData.accPerson = rs.getString("accPerson");
             accountData.accAddressCity = rs.getString("accAddressCity");
+            accountData.accAddressStreet = rs.getString("accAddressStreet");
             accountData.accAddressBuild = rs.getString("accAddressBuild");
             accountData.accAddressApt = rs.getString("accAddressApt");
             accountData.accRegDate = rs.getDate("accRegDate");
