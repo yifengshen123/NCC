@@ -7,7 +7,7 @@ import java.util.Date;
 
 public interface AccountsService {
     AccountData getAccount(Integer id);
-    ArrayList<AccountData> getAccounts();
+    ApiAccountData getUserAccount();
     ArrayList<Integer> createAccount(Double accDeposit,
                                      Double accCredit,
                                      String accPerson,

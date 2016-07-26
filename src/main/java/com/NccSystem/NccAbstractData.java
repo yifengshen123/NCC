@@ -16,7 +16,7 @@ public abstract class NccAbstractData<T> {
 
     public abstract T fillData();
 
-    public T getData(String queryString){
+    public T getData(String queryString) {
 
         try {
             NccQuery query = new NccQuery();

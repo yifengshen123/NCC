@@ -2,32 +2,22 @@ package com.NccAPI.UserAccounts;
 
 import com.NccAccounts.AccountData;
 import com.NccAccounts.NccAccounts;
-import com.NccAccounts.NccAccountsException;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 public class AccountsServiceImpl implements AccountsService {
 
+
     public AccountData getAccount(Integer id) {
-
-        try {
-            return new NccAccounts().getAccount(id);
-        } catch (NccAccountsException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccAccounts().getAccount(id);
     }
 
-    public ArrayList<AccountData> getAccounts() {
-        try {
-            return new NccAccounts().getAccounts();
-        } catch (NccAccountsException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    public ApiAccountData getUserAccount() {
+        ArrayList<AccountData> accountData = new NccAccounts().getAccount();
+        ApiAccountData result = new ApiAccountData();
+        result.data = accountData;
+        return result;
     }
 
     public ArrayList<Integer> createAccount(Double accDeposit,
@@ -57,12 +47,6 @@ public class AccountsServiceImpl implements AccountsService {
         accountData.accPersonEmail = accPersonEmail;
         accountData.accComments = accComments;
 
-        try {
-            return new NccAccounts().createAccount(accountData);
-        } catch (NccAccountsException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new NccAccounts().createAccount(accountData);
     }
 }

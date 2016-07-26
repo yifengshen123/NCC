@@ -16,7 +16,7 @@ public class NccAccounts {
     private static Logger logger = Logger.getLogger(NccAccounts.class);
     private final String accQueryFieldset = "id, accDeposit, accCredit, accPerson, accAddressCity, accAddressStreet, accAddressBuild, accAddressApt, accRegDate, accPersonPassport, accPersonPhone, accPersonEmail, accComments";
 
-    public NccAccounts() throws NccAccountsException {
+    public NccAccounts() {
         try {
             query = new NccQuery();
         } catch (NccQueryException e) {
@@ -24,92 +24,37 @@ public class NccAccounts {
         }
     }
 
-    public AccountData getAccount(Integer id) throws NccAccountsException {
-
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT " + accQueryFieldset + " FROM nccUserAccounts WHERE id=" + id);
-        } catch (NccQueryException e) {
-            throw new NccAccountsException("UserAccount: SQL error: " + e.getMessage());
-        }
-
-        if (rs != null) {
-            try {
-                if (rs.next()) {
-
-                    AccountData accountData = new AccountData();
-
-                    accountData.id = rs.getInt("id");
-                    accountData.accDeposit = rs.getDouble("accDeposit");
-                    accountData.accCredit = rs.getDouble("accCredit");
-                    accountData.accPerson = rs.getString("accPerson");
-                    accountData.accAddressCity = rs.getString("accAddressCity");
-                    accountData.accAddressStreet = rs.getString("accAddressStreet");
-                    accountData.accAddressBuild = rs.getString("accAddressBuild");
-                    accountData.accAddressApt = rs.getString("accAddressApt");
-                    accountData.accRegDate = rs.getDate("accRegDate");
-                    accountData.accPersonPassport = rs.getString("accPersonPassport");
-                    accountData.accPersonPhone = rs.getString("accPersonPhone");
-                    accountData.accPersonEmail = rs.getString("accPersonEmail");
-                    accountData.accComments = rs.getString("accComments");
-
-                    return accountData;
-                } else {
-                    throw new NccAccountsException("UserAccount not found");
-                }
-            } catch (SQLException e) {
-                throw new NccAccountsException("UserAccount: SQL error: " + e.getMessage());
-            }
-        } else {
-            throw new NccAccountsException("UserAccount not found");
-        }
+    public AccountData getAccount(Integer id) {
+        return new AccountData().getData("SELECT * FROM nccUserAccounts WHERE id=" + id);
     }
 
-    public ArrayList<AccountData> getAccounts() throws NccAccountsException {
+    public AccountData getAccount(String login) {
+        return new AccountData().getData("SELECT * FROM nccUserAccounts WHERE accLogin='" + login + "'");
+    }
 
-        ArrayList<AccountData> accounts = new ArrayList<>();
+    public ArrayList<AccountData> getAccount() {
+        return new AccountData().getDataList("SELECT * FROM nccUserAccounts");
+    }
 
-        ResultSet rs;
+    public boolean checkAccountPermission(AccountData accountData, String permission) {
 
-        try {
-            rs = query.selectQuery("SELECT " + accQueryFieldset + " FROM nccUserAccounts LIMIT 10");
+        if (accountData != null) {
 
             try {
-                while (rs.next()) {
+                CachedRowSetImpl rs = query.selectQuery("SELECT * FROM nccAccountsPermissions a " +
+                        "LEFT JOIN nccPermissions p ON a.permId=p.id " +
+                        "WHERE p.permName='" + permission + "' AND " +
+                        "a.id=" + accountData.id);
 
-                    AccountData accountData = new AccountData();
-
-                    accountData.id = rs.getInt("id");
-                    accountData.accDeposit = rs.getDouble("accDeposit");
-                    accountData.accCredit = rs.getDouble("accCredit");
-                    accountData.accPerson = rs.getString("accPerson");
-                    accountData.accAddressCity = rs.getString("accAddressCity");
-                    accountData.accAddressStreet = rs.getString("accAddressStreet");
-                    accountData.accAddressBuild = rs.getString("accAddressBuild");
-                    accountData.accAddressApt = rs.getString("accAddressApt");
-                    accountData.accRegDate = rs.getDate("accRegDate");
-                    accountData.accPersonPassport = rs.getString("accPersonPassport");
-                    accountData.accPersonPhone = rs.getString("accPersonPhone");
-                    accountData.accPersonEmail = rs.getString("accPersonEmail");
-                    accountData.accComments = rs.getString("accComments");
-
-                    accounts.add(accountData);
+                if (rs != null) {
+                    return true;
                 }
-
-                return accounts;
-
-            } catch (SQLException e) {
+            } catch (NccQueryException e) {
                 e.printStackTrace();
             }
-
-
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-            throw new NccAccountsException("CachedQuery error: " + e.getMessage());
         }
 
-        return null;
+        return false;
     }
 
     public ArrayList<Integer> createAccount(AccountData accountData) {
@@ -127,7 +72,9 @@ public class NccAccounts {
                 "accPersonPassport, " +
                 "accPersonPhone, " +
                 "accPersonEmail, " +
-                "accComments) VALUES (" +
+                "accComments, " +
+                "accLogin, " +
+                "accPassword) VALUES (" +
                 accountData.accDeposit + ", " +
                 accountData.accCredit + ", " +
                 "'" + accountData.accPerson + "', " +
@@ -139,11 +86,11 @@ public class NccAccounts {
                 "'" + accountData.accPersonPassport + "', " +
                 "'" + accountData.accPersonPhone + "', " +
                 "'" + accountData.accPersonEmail + "', " +
-                "'" + accountData.accComments + "')";
+                "'" + accountData.accComments + "', " +
+                "'" + accountData.accLogin + "', " +
+                "'" + accountData.accPassword + "')";
 
         try {
-            NccQuery query = new NccQuery();
-
             return query.updateQuery(insertQuery);
 
         } catch (NccQueryException e) {

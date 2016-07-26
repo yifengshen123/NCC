@@ -135,13 +135,7 @@ public class NccRadius extends RadiusServer {
             System.exit(-1);
         }
 
-        try {
-            nccAccounts = new NccAccounts();
-        } catch (NccAccountsException e) {
-            e.printStackTrace();
-            logger.fatal(e.getMessage());
-            System.exit(-1);
-        }
+        nccAccounts = new NccAccounts();
 
         setAuthPort(radAuthPort);
         setAcctPort(radAcctPort);
@@ -676,47 +670,42 @@ public class NccRadius extends RadiusServer {
                 try {
                     NccUserData userData = nccUsers.getUser(reqUserName);
 
+                    AccountData accountData = nccAccounts.getAccount(userData.accountId);
                     try {
-                        AccountData accountData = nccAccounts.getAccount(userData.accountId);
+                        if (req.verifyPassword(userData.userPassword)) {
+                            if (userData.userStatus > 0) {
 
-                        try {
-                            if (req.verifyPassword(userData.userPassword)) {
-                                if (userData.userStatus > 0) {
+                                if (accountData != null) if (accountData.accDeposit > -accountData.accCredit) {
+                                    logger.info("Login OK: '" + reqUserName + "'");
 
-                                    if (accountData != null) if (accountData.accDeposit > -accountData.accCredit) {
-                                        logger.info("Login OK: '" + reqUserName + "'");
+                                    packetType = RadiusPacket.ACCESS_ACCEPT;
 
-                                        packetType = RadiusPacket.ACCESS_ACCEPT;
+                                    try {
+                                        ArrayList<NccPoolData> pools;
 
-                                        try {
-                                            ArrayList<NccPoolData> pools;
+                                        NccTariffScale tariffScale = new NccTariffScale();
 
-                                            NccTariffScale tariffScale = new NccTariffScale();
+                                        pools = tariffScale.getTariffPools(userData.userTariff);
 
-                                            pools = tariffScale.getTariffPools(userData.userTariff);
+                                        Long framedIP = new NccSessions().getIPFromPool(pools);
 
-                                            Long framedIP = new NccSessions().getIPFromPool(pools);
-
-                                            radiusPacket.addAttribute("Framed-IP-Address", NccUtils.long2ip(framedIP));
-                                            radiusPacket.addAttribute("Framed-IP-Netmask", "255.255.255.255");
-                                            radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
-                                        } catch (NccSessionsException e) {
-                                            logger.info("Login FAIL: no enough IP in pools");
-                                        }
-                                    } else {
-                                        logger.info("Login FAIL: deposit <= -credit");
+                                        radiusPacket.addAttribute("Framed-IP-Address", NccUtils.long2ip(framedIP));
+                                        radiusPacket.addAttribute("Framed-IP-Netmask", "255.255.255.255");
+                                        radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
+                                    } catch (NccSessionsException e) {
+                                        logger.info("Login FAIL: no enough IP in pools");
                                     }
                                 } else {
-                                    logger.info("Login FAIL: user disabled");
+                                    logger.info("Login FAIL: deposit <= -credit");
                                 }
                             } else {
-                                logger.info("Login FAIL: incorrect userPassword for '" + reqUserName + "': '" + reqUserPassword + "' expected '" + userData.userPassword + "'");
+                                logger.info("Login FAIL: user disabled");
                             }
-                        } catch (RadiusException re) {
-                            re.printStackTrace();
+                        } else {
+                            logger.info("Login FAIL: incorrect userPassword for '" + reqUserName + "': '" + reqUserPassword + "' expected '" + userData.userPassword + "'");
                         }
-                    } catch (NccAccountsException e) {
-                        logger.error(e.getMessage() + " for userId=" + userData.id);
+                    } catch (RadiusException re) {
+                        re.printStackTrace();
                     }
 
                 } catch (NccUsersException e) {

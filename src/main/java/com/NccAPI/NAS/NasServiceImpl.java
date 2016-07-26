@@ -1,6 +1,7 @@
 package com.NccAPI.NAS;
 
 import com.NccAPI.NccAPI;
+import com.NccAccounts.AccountData;
 import com.NccNAS.NccNAS;
 import com.NccNAS.NccNasData;
 import com.NccNAS.NccNasException;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 
 public class NasServiceImpl implements NasService {
 
-    public Integer deleteNAS(String apiKey, Integer id){
+    public Integer deleteNAS(String apiKey, Integer id) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         Integer did;
@@ -25,7 +26,7 @@ public class NasServiceImpl implements NasService {
         return did;
     }
 
-    public Integer createNAS(String apiKey, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval){
+    public Integer createNAS(String apiKey, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         NccNasData nasData = new NccNasData();
@@ -47,7 +48,7 @@ public class NasServiceImpl implements NasService {
         return id;
     }
 
-    public Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval){
+    public Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {
         if (!new NccAPI().checkKey(apiKey)) return null;
 
         NccNasData nasData = new NccNasData();
@@ -69,7 +70,7 @@ public class NasServiceImpl implements NasService {
         return id;
     }
 
-    public NccNasData getNAS(String apiKey, Integer id){
+    public NccNasData getNAS(String apiKey, Integer id) {
         if (!new NccAPI().checkKey(apiKey)) return null;
         NccNasData nasData = null;
         try {
@@ -82,12 +83,12 @@ public class NasServiceImpl implements NasService {
         return nasData;
     }
 
-    public ArrayList<NccNasData> getNAS(String apiKey){
+    public ArrayList<NccNasData> getNAS(String apiKey) {
         if (!new NccAPI().checkKey(apiKey)) return null;
         ArrayList<NccNasData> nas = null;
 
         try {
-             nas = new NccNAS().getNAS();
+            nas = new NccNAS().getNAS();
         } catch (NccNasException e) {
             e.printStackTrace();
             return null;
@@ -96,7 +97,22 @@ public class NasServiceImpl implements NasService {
         return nas;
     }
 
-    public ArrayList<NccNasType> getNASTypes(String apiKey){
+    public ArrayList<NccNasData> getNAS(String login, String apiKey) {
+        AccountData accountData = new NccAPI().checkKey(login, apiKey);
+        if (accountData == null) return null;
+        ArrayList<NccNasData> nas = null;
+
+        try {
+            nas = new NccNAS().getNAS();
+        } catch (NccNasException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return nas;
+    }
+
+    public ArrayList<NccNasType> getNASTypes(String apiKey) {
         if (!new NccAPI().checkKey(apiKey)) return null;
         ArrayList<NccNasType> types = null;
 

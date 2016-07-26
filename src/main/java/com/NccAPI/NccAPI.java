@@ -22,6 +22,8 @@ import com.NccAPI.Users.UsersService;
 import com.NccAPI.Users.UsersServiceImpl;
 import com.NccAPI.Views.ViewsService;
 import com.NccAPI.Views.ViewsServiceImpl;
+import com.NccAccounts.AccountData;
+import com.NccAccounts.NccAccounts;
 import com.googlecode.jsonrpc4j.JsonRpcServer;
 import com.googlecode.jsonrpc4j.ProxyUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -211,6 +213,32 @@ public class NccAPI {
 
     public boolean checkKey(String apiKey) {
         if (apiKey.equals("CtrhtnT,fnmRfrjq")) return true;
+        return false;
+    }
+
+    public AccountData checkKey(String login, String key) {
+        AccountData accountData = new NccAccounts().getAccount(login);
+
+        if (accountData != null) {
+
+            String hash = DigestUtils.md5Hex(login.concat(accountData.accPassword));
+
+            logger.info("Checking for login='" + login + "' key='" + key + "' with hash='" + hash + "'");
+
+            if (hash.equals(key)) return accountData;
+        }
+
+        return null;
+    }
+
+    public boolean checkPermission(String login, String key, String permission) {
+
+        AccountData accountData = checkKey(login, key);
+
+        if (accountData != null) {
+            return new NccAccounts().checkAccountPermission(accountData, permission);
+        }
+
         return false;
     }
 

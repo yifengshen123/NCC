@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public interface NasService {
     NccNasData getNAS(String apiKey, Integer id);
     ArrayList<NccNasData> getNAS(String apiKey);
+    ArrayList<NccNasData> getNAS(String login, String apiKey);
 
     ArrayList<NccNasType> getNASTypes(String apiKey);
 
