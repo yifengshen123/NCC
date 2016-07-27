@@ -36,23 +36,37 @@ public class NccAccounts {
         return new AccountData().getDataList("SELECT * FROM nccUserAccounts");
     }
 
+    public ArrayList<AccountData> getAdministrators() {
+        return new AccountData().getDataList("SELECT * FROM nccAccountsPermissions a " +
+                "LEFT JOIN nccPermissions p ON a.permId=p.id " +
+                "LEFT JOIN nccUserAccounts c ON c.id=a.accountId " +
+                "WHERE p.permName='LoginAsAdministrator'");
+    }
+
     public boolean checkAccountPermission(AccountData accountData, String permission) {
+
+        logger.info("Checking permission '" + permission + "' for account '" + accountData.accLogin + "'");
 
         if (accountData != null) {
 
             try {
-                CachedRowSetImpl rs = query.selectQuery("SELECT * FROM nccAccountsPermissions a " +
+                CachedRowSetImpl rs = query.selectQuery("SELECT a.accountId FROM nccAccountsPermissions a " +
                         "LEFT JOIN nccPermissions p ON a.permId=p.id " +
                         "WHERE p.permName='" + permission + "' AND " +
-                        "a.id=" + accountData.id);
+                        "a.accountId=" + accountData.id);
 
                 if (rs != null) {
-                    return true;
+                    if (rs.size() > 0) {
+                        logger.info("Success");
+                        return true;
+                    }
                 }
             } catch (NccQueryException e) {
                 e.printStackTrace();
             }
         }
+
+        logger.info("Fail");
 
         return false;
     }

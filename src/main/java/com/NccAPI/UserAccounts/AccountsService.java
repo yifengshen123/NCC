@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public interface AccountsService {
-    AccountData getAccount(Integer id);
-    ApiAccountData getUserAccount();
-    ArrayList<Integer> createAccount(Double accDeposit,
+    AccountData getAccount(String login, String key, Integer id);
+    ApiAccountData getAccounts(String login, String key);
+    ApiAccountData getAdministrators(String login, String key);
+    ArrayList<Integer> createAccount(String login, String key,
+                                     Double accDeposit,
                                      Double accCredit,
                                      String accPerson,
                                      String accAddressCity,
