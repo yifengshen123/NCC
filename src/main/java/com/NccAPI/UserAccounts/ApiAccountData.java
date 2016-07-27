@@ -9,4 +9,6 @@ import java.util.ArrayList;
  */
 public class ApiAccountData {
     public ArrayList<AccountData> data;
+    public Integer status;
+    public String message;
 }
