@@ -6,6 +6,8 @@ import com.NccAPI.DhcpBinding.DhcpBindingService;
 import com.NccAPI.DhcpBinding.DhcpBindingServiceImpl;
 import com.NccAPI.DhcpLeases.DhcpLeasesService;
 import com.NccAPI.DhcpLeases.DhcpLeasesServiceImpl;
+import com.NccAPI.Map.MapService;
+import com.NccAPI.Map.MapServiceImpl;
 import com.NccAPI.NAS.NasService;
 import com.NccAPI.NAS.NasServiceImpl;
 import com.NccAPI.Pools.PoolsService;
@@ -127,6 +129,7 @@ public class NccAPI {
             private DhcpRelayAgentService relayAgentService;
             private DhcpLeasesService dhcpLeasesService;
             private DhcpBindingService dhcpBindingService;
+            private MapService mapService;
             private SystemService systemService;
 
             private Object compositeService;
@@ -142,6 +145,7 @@ public class NccAPI {
                 relayAgentService = new DhcpRelayAgentServiceImpl();
                 dhcpLeasesService = new DhcpLeasesServiceImpl();
                 dhcpBindingService = new DhcpBindingServiceImpl();
+                mapService = new MapServiceImpl();
                 systemService = new SystemServiceImpl();
 
                 compositeService = ProxyUtil.createCompositeServiceProxy(
@@ -157,6 +161,7 @@ public class NccAPI {
                                 relayAgentService,
                                 dhcpLeasesService,
                                 dhcpBindingService,
+                                mapService,
                                 systemService
                         },
                         new Class<?>[]{
@@ -170,6 +175,7 @@ public class NccAPI {
                                 DhcpRelayAgentService.class,
                                 DhcpLeasesService.class,
                                 DhcpBindingService.class,
+                                MapService.class,
                                 SystemService.class
                         },
                         true);
