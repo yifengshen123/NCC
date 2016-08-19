@@ -12,6 +12,7 @@ public class MapPointData extends NccAbstractData<MapPointData> {
     public Double lat;
     public Double lng;
     public Integer radius;
+    public Integer state;
 
     @Override
     public MapPointData fillData(){
@@ -22,6 +23,7 @@ public class MapPointData extends NccAbstractData<MapPointData> {
             mapPointData.lat = rs.getDouble("lat");
             mapPointData.lng = rs.getDouble("lng");
             mapPointData.radius = rs.getInt("radius");
+            mapPointData.state = rs.getInt("active");
 
             return mapPointData;
         } catch (SQLException e) {

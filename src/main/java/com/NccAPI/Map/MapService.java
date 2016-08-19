@@ -5,4 +5,6 @@ package com.NccAPI.Map;
  */
 public interface MapService {
     ApiMapPointData getMapPoints(String login, String key);
+
+    ApiMapLineData getMapLines(String login, String key);
 }
