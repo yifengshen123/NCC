@@ -635,9 +635,10 @@ public class NccRadius extends RadiusServer {
 
                                     packetType = RadiusPacket.ACCESS_ACCEPT;
                                     radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
+                                    radiusPacket.addAttribute("Idle-Timeout", "600");
                                     radiusPacket.addAttribute("avpair", "subscriber:accounting-list=ipoe-isg-aaa");
                                     radiusPacket.addAttribute("avpair", "ip:traffic-class=in access-group 101 priority 201");
-                                    radiusPacket.addAttribute("avpair", "ip:traffic-class=out access-group 102 priority 201");
+                                    radiusPacket.addAttribute("avpair", "ip:traffic-class=out access-group 101 priority 201");
                                     radiusPacket.setPacketIdentifier(reqPacketIdentifier);
                                     radiusPacket.setPacketType(packetType);
                                     logger.info("Login OK: " + reqUserName + " [" + userData.userLogin + "]");
