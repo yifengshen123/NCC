@@ -27,7 +27,7 @@ public class NccNAS {
         return new NccNasData().getData("SELECT * FROM nccNAS WHERE id=" + id);
     }
 
-    public ArrayList<NccNasData> getNAS() throws NccNasException {
+    public ArrayList<NccNasData> getNAS() {
 
         return new NccNasData().getDataList("SELECT * FROM nccNAS");
     }

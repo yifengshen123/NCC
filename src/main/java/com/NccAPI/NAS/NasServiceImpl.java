@@ -97,19 +97,39 @@ public class NasServiceImpl implements NasService {
         return nas;
     }
 
-    public ArrayList<NccNasData> getNAS(String login, String apiKey) {
-        AccountData accountData = new NccAPI().checkKey(login, apiKey);
-        if (accountData == null) return null;
-        ArrayList<NccNasData> nas = null;
+    public ApiNasData getNAS(String login, String key) {
+
+        if (!new NccAPI().checkPermission(login, key, "GetNAS")) return null;
+
+        ApiNasData result = new ApiNasData();
 
         try {
-            nas = new NccNAS().getNAS();
+            ArrayList<NccNasData> nasData = new NccNAS().getNAS();
+
+            result.data = nasData;
+
         } catch (NccNasException e) {
             e.printStackTrace();
-            return null;
         }
 
-        return nas;
+        return result;
+    }
+
+    public ApiNasTypeData getNasTypes(String login, String key){
+
+        if (!new NccAPI().checkPermission(login, key, "GetNAS")) return null;
+
+        ApiNasTypeData result = new ApiNasTypeData();
+
+        try {
+            ArrayList<NccNasType> nasTypes = new NccNAS().getNASTypes();
+
+            result.data = nasTypes;
+        } catch (NccNasException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     public ArrayList<NccNasType> getNASTypes(String apiKey) {
