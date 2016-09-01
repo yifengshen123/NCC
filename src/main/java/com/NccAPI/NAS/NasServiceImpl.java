@@ -26,11 +26,11 @@ public class NasServiceImpl implements NasService {
         return did;
     }
 
-    public Integer createNAS(String apiKey, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {
-        if (!new NccAPI().checkKey(apiKey)) return null;
+    public ApiNasData createNAS(String login, String key, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {
+
+        if (!new NccAPI().checkPermission(login, key, "CreateNAS")) return null;
 
         NccNasData nasData = new NccNasData();
-        Integer id;
 
         nasData.nasName = nasName;
         nasData.nasType = nasType;
@@ -38,14 +38,19 @@ public class NasServiceImpl implements NasService {
         nasData.nasSecret = nasSecret;
         nasData.nasInterimInterval = nasInterimInterval;
 
+        ApiNasData apiNasData = new ApiNasData();
+        apiNasData.data = new ArrayList<>();
+        apiNasData.status = 0;
+
         try {
-            id = new NccNAS().createNas(nasData);
+            nasData.id = new NccNAS().createNas(nasData);
+            apiNasData.status = 1;
+            apiNasData.data.add(nasData);
         } catch (NccNasException e) {
             e.printStackTrace();
-            return null;
         }
 
-        return id;
+        return apiNasData;
     }
 
     public Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {

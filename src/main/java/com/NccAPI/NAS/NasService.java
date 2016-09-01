@@ -14,7 +14,7 @@ public interface NasService {
 
     ArrayList<NccNasType> getNASTypes(String apiKey);
 
-    Integer createNAS(String apiKey, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval);
+    ApiNasData createNAS(String login, String key, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval);
 
     Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval);
 
