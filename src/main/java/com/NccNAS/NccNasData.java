@@ -11,6 +11,9 @@ public class NccNasData extends NccAbstractData<NccNasData> {
     public Integer nasStatus;
     public String nasSecret;
     public Integer nasInterimInterval;
+    public Integer nasIdleTimeout;
+    public Integer nasAccessGroupIn;
+    public Integer nasAccessGroupOut;
 
     @Override
     public NccNasData fillData(){
@@ -24,6 +27,9 @@ public class NccNasData extends NccAbstractData<NccNasData> {
             nasData.nasStatus = rs.getInt("nasStatus");
             nasData.nasSecret = rs.getString("nasSecret");
             nasData.nasInterimInterval = rs.getInt("nasInterimInterval");
+            nasData.nasIdleTimeout = rs.getInt("nasIdleTimeout");
+            nasData.nasAccessGroupIn = rs.getInt("nasAccessGroupIn");
+            nasData.nasAccessGroupOut = rs.getInt("nasAccessGroupOut");
 
             return nasData;
         } catch (SQLException e) {

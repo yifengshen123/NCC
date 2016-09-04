@@ -641,10 +641,10 @@ public class NccRadius extends RadiusServer {
 
                                     packetType = RadiusPacket.ACCESS_ACCEPT;
                                     radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
-                                    radiusPacket.addAttribute("Idle-Timeout", "600");
+                                    radiusPacket.addAttribute("Idle-Timeout", nasData.nasIdleTimeout.toString());
                                     radiusPacket.addAttribute("avpair", "subscriber:accounting-list=ipoe-isg-aaa");
-                                    radiusPacket.addAttribute("avpair", "ip:traffic-class=in access-group 101 priority 201");
-                                    radiusPacket.addAttribute("avpair", "ip:traffic-class=out access-group 101 priority 201");
+                                    radiusPacket.addAttribute("avpair", "ip:traffic-class=in access-group " + nasData.nasAccessGroupIn.toString() + " priority 201");
+                                    radiusPacket.addAttribute("avpair", "ip:traffic-class=out access-group " + nasData.nasAccessGroupOut.toString() + " priority 201");
                                     radiusPacket.setPacketIdentifier(reqPacketIdentifier);
                                     radiusPacket.setPacketType(packetType);
                                     logger.info("Login OK: " + reqUserName + " [" + userData.userLogin + "]");
@@ -655,7 +655,7 @@ public class NccRadius extends RadiusServer {
                                 radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                                 logger.info("Login FAIL: [" + reqUserName + "] user not found");
                             } catch (NccUsersException e) {
-                                logger.debug("getUser error: "+e.getMessage());
+                                logger.debug("getUser error: " + e.getMessage());
                                 e.printStackTrace();
                             }
 
