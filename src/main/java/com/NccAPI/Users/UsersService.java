@@ -16,7 +16,7 @@ public interface UsersService {
             String userPassword,
             Integer userStatus,
             Integer userAccount,
-            Integer userIP);
+            Long userIP);
 
 
 }

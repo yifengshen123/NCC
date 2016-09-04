@@ -590,6 +590,8 @@ public class NccRadius extends RadiusServer {
 
                 if (reqServiceType.equals("Outbound-User") || reqServiceType.equals("5")) {
 
+                    logger.debug("Outbound-User");
+
                     NccDhcpLeases leases = new NccDhcpLeases();
                     try {
 
@@ -603,10 +605,14 @@ public class NccRadius extends RadiusServer {
                                 return;
                             }
 
+                            logger.debug("Found lease data");
+
                             try {
                                 NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
 
                                 if (userData != null) {
+
+                                    logger.debug("Found user data");
 
                                     if (userData.userStatus == 0) {
                                         radiusPacket.setPacketIdentifier(reqPacketIdentifier);
@@ -649,6 +655,7 @@ public class NccRadius extends RadiusServer {
                                 radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
                                 logger.info("Login FAIL: [" + reqUserName + "] user not found");
                             } catch (NccUsersException e) {
+                                logger.debug("getUser error: "+e.getMessage());
                                 e.printStackTrace();
                             }
 

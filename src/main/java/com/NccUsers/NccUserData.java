@@ -6,7 +6,7 @@ public class NccUserData {
     public String userPassword;
     public Integer userStatus;
     public Integer accountId;
-    public Integer userIP;
+    public Long userIP;
     public String userMAC;
     public Integer userTariff;
     public String userComments;

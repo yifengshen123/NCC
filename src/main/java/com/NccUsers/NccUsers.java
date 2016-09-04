@@ -34,7 +34,7 @@ public class NccUsers {
                     userData.id = rs.getInt("uid");
                     userData.userPassword = rs.getString("userPassword");
                     userData.userStatus = rs.getBoolean("disable") ? 0 : 1;
-                    userData.userIP = rs.getInt("ip");
+                    userData.userIP = rs.getLong("ip");
                     userData.userTariff = rs.getInt("tp_id");
                     userData.userCredit = rs.getFloat("credit");
                     userData.userDeposit = rs.getFloat("deposit");
@@ -100,7 +100,7 @@ public class NccUsers {
                     userData.userPassword = rs.getString("userPassword");
                     userData.userStatus = rs.getInt("userStatus");
                     userData.accountId = rs.getInt("accountId");
-                    userData.userIP = rs.getInt("userIP");
+                    userData.userIP = rs.getLong("userIP");
                     userData.userTariff = rs.getInt("userTariff");
 
                     return userData;
@@ -133,7 +133,7 @@ public class NccUsers {
                     userData.userPassword = rs.getString("userPassword");
                     userData.userStatus = rs.getInt("userStatus");
                     userData.accountId = rs.getInt("accountId");
-                    userData.userIP = rs.getInt("userIP");
+                    userData.userIP = rs.getLong("userIP");
 
                     users.add(userData);
                 }

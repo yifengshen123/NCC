@@ -35,7 +35,7 @@ public class UsersServiceImpl implements UsersService {
             String userPassword,
             Integer userStatus,
             Integer userAccount,
-            Integer userIP) {
+            Long userIP) {
 
         System.out.println("API: createUser: " + userLogin);
 
