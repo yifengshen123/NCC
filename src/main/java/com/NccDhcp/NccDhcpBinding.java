@@ -32,16 +32,28 @@ public class NccDhcpBinding {
 
     public NccDhcpBindData getBinding(NccDhcpRequest request) {
 
-        String whereMAC = "";
+        String checkMAC = "";
 
         if (request.getClientMAC() != null) {
-            whereMAC = "clientMAC='" + request.getClientMAC() + "' AND ";
+            checkMAC = "clientMAC='" + request.getClientMAC() + "' AND ";
+        }
+
+        String checkCircuitId = "";
+
+        try {
+            NccDhcpRelayAgentData relayAgent = new NccDhcpRelayAgent().getRelayAgentByIP(request.getRelayAgent());
+
+            if (relayAgent.checkCircuitId > 0) {
+                checkCircuitId = "circuitID='" + request.getCircuitID() + "' AND ";
+            }
+        } catch (NccDhcpRelayAgentException e) {
+            e.printStackTrace();
         }
 
         return new NccDhcpBindData().getData("SELECT * FROM nccDhcpBinding WHERE " +
                 "remoteID='" + request.getRemoteID() + "' AND " +
-                "circuitID='" + request.getCircuitID() + "' AND " +
-                whereMAC +
+                checkCircuitId +
+                checkMAC +
                 "relayAgent=" + request.getRelayAgent());
     }
 

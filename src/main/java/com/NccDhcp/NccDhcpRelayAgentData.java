@@ -15,6 +15,7 @@ public class NccDhcpRelayAgentData extends NccAbstractData<NccDhcpRelayAgentData
     public String agentPassword;
     public String agentEnablePassword;
     public Integer agentUnbindedPool;
+    public Integer checkCircuitId;
 
     @Override
     public NccDhcpRelayAgentData fillData() {
@@ -32,6 +33,7 @@ public class NccDhcpRelayAgentData extends NccAbstractData<NccDhcpRelayAgentData
             agentData.agentPassword = rs.getString("agentPassword");
             agentData.agentEnablePassword = rs.getString("agentEnablePassword");
             agentData.agentUnbindedPool = rs.getInt("agentUnbindedPool");
+            agentData.checkCircuitId = rs.getInt("checkCircuitId");
 
             return agentData;
         } catch (SQLException e) {
