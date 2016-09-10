@@ -98,10 +98,13 @@ class NccDhcpReceiver extends Thread {
 
         byte[] dhcpReply = null;
 
+        if (Ncc.dhcpLogLevel >= 5)
+            logger.info("Trying to send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC='" + pkt.getClientMAC() + "' IP='" + ip.getHostAddress() + "' localIP='" + this.localIP.getHostAddress() + "'");
+
         dhcpReply = pkt.buildReply(type, this.localIP, ip, netmask, router, dns1, dns2, nextserver, leaseTime);
 
         if (Ncc.dhcpLogLevel >= 5)
-            logger.info("Send " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC='" + pkt.getClientMAC() + "' IP='" + ip.getHostAddress() + "' localIP='" + this.localIP.getHostAddress() + "'");
+            logger.info("Sent " + pkt.type2string(type) + " to " + inPkt.getAddress().getHostAddress() + ":" + inPkt.getPort() + " clientMAC='" + pkt.getClientMAC() + "' IP='" + ip.getHostAddress() + "' localIP='" + this.localIP.getHostAddress() + "'");
 
         try {
             DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), inPkt.getPort());
@@ -132,6 +135,9 @@ class NccDhcpReceiver extends Thread {
                 break;
             case NccDhcpPacket.DHCP_MSG_TYPE_RELEASE:
                 type = "DHCPRELEASE";
+                break;
+            case NccDhcpPacket.DHCP_MSG_TYPE_DECLINE:
+                type = "DHCPDECLINE";
                 break;
             default:
                 break;
@@ -298,6 +304,16 @@ class NccDhcpReceiver extends Thread {
 
     private void requestRelease(NccDhcpPacket pkt) {
         if (Ncc.dhcpLogLevel >= 5) logRequest(pkt);
+        NccDhcpRequest request = new NccDhcpRequest(pkt);
+        NccDhcpLeaseData leaseData = new NccDhcpLeases().getLeaseByRequest(request);
+
+        if (leaseData != null) {
+            if (Ncc.dhcpLogLevel >= 5)
+                logger.info("Releasing lease after DHCPRELEASE for clientMAC='" + request.getClientMAC() + "' clientIP='" + request.getClientIP() + "'");
+            new NccDhcpLeases().releaseLease(leaseData);
+        } else {
+            logger.error("Lease not found for clientMAC='" + request.getClientMAC() + "'");
+        }
     }
 
     private void requestDecline(NccDhcpPacket pkt) {
@@ -307,7 +323,7 @@ class NccDhcpReceiver extends Thread {
 
         if (leaseData != null) {
             if (Ncc.dhcpLogLevel >= 5)
-                logger.info("Releasing lease for clientMAC='" + request.getClientMAC() + "' clientIP='" + request.getClientIP() + "'");
+                logger.info("Releasing lease after DHCPDECLINE for clientMAC='" + request.getClientMAC() + "' clientIP='" + request.getClientIP() + "'");
             new NccDhcpLeases().releaseLease(leaseData);
         } else {
             logger.error("Lease not found for clientMAC='" + request.getClientMAC() + "'");

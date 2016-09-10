@@ -164,8 +164,10 @@ public class NccDhcpLeases {
         try {
             String condition = "leaseClientMAC='" + request.getClientMAC() + "' ";
 
+/*
             if (!request.getRemoteID().equals("")) condition += "AND leaseRemoteID='" + request.getRemoteID() + "' ";
             if (!request.getCircuitID().equals("")) condition += "AND leaseCircuitID='" + request.getCircuitID() + "' ";
+*/
 
             rs = query.selectQuery("SELECT id FROM nccDhcpLeases WHERE " +
                     "leaseIP=" + request.getRequestIP() + " AND " +

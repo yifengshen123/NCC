@@ -311,6 +311,16 @@ public class NccDhcpPacket {
         return sb.toString();
     }
 
+    String ba2string(byte[] data) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < data.length; i++) {
+            sb.append(String.format("%02X", data[i]));
+        }
+
+        return sb.toString();
+    }
+
     int getType() {
         int type = ba2int(this.dhcpMsgType);
 
@@ -393,7 +403,7 @@ public class NccDhcpPacket {
 
     byte[] buildReply(byte type, InetAddress localIP, InetAddress clientIP, InetAddress netmask, InetAddress router, InetAddress dns1, InetAddress dns2, InetAddress nextserver, int leaseTime) {
 
-        int PKT_LEN = 360;
+        int PKT_LEN = 460;
 
         byte[] data = new byte[PKT_LEN];
         int p = 0;
@@ -557,6 +567,9 @@ public class NccDhcpPacket {
 
         // opt82
         if (this.dhcpRawOpt82 != null) {
+
+            logger.debug("raw opt82: '" + ba2string(this.dhcpRawOpt82) + "'");
+
             byte[] opt82 = {82, (byte) this.dhcpRawOpt82.length};
             data = baInsert(data, p, opt82);
             p += opt82.length;
