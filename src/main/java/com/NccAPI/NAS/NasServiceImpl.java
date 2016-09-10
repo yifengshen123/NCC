@@ -26,26 +26,55 @@ public class NasServiceImpl implements NasService {
         return did;
     }
 
-    public ApiNasData createNAS(String login, String key, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {
+    public ApiNasData createNAS(String login, String key, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval, Integer nasIdleTimeout, Integer nasAccessGroupIn, Integer nasAccessGroupOut) {
 
         if (!new NccAPI().checkPermission(login, key, "CreateNAS")) return null;
 
         NccNasData nasData = new NccNasData();
+
+        ApiNasData apiNasData = new ApiNasData();
+        apiNasData.data = new ArrayList<>();
+        apiNasData.status = 0;
 
         nasData.nasName = nasName;
         nasData.nasType = nasType;
         nasData.nasIP = nasIP;
         nasData.nasSecret = nasSecret;
         nasData.nasInterimInterval = nasInterimInterval;
+        nasData.nasIdleTimeout = nasIdleTimeout;
+        nasData.nasAccessGroupIn = nasAccessGroupIn;
+        nasData.nasAccessGroupOut = nasAccessGroupOut;
 
-        ApiNasData apiNasData = new ApiNasData();
-        apiNasData.data = new ArrayList<>();
-        apiNasData.status = 0;
+        if (nasName.equals("")) {
+            apiNasData.message = "Empty NAS name";
+            return apiNasData;
+        }
+
+        if (nasIP <= 0) {
+            apiNasData.message = "Incorrect NAS IP";
+            return apiNasData;
+        }
+
+        if (nasInterimInterval <= 0) {
+            apiNasData.message = "InterimInterval must be >0";
+            return apiNasData;
+        }
+
+        if (nasIdleTimeout <= 0) {
+            apiNasData.message = "IdleTimeout must be >0";
+            return apiNasData;
+        }
 
         try {
             nasData.id = new NccNAS().createNas(nasData);
-            apiNasData.status = 1;
-            apiNasData.data.add(nasData);
+
+            if (nasData.id != null) {
+                apiNasData.status = 1;
+                apiNasData.data.add(nasData);
+            } else {
+                apiNasData.status = 0;
+                apiNasData.message = "Error creating NAS";
+            }
         } catch (NccNasException e) {
             e.printStackTrace();
         }
@@ -120,7 +149,7 @@ public class NasServiceImpl implements NasService {
         return result;
     }
 
-    public ApiNasTypeData getNasTypes(String login, String key){
+    public ApiNasTypeData getNasTypes(String login, String key) {
 
         if (!new NccAPI().checkPermission(login, key, "GetNAS")) return null;
 

@@ -66,13 +66,19 @@ public class NccNAS {
                     "nasIP, " +
                     "nasStatus, " +
                     "nasSecret, " +
-                    "nasInterimInterval) VALUES(" +
+                    "nasInterimInterval, " +
+                    "nasIdleTimeout, " +
+                    "nasAccessGroupIn, " +
+                    "nasAccessGroupOut) VALUES(" +
                     "'" + nasData.nasName + "', " +
                     nasData.nasType + ", " +
                     nasData.nasIP + ", " +
                     "1, " +
                     "'" + nasData.nasSecret + "', " +
-                    nasData.nasInterimInterval + ")");
+                    nasData.nasInterimInterval + ", " +
+                    nasData.nasIdleTimeout + ", " +
+                    nasData.nasAccessGroupIn + ", " +
+                    nasData.nasAccessGroupOut + ")");
 
             if (ids != null && ids.size() > 0) {
                 return ids.get(0);
@@ -93,7 +99,10 @@ public class NccNAS {
                     "nasType=" + nasData.nasType + ", " +
                     "nasIP=" + nasData.nasIP + ", " +
                     "nasSecret='" + nasData.nasSecret + "', " +
-                    "nasInterimInterval=" + nasData.nasInterimInterval + " " +
+                    "nasInterimInterval=" + nasData.nasInterimInterval + ", " +
+                    "nasIdleTimeoute=" + nasData.nasIdleTimeout + ", " +
+                    "nasAccessGroupIn=" + nasData.nasAccessGroupIn + ", " +
+                    "nasAccessGroupOut=" + nasData.nasAccessGroupOut + " " +
                     "WHERE id=" + nasData.id);
 
             if (ids != null && ids.size() > 0) {
