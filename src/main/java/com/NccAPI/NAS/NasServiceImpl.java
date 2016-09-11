@@ -55,13 +55,13 @@ public class NasServiceImpl implements NasService {
             return apiNasData;
         }
 
-        if (nasInterimInterval <= 0) {
-            apiNasData.message = "InterimInterval must be >0";
+        if (nasInterimInterval < 60) {
+            apiNasData.message = "InterimInterval must be >=60";
             return apiNasData;
         }
 
-        if (nasIdleTimeout <= 0) {
-            apiNasData.message = "IdleTimeout must be >0";
+        if (nasIdleTimeout < 60) {
+            apiNasData.message = "IdleTimeout must be >=60";
             return apiNasData;
         }
 
