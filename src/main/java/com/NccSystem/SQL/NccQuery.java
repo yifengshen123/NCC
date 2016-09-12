@@ -65,9 +65,9 @@ public class NccQuery {
             Statement stmt = sql.createStatement();
             Integer updateRows = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 
+            ArrayList<Integer> ids = new ArrayList<>();
             if (updateRows > 0) {
                 ResultSet rs = stmt.getGeneratedKeys();
-                ArrayList<Integer> ids = new ArrayList<>();
 
                 CachedRowSetImpl crs = new CachedRowSetImpl();
 
@@ -76,12 +76,10 @@ public class NccQuery {
                 }
 
                 sql.close();
-                return ids;
             } else {
                 sql.close();
-                //throw new NccQueryException("null result set: '" + query);
-                return null;
             }
+            return ids;
 
         } catch (SQLException se) {
             se.printStackTrace();

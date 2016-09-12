@@ -18,5 +18,5 @@ public interface NasService {
 
     ApiNasData updateNAS(String login, String key, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval, Integer nasIdleTimeout, Integer nasAccessGroupIn, Integer nasAccessGroupOut);
 
-    Integer deleteNAS(String apiKey, Integer id);
+    ApiNasData deleteNAS(String login, String key, Integer id);
 }

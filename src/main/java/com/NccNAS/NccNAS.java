@@ -116,17 +116,17 @@ public class NccNAS {
         return null;
     }
 
-    public Integer deleteNas(Integer id) throws NccNasException {
+    public boolean deleteNas(Integer id) throws NccNasException {
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccNAS WHERE id=" + id);
 
-            if (ids != null && ids.size() > 0) {
-                return ids.get(0);
+            if (ids != null) {
+                return true;
             }
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
     }
 }

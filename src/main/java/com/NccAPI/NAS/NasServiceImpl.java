@@ -11,19 +11,29 @@ import java.util.ArrayList;
 
 public class NasServiceImpl implements NasService {
 
-    public Integer deleteNAS(String apiKey, Integer id) {
-        if (!new NccAPI().checkKey(apiKey)) return null;
+    public ApiNasData deleteNAS(String login, String key, Integer id) {
 
-        Integer did;
+        ApiNasData apiNasData = new ApiNasData();
+        apiNasData.data = new ArrayList<>();
+        apiNasData.status = 0;
 
-        try {
-            did = new NccNAS().deleteNas(id);
-        } catch (NccNasException e) {
-            e.printStackTrace();
-            return null;
+        if (!new NccAPI().checkPermission(login, key, "DeleteNAS")){
+            apiNasData.message = "Permission denied";
+            return apiNasData;
         }
 
-        return did;
+        try {
+            boolean did = new NccNAS().deleteNas(id);
+
+            if(did){
+                apiNasData.status = 1;
+            }
+        } catch (NccNasException e) {
+            e.printStackTrace();
+            apiNasData.message = e.getMessage();
+        }
+
+        return apiNasData;
     }
 
     public ApiNasData createNAS(String login, String key, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval, Integer nasIdleTimeout, Integer nasAccessGroupIn, Integer nasAccessGroupOut) {
@@ -80,6 +90,7 @@ public class NasServiceImpl implements NasService {
             }
         } catch (NccNasException e) {
             e.printStackTrace();
+            apiNasData.message = e.getMessage();
         }
 
         return apiNasData;
@@ -139,7 +150,7 @@ public class NasServiceImpl implements NasService {
             }
         } catch (NccNasException e) {
             e.printStackTrace();
-            return null;
+            apiNasData.message = e.getMessage();
         }
 
         return apiNasData;
