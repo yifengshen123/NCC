@@ -28,13 +28,16 @@ public class NasServiceImpl implements NasService {
 
     public ApiNasData createNAS(String login, String key, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval, Integer nasIdleTimeout, Integer nasAccessGroupIn, Integer nasAccessGroupOut) {
 
-        if (!new NccAPI().checkPermission(login, key, "CreateNAS")) return null;
-
-        NccNasData nasData = new NccNasData();
-
         ApiNasData apiNasData = new ApiNasData();
         apiNasData.data = new ArrayList<>();
         apiNasData.status = 0;
+
+        if (!new NccAPI().checkPermission(login, key, "CreateNAS")){
+            apiNasData.message = "Permission denied";
+            return apiNasData;
+        }
+
+        NccNasData nasData = new NccNasData();
 
         nasData.nasName = nasName;
         nasData.nasType = nasType;
@@ -82,8 +85,15 @@ public class NasServiceImpl implements NasService {
         return apiNasData;
     }
 
-    public Integer updateNAS(String apiKey, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval) {
-        if (!new NccAPI().checkKey(apiKey)) return null;
+    public ApiNasData updateNAS(String login, String key, Integer id, String nasName, Integer nasType, Long nasIP, String nasSecret, Integer nasInterimInterval, Integer nasIdleTimeout, Integer nasAccessGroupIn, Integer nasAccessGroupOut) {
+        ApiNasData apiNasData = new ApiNasData();
+        apiNasData.data = new ArrayList<>();
+        apiNasData.status = 0;
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateNAS")){
+            apiNasData.message = "Permission denied";
+            return apiNasData;
+        }
 
         NccNasData nasData = new NccNasData();
 
@@ -93,15 +103,46 @@ public class NasServiceImpl implements NasService {
         nasData.nasIP = nasIP;
         nasData.nasSecret = nasSecret;
         nasData.nasInterimInterval = nasInterimInterval;
+        nasData.nasIdleTimeout = nasIdleTimeout;
+        nasData.nasAccessGroupIn = nasAccessGroupIn;
+        nasData.nasAccessGroupOut = nasAccessGroupOut;
+
+        if (nasName.equals("")) {
+            apiNasData.message = "Empty NAS name";
+            return apiNasData;
+        }
+
+        if (nasIP <= 0) {
+            apiNasData.message = "Incorrect NAS IP";
+            return apiNasData;
+        }
+
+        if (nasInterimInterval < 60) {
+            apiNasData.message = "InterimInterval must be >=60";
+            return apiNasData;
+        }
+
+        if (nasIdleTimeout < 60) {
+            apiNasData.message = "IdleTimeout must be >=60";
+            return apiNasData;
+        }
 
         try {
             id = new NccNAS().updateNas(nasData);
+
+            if (nasData.id != null) {
+                apiNasData.status = 1;
+                apiNasData.data.add(nasData);
+            } else {
+                apiNasData.status = 0;
+                apiNasData.message = "Error updating NAS";
+            }
         } catch (NccNasException e) {
             e.printStackTrace();
             return null;
         }
 
-        return id;
+        return apiNasData;
     }
 
     public NccNasData getNAS(String apiKey, Integer id) {

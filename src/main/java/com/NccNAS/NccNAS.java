@@ -100,7 +100,7 @@ public class NccNAS {
                     "nasIP=" + nasData.nasIP + ", " +
                     "nasSecret='" + nasData.nasSecret + "', " +
                     "nasInterimInterval=" + nasData.nasInterimInterval + ", " +
-                    "nasIdleTimeoute=" + nasData.nasIdleTimeout + ", " +
+                    "nasIdleTimeout=" + nasData.nasIdleTimeout + ", " +
                     "nasAccessGroupIn=" + nasData.nasAccessGroupIn + ", " +
                     "nasAccessGroupOut=" + nasData.nasAccessGroupOut + " " +
                     "WHERE id=" + nasData.id);
