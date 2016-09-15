@@ -319,8 +319,8 @@ public class NccRadius extends RadiusServer {
 
                             sessionData.nasId = nasData.id;
 
-                            sessionData.framedIP = NccUtils.ip2long(framedIP);
-                            sessionData.framedMAC = framedMAC;
+                            sessionData.framedIP = (framedIP != null) ? NccUtils.ip2long(framedIP) : 0L;
+                            sessionData.framedMAC = (framedMAC != null) ? framedMAC : "00:00:00:00:00:00";
                             sessionData.acctInputOctets = 0L;
                             sessionData.acctOutputOctets = 0L;
                             sessionData.sessionId = sessionID;
@@ -328,39 +328,62 @@ public class NccRadius extends RadiusServer {
                             sessionData.lastAlive = sessionData.startTime;
                             sessionData.sessionDuration = 0L;
 
-                            try {
-                                leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
+                            if (serviceType.equals("Outbound-User") || serviceType.equals("5")) {
 
-                                if (leaseData != null) {
+                                try {
+                                    leaseData = new NccDhcpLeases().getLeaseByIP(sessionData.framedIP);
 
-                                    sessionData.framedMAC = leaseData.leaseClientMAC;
-                                    sessionData.framedAgentId = leaseData.leaseRelayAgent;
-                                    sessionData.framedCircuitId = leaseData.leaseCircuitID;
-                                    sessionData.framedRemoteId = leaseData.leaseRemoteID;
+                                    if (leaseData != null) {
 
-                                    try {
-                                        NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
+                                        sessionData.framedMAC = leaseData.leaseClientMAC;
+                                        sessionData.framedAgentId = leaseData.leaseRelayAgent;
+                                        sessionData.framedCircuitId = leaseData.leaseCircuitID;
+                                        sessionData.framedRemoteId = leaseData.leaseRemoteID;
 
-                                        if (userData != null) {
+                                        try {
+                                            NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
 
-                                            sessionData.userId = userData.id;
-                                            sessionData.userTariff = userData.userTariff;
-                                            try {
-                                                new NccSessions().startSession(sessionData);
-                                            } catch (NccSessionsException e) {
-                                                e.printStackTrace();
+                                            if (userData != null) {
+
+                                                sessionData.userId = userData.id;
+                                                sessionData.userTariff = userData.userTariff;
+                                                try {
+                                                    new NccSessions().startSession(sessionData);
+                                                } catch (NccSessionsException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
+                                        } catch (NccUsersException e) {
+                                            e.printStackTrace();
                                         }
-                                    } catch (NccUsersException e) {
-                                        e.printStackTrace();
+
+                                    } else {
+
+                                        logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
                                     }
-
-                                } else {
-
-                                    logger.info("No lease found for session: " + sessionID + " login: " + userLogin);
+                                } catch (NccDhcpException e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (NccDhcpException e) {
-                                e.printStackTrace();
+                            } else if (serviceType.equals("Framed") || serviceType.equals("2")) {
+                                try {
+                                    NccUserData userData = new NccUsers().getUser(userLogin);
+
+                                    if (userData != null) {
+
+                                        sessionData.userId = userData.id;
+                                        sessionData.userTariff = userData.userTariff;
+                                        try {
+                                            new NccSessions().startSession(sessionData);
+                                        } catch (NccSessionsException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                } catch (NccUsersException e) {
+                                    e.printStackTrace();
+                                }
+
+                            } else {
+                                logger.error("Unknown Service-Type: " + serviceType);
                             }
 
                         } else if (statusType.intValue() == AccountingRequest.ACCT_STATUS_TYPE_STOP) {
@@ -681,30 +704,39 @@ public class NccRadius extends RadiusServer {
                     AccountData accountData = nccAccounts.getAccount(userData.accountId);
                     try {
                         if (req.verifyPassword(userData.userPassword)) {
+
+                            logger.debug("Passwords equals");
+
                             if (userData.userStatus > 0) {
 
-                                if (accountData != null) if (accountData.accDeposit > -accountData.accCredit) {
-                                    logger.info("Login OK: '" + reqUserName + "'");
+                                logger.debug("userStatus OK");
 
-                                    packetType = RadiusPacket.ACCESS_ACCEPT;
+                                if (accountData != null) {
+                                    if (accountData.accDeposit > -accountData.accCredit) {
+                                        logger.info("Login OK: '" + reqUserName + "'");
 
-                                    try {
-                                        ArrayList<NccPoolData> pools;
+                                        packetType = RadiusPacket.ACCESS_ACCEPT;
 
-                                        NccTariffScale tariffScale = new NccTariffScale();
+                                        try {
+                                            ArrayList<NccPoolData> pools;
 
-                                        pools = tariffScale.getTariffPools(userData.userTariff);
+                                            NccTariffScale tariffScale = new NccTariffScale();
 
-                                        Long framedIP = new NccSessions().getIPFromPool(pools);
+                                            pools = tariffScale.getTariffPools(userData.userTariff);
 
-                                        radiusPacket.addAttribute("Framed-IP-Address", NccUtils.long2ip(framedIP));
-                                        radiusPacket.addAttribute("Framed-IP-Netmask", "255.255.255.255");
-                                        radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
-                                    } catch (NccSessionsException e) {
-                                        logger.info("Login FAIL: no enough IP in pools");
+                                            Long framedIP = new NccSessions().getIPFromPool(pools);
+
+                                            radiusPacket.addAttribute("Framed-IP-Address", NccUtils.long2ip(framedIP));
+                                            radiusPacket.addAttribute("Framed-IP-Netmask", "255.255.255.255");
+                                            radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
+                                        } catch (NccSessionsException e) {
+                                            logger.info("Login FAIL: no enough IP in pools");
+                                        }
+                                    } else {
+                                        logger.info("Login FAIL: deposit <= -credit");
                                     }
                                 } else {
-                                    logger.info("Login FAIL: deposit <= -credit");
+                                    logger.info("Login FAIL: accountData==NULL");
                                 }
                             } else {
                                 logger.info("Login FAIL: user disabled");
