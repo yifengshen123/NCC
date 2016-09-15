@@ -175,8 +175,9 @@ public class NccSessions {
             ArrayList<Integer> idsUpdate = query.updateQuery("UPDATE nccSessions SET " +
                     "acctInputOctets=" + sessionData.acctInputOctets + ", " +
                     "acctOutputOctets=" + sessionData.acctOutputOctets + ", " +
-                    "framedMAC='" + sessionData.framedMAC+"', " +
-                    "userId=" + sessionData.userId+", " +
+                    "framedIP=" + sessionData.framedIP + ", " +
+                    "framedMAC='" + sessionData.framedMAC + "', " +
+                    "userId=" + sessionData.userId + ", " +
                     "lastAlive=UNIX_TIMESTAMP(NOW()), " +
                     "sessionDuration=" + sessionData.sessionDuration + " " +
                     "WHERE id=" + sessionData.id);
