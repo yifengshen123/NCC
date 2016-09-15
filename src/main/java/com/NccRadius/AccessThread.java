@@ -37,125 +37,96 @@ class AccessThread implements Runnable {
         return radiusPacket;
     }
 
-    public AccessThread(AccessRequest accessRequest, InetSocketAddress socketAddress){
+    private long startTime = System.nanoTime();
+
+    private String reqUserName;
+    private String reqUserPassword;
+    private Integer reqPacketIdentifier;
+    private String reqServiceType;
+
+    private Integer packetType = RadiusPacket.ACCESS_REJECT;
+    private NccNasData nasData;
+
+    public AccessThread(AccessRequest accessRequest, InetSocketAddress socketAddress) {
         this.req = accessRequest;
         this.addr = socketAddress;
+        this.reqUserName = accessRequest.getUserName();
+        this.reqUserPassword = accessRequest.getUserPassword();
+        this.reqPacketIdentifier = accessRequest.getPacketIdentifier();
+        this.reqServiceType = accessRequest.getServiceType();
     }
 
-    @Override
-    public void run() {
-
-        long startTime = System.nanoTime();
-
-        String reqUserName = req.getUserName();
-        String reqUserPassword = req.getUserPassword();
-        Integer reqPacketIdentifier = req.getPacketIdentifier();
-        String reqServiceType = req.getServiceType();
-
-        if (Ncc.radiusLogLevel >= 6)
-            logger.info("Access-Request '" + reqUserName + "' Service-Type '" + reqServiceType + "'");
-
-        Integer packetType = RadiusPacket.ACCESS_REJECT;
-
-        NccNasData nasData;
-        Long nasIP = NccUtils.ip2long(addr.getHostString());
-
+    private void processOutbound(){
+        NccDhcpLeases leases = new NccDhcpLeases();
         try {
-            NccNAS nccNAS = new NccNAS();
 
-            nasData = nccNAS.getNasByIP(nasIP);
-        } catch (NccNasException e) {
-            logger.error("NAS error: " + e.getMessage());
-            return;
-        }
+            NccDhcpLeaseData leaseData = leases.getLeaseByIP(NccUtils.ip2long(reqUserName));
+            if (leaseData != null) {
 
-        if (reqServiceType.equals("Outbound-User") || reqServiceType.equals("5")) {
+                if (leaseData.leaseUID == 0) {
+                    logger.info("Login FAIL: userId=0");
+                    return;
+                }
 
-            logger.debug("Outbound-User");
+                logger.debug("Found lease data");
 
-            NccDhcpLeases leases = new NccDhcpLeases();
-            try {
+                try {
+                    NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
 
-                NccDhcpLeaseData leaseData = leases.getLeaseByIP(NccUtils.ip2long(reqUserName));
-                if (leaseData != null) {
+                    if (userData != null) {
 
-                    if (leaseData.leaseUID == 0) {
-                        radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                        radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
-                        logger.info("Login FAIL: userId=0");
-                        return;
-                    }
+                        logger.debug("Found user data");
 
-                    logger.debug("Found lease data");
-
-                    try {
-                        NccUserData userData = new NccUsers().getUser(leaseData.leaseUID);
-
-                        if (userData != null) {
-
-                            logger.debug("Found user data");
-
-                            if (userData.userStatus == 0) {
-                                radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                                radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
-                                logger.info("Login FAIL: [" + userData.userLogin + "] user disabled");
-                                return;
-                            }
-
-                            if (Math.floor(userData.userDeposit) <= -Math.floor(userData.userCredit)) {
-                                radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                                radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
-                                logger.info("Login FAIL: [" + userData.userLogin + "] negative deposit");
-                                return;
-                            }
-
-                            RateData rateData = new NccTariffScale().getRate(userData.userTariff);
-
-                            if (rateData != null) {
-                                Integer inRate = rateData.inRate * 1000;
-                                Integer outRate = rateData.outRate * 1000;
-                                Integer inBurst = inRate / 2;
-                                Integer outBurst = outRate / 2;
-
-                                radiusPacket.addAttribute("SSG-Service-Info", "QU;" + inRate + ";" + inBurst + ";" + inRate + ";D;" + outRate + ";" + outBurst + ";" + outRate);
-                            }
-
-                            packetType = RadiusPacket.ACCESS_ACCEPT;
-                            radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
-                            radiusPacket.addAttribute("Idle-Timeout", nasData.nasIdleTimeout.toString());
-                            radiusPacket.addAttribute("avpair", "subscriber:accounting-list=ipoe-isg-aaa");
-                            radiusPacket.addAttribute("avpair", "ip:traffic-class=in access-group " + nasData.nasAccessGroupIn.toString() + " priority 201");
-                            radiusPacket.addAttribute("avpair", "ip:traffic-class=out access-group " + nasData.nasAccessGroupOut.toString() + " priority 201");
-                            radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                            radiusPacket.setPacketType(packetType);
-                            logger.info("Login OK: " + reqUserName + " [" + userData.userLogin + "]");
+                        if (userData.userStatus == 0) {
+                            logger.info("Login FAIL: [" + userData.userLogin + "] user disabled");
                             return;
                         }
 
-                        radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                        radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
-                        logger.info("Login FAIL: [" + reqUserName + "] user not found");
-                    } catch (NccUsersException e) {
-                        logger.debug("getUser error: " + e.getMessage());
-                        e.printStackTrace();
+                        if (Math.floor(userData.userDeposit) <= -Math.floor(userData.userCredit)) {
+                            logger.info("Login FAIL: [" + userData.userLogin + "] negative deposit");
+                            return;
+                        }
+
+                        RateData rateData = new NccTariffScale().getRate(userData.userTariff);
+
+                        if (rateData != null) {
+                            Integer inRate = rateData.inRate * 1000;
+                            Integer outRate = rateData.outRate * 1000;
+                            Integer inBurst = inRate / 2;
+                            Integer outBurst = outRate / 2;
+
+                            radiusPacket.addAttribute("SSG-Service-Info", "QU;" + inRate + ";" + inBurst + ";" + inRate + ";D;" + outRate + ";" + outBurst + ";" + outRate);
+                        }
+
+                        radiusPacket.addAttribute("Acct-Interim-Interval", nasData.nasInterimInterval.toString());
+                        radiusPacket.addAttribute("Idle-Timeout", nasData.nasIdleTimeout.toString());
+                        radiusPacket.addAttribute("avpair", "subscriber:accounting-list=ipoe-isg-aaa");
+                        radiusPacket.addAttribute("avpair", "ip:traffic-class=in access-group " + nasData.nasAccessGroupIn.toString() + " priority 201");
+                        radiusPacket.addAttribute("avpair", "ip:traffic-class=out access-group " + nasData.nasAccessGroupOut.toString() + " priority 201");
+                        packetType = RadiusPacket.ACCESS_ACCEPT;
+                        logger.info("Login OK: " + reqUserName + " [" + userData.userLogin + "]");
+                        return;
                     }
 
-                } else {
-                    radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-                    radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
-                    logger.info("Login FAIL: [" + reqUserName + "] lease not found");
+                    logger.info("Login FAIL: [" + reqUserName + "] user not found");
+                    return;
+                } catch (NccUsersException e) {
+                    logger.debug("getUser error: " + e.getMessage());
+                    e.printStackTrace();
                 }
-
-            } catch (NccDhcpException e) {
-                e.printStackTrace();
+            } else {
+                logger.info("Login FAIL: [" + reqUserName + "] lease not found");
+                return;
             }
 
-            radiusPacket.setPacketIdentifier(reqPacketIdentifier);
-            radiusPacket.setPacketType(RadiusPacket.ACCESS_REJECT);
-            logger.info("Login FAIL: " + reqUserName);
-            return;
+        } catch (NccDhcpException e) {
+            e.printStackTrace();
         }
 
+        logger.info("Login FAIL: " + reqUserName);
+    }
+
+    private void processFramed(){
         try {
             NccUserData userData = new NccUsers().getUser(reqUserName);
 
@@ -163,11 +134,7 @@ class AccessThread implements Runnable {
             try {
                 if (req.verifyPassword(userData.userPassword)) {
 
-                    logger.debug("Passwords equals");
-
                     if (userData.userStatus > 0) {
-
-                        logger.debug("userStatus OK");
 
                         if (accountData != null) {
                             if (accountData.accDeposit > -accountData.accCredit) {
@@ -200,7 +167,7 @@ class AccessThread implements Runnable {
                         logger.info("Login FAIL: user disabled");
                     }
                 } else {
-                    logger.info("Login FAIL: incorrect userPassword for '" + reqUserName + "': '" + reqUserPassword + "' expected '" + userData.userPassword + "'");
+                    logger.info("Login FAIL: incorrect userPassword for '" + reqUserName + "' expected '" + userData.userPassword + "'");
                 }
             } catch (RadiusException re) {
                 re.printStackTrace();
@@ -208,6 +175,32 @@ class AccessThread implements Runnable {
 
         } catch (NccUsersException e) {
             logger.info("User not found: '" + reqUserName + "'");
+        }
+    }
+
+    @Override
+    public void run() {
+
+        if (Ncc.radiusLogLevel >= 6)
+            logger.info("Access-Request '" + reqUserName + "' Service-Type '" + reqServiceType + "'");
+
+        Long nasIP = NccUtils.ip2long(addr.getHostString());
+
+        try {
+            NccNAS nccNAS = new NccNAS();
+
+            nasData = nccNAS.getNasByIP(nasIP);
+        } catch (NccNasException e) {
+            logger.error("NAS error: " + e.getMessage());
+            return;
+        }
+
+        if (reqServiceType.equals("Outbound-User") || reqServiceType.equals("5")) {
+            logger.debug("Outbound-User");
+            processOutbound();
+        } else if (reqServiceType.equals("Framed") || reqServiceType.equals("2")) {
+            logger.debug("Framed-User");
+            processFramed();
         }
 
         radiusPacket.setPacketIdentifier(reqPacketIdentifier);
