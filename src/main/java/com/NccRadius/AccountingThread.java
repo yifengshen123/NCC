@@ -19,6 +19,8 @@ import org.tinyradius.packet.AccountingRequest;
 import org.tinyradius.packet.RadiusPacket;
 import org.tinyradius.util.RadiusException;
 
+import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 class AccountingThread implements Runnable {
@@ -27,6 +29,7 @@ class AccountingThread implements Runnable {
 
     private volatile RadiusPacket radiusPacket = new RadiusPacket();
     private AccountingRequest accountingRequest;
+    private InetSocketAddress socketAddress;
 
     public RadiusPacket getValue() {
         return radiusPacket;
@@ -36,8 +39,9 @@ class AccountingThread implements Runnable {
 
     }
 
-    public AccountingThread(AccountingRequest accReq){
+    public AccountingThread(AccountingRequest accReq, InetSocketAddress accClient){
         this.accountingRequest = accReq;
+        this.socketAddress = accClient;
     }
 
     @Override
