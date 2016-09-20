@@ -90,7 +90,7 @@ class AccountingThread implements Runnable {
         sessionData.lastAlive = sessionData.startTime;
         sessionData.sessionDuration = 0L;
 
-        if (serviceType.equals("Outbound-User") || serviceType.equals("5")) {
+        if (serviceType.equals("Outbound-User") || serviceType.equals("5") || serviceType.equals("Framed") || serviceType.equals("2")) {
 
             try {
                 leaseData = new NccDhcpLeases().getLeaseByIP(sessionData.framedIP);
@@ -126,6 +126,7 @@ class AccountingThread implements Runnable {
             } catch (NccDhcpException e) {
                 e.printStackTrace();
             }
+/*
         } else if (serviceType.equals("Framed") || serviceType.equals("2")) {
             try {
                 NccUserData userData = new NccUsers().getUser(userLogin);
@@ -144,6 +145,7 @@ class AccountingThread implements Runnable {
                 e.printStackTrace();
             }
 
+*/
         } else {
             logger.error("Unknown Service-Type: " + serviceType);
         }
@@ -256,7 +258,7 @@ class AccountingThread implements Runnable {
             }
         }
 
-        if (serviceType.equals("Outbound-User") || serviceType.equals("5")) {
+        if (serviceType.equals("Outbound-User") || serviceType.equals("5") || serviceType.equals("Framed") || serviceType.equals("2")) {
             try {
                 leaseData = new NccDhcpLeases().getLeaseByIP(NccUtils.ip2long(framedIP));
 
@@ -310,6 +312,7 @@ class AccountingThread implements Runnable {
             } catch (NccDhcpException e) {
                 e.printStackTrace();
             }
+/*
         } else if (serviceType.equals("Framed") || serviceType.equals("2")) {
 
             if (sessionData != null) {
@@ -327,6 +330,10 @@ class AccountingThread implements Runnable {
                     e.printStackTrace();
                 }
             }
+        }
+*/
+        } else {
+            logger.error("Unknown Service-Type: " + serviceType);
         }
     }
 

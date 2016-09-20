@@ -37,6 +37,7 @@ public class NccQuery {
             if (rs != null) {
                 crs.populate(rs);
                 sql.close();
+                if(Ncc.logQuery) logger.info("Query complete");
                 return crs;
             } else {
                 sql.close();
@@ -79,6 +80,7 @@ public class NccQuery {
             } else {
                 sql.close();
             }
+            if(Ncc.logQuery) logger.info("Query complete");
             return ids;
 
         } catch (SQLException se) {

@@ -93,22 +93,24 @@ public class NccDhcpBinding {
         Long lastSeen = System.currentTimeMillis() / 1000L;
 
         try {
+/*
             ids = query.updateQuery("UPDATE nccDhcpUnbinded SET lastSeen=" + lastSeen + ", clientMAC='" + request.getClientMAC() + "' WHERE " +
                     "remoteID='" + request.getRemoteID() + "' AND " +
                     "circuitID='" + request.getCircuitID() + "' AND " +
                     "relayAgent=" + request.getRelayAgent());
+*/
 
-            if (ids == null) ids = query.updateQuery("INSERT INTO nccDhcpUnbinded (" +
+            ids = query.updateQuery("INSERT INTO nccDhcpUnbinded (" +
                     "lastSeen, " +
                     "remoteID, " +
                     "circuitID, " +
                     "clientMAC, " +
-                    "relayAgent) VALUES (" +
-                    lastSeen + ", " +
+                    "relayAgent) VALUES (UNIX_TIMESTAMP(NOW()), " +
                     "'" + request.getRemoteID() + "', " +
                     "'" + request.getCircuitID() + "', " +
                     "'" + request.getClientMAC() + "', " +
-                    request.getRelayAgent() + ")");
+                    request.getRelayAgent() + ") ON DUPLICATE KEY " +
+                    "UPDATE lastSeen=UNIX_TIMESTAMP(NOW()), clientMAC='" + request.getClientMAC() + "'");
 
         } catch (NccQueryException e) {
             e.printStackTrace();

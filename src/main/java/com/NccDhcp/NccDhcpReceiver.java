@@ -110,6 +110,12 @@ class NccDhcpReceiver extends Thread {
             DatagramPacket outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), inPkt.getPort());
             dhcpSocket.send(outPkt);
 
+            // send copy to port 67 for D-Link
+            if(inPkt.getPort()!=67) {
+                outPkt = new DatagramPacket(dhcpReply, dhcpReply.length, inPkt.getAddress(), 67);
+                dhcpSocket.send(outPkt);
+            }
+
             NccDhcpServer.requestProcessed++;
 
             return outPkt;
