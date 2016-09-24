@@ -254,6 +254,8 @@ class NccDhcpReceiver extends Thread {
         if (request.getRemoteID().equals("")) {
             if (Ncc.dhcpLogLevel >= 6)
                 logger.info("Empty remoteID clientMAC='" + pkt.getClientID() + "'");
+        } else {
+            NccDhcpBindData bindData = checkBind(request);
         }
 
         if (!NccUtils.long2ip(request.getClientIP()).equals("0.0.0.0")) {     // renew lease
