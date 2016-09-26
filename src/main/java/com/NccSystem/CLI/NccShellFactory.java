@@ -100,6 +100,7 @@ public class NccShellFactory extends ProcessShellFactory {
             subs.add(new NccCommand("radius", "Show radius-related information", true, null, null));
 
             ArrayList<NccCommand> astraSubs = new ArrayList<>();
+            astraSubs.add(new NccCommand("activechannels", "Show active channel list at specified transponder", true, new Class[]{Integer.class}, null, "showAstraActiveChannels"));
             astraSubs.add(new NccCommand("transponders", "Show transponder list", false, null, "getAstraTransponders"));
             subs.add(new NccCommand("astra", "AstraManager related info", true, astraSubs, null));
             nccCommands.add(new NccCommand("show", "Show various options", false, subs, null));
@@ -154,18 +155,16 @@ public class NccShellFactory extends ProcessShellFactory {
                         token = st.nextToken();
 
                         ptypes = cmd.argTypes;
-                        System.out.println(ptypes);
                         ArrayList<Object> tmp = new ArrayList<Object>(Arrays.asList(args));
                         for (Class c : cmd.argTypes) {
                             String type = c.getName();
-                            System.out.println(type);
                             if (type.equals("java.lang.Integer")) {
                                 tmp.add(Integer.valueOf(token));
-                            } else if(type.equals("java.lang.String")) {
+                            } else if (type.equals("java.lang.String")) {
                                 tmp.add(token);
                             } else {
-                                    logger.error("Unknown param type: " + type);
-                                    return null;
+                                logger.error("Unknown param type: " + type);
+                                return null;
                             }
                         }
                         args = tmp.toArray();
@@ -459,7 +458,7 @@ public class NccShellFactory extends ProcessShellFactory {
 
                         executeCommand(line);
 
-                        if(exitFlag) break;
+                        if (exitFlag) break;
 
                         writer.print("#");
                         writer.flush();

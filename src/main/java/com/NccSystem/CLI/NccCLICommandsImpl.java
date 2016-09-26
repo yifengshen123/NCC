@@ -21,7 +21,7 @@ public class NccCLICommandsImpl implements NccCLICommands {
         this.writer = writer;
     }
 
-    public void exitCLI(){
+    public void exitCLI() {
         writer.println("Exiting CLI");
         NccShellFactory.exitFlag = true;
     }
@@ -73,5 +73,16 @@ public class NccCLICommandsImpl implements NccCLICommands {
             }
         });
         t.start();
+    }
+
+    public void showAstraActiveChannels(Integer id) {
+        ArrayList<NccAstraManager.ActiveChannel> channels = new NccAstraManager().getActiveChannelsByTransponderId(id);
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+
+        writer.println(formatter.format("%-36s %-15s %-5s %-5s %-5s\r", "Channel name", "Channel IP", "Bps", "CC", "PES"));
+        for (NccAstraManager.ActiveChannel c : channels) {
+            writer.println(formatter.format("%-36s %-15s %-5d %-5d %-5d\r", c.channelData.channelName, NccUtils.long2ip(c.channelData.channelIP), c.bitrate, c.ccCount, c.scrambledCount));
+        }
     }
 }
