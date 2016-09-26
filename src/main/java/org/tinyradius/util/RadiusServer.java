@@ -514,8 +514,7 @@ public abstract class RadiusServer {
 	private List receivedPackets = new LinkedList();
 	private long duplicateInterval = 30000; // 30 s
 	public boolean closing = false;
-	//private static Log logger = LogFactory.getLog(RadiusServer.class);
-	private static Logger logger = Logger.getLogger(RadiusServer.class);
+	private static Logger logger = Logger.getLogger("RadiusLogger");
 	
 }
 

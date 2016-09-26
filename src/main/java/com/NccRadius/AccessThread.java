@@ -28,7 +28,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 class AccessThread implements Runnable {
-    private static Logger logger = Logger.getLogger(NccRadius.class);
+    private static Logger logger = Logger.getLogger("RadiusLogger");
     private volatile RadiusPacket radiusPacket = new RadiusPacket();
     private AccessRequest req;
     private InetSocketAddress addr;

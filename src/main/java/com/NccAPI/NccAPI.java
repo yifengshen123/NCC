@@ -1,5 +1,6 @@
 package com.NccAPI;
 
+import com.Ncc;
 import com.NccAPI.AstraManager.AstraManagerImpl;
 import com.NccAPI.AstraManager.AstraManagerService;
 import com.NccAPI.DhcpBinding.DhcpBindingService;
@@ -26,6 +27,7 @@ import com.NccAPI.Views.ViewsService;
 import com.NccAPI.Views.ViewsServiceImpl;
 import com.NccAccounts.AccountData;
 import com.NccAccounts.NccAccounts;
+import com.NccSystem.NccLogger;
 import com.googlecode.jsonrpc4j.JsonRpcServer;
 import com.googlecode.jsonrpc4j.ProxyUtil;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -44,10 +46,10 @@ import java.io.OutputStream;
 public class NccAPI {
 
     private Server apiServer;
-    private static Logger logger = Logger.getLogger(NccAPI.class);
+    private static NccLogger nccLogger = new NccLogger("APILogger");
+    private static Logger logger = nccLogger.setFilename(Ncc.apiLogfile);
 
     public NccAPI() {
-
     }
 
     public NccAPI(Integer port) {
@@ -201,6 +203,8 @@ public class NccAPI {
     }
 
     public void start() {
+        logger.info("Starting API on port " + Ncc.apiPort);
+
         try {
             apiServer.start();
             apiServer.join();
@@ -238,6 +242,8 @@ public class NccAPI {
     }
 
     public boolean checkPermission(String login, String key, String permission) {
+
+        logger.info("API request for: '" + login + "' permission=" + permission);
 
         AccountData accountData = checkKey(login, key);
 

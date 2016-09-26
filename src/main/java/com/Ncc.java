@@ -4,14 +4,14 @@ import com.NccAPI.NccAPI;
 import com.NccDhcp.NccDhcpServer;
 import com.NccRadius.NccRadius;
 import com.NccSystem.CLI.NccCLI;
-import com.NccSystem.NccUtils;
+import com.NccSystem.NccLogger;
 import com.NccSystem.SQL.NccSQLPool;
 import org.apache.commons.configuration.*;
 import org.apache.log4j.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.InetSocketAddress;
 import java.sql.*;
 
 public class Ncc {
@@ -20,9 +20,10 @@ public class Ncc {
     private static NccAPI nccAPI;
     private static NccDhcpServer nccDhcp;
     public static NccSQLPool sqlPool;
-    private static Logger logger = Logger.getRootLogger();
-    private static String logLevel = "DEBUG";
-    public static String logFile = "NCC.log";
+    private static NccLogger nccLogger = new NccLogger("MainLogger");
+    private static Logger logger;
+    public static String logLevel = "DEBUG";
+    public static String logFile = "ncc.log";
     private static boolean moduleRadius = true;
     private static boolean moduleDHCP = true;
     private static boolean moduleCLI = true;
@@ -36,11 +37,15 @@ public class Ncc {
     public static boolean dhcpIgnoreBroadcast = true;
     public static Integer cliSshPort = 3270;
     public static boolean nccForceGC = false;
+    public static Integer apiPort = 8032;
+
+    public static String SQLLogfile = "sql.log";
+    public static String radiusLogfile = "radius.log";
+    public static String dhcpLogfile = "dhcp.log";
+    public static String apiLogfile = "api.log";
+    public static String cliLogfile = "cli.log";
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
-
-
-        logger.setLevel(Level.toLevel(logLevel));
 
         String dbHost, dbDbname, dbUser, dbPassword;
         String connectString;
@@ -54,24 +59,18 @@ public class Ncc {
             config.addConfiguration(new PropertiesConfiguration("config.properties"));
 
             logLevel = config.getString("log.level", "INFO");
-            logFile = config.getString("log.file", "NCC.log");
-            logQuery = config.getBoolean("log.query", false);
+            logFile = config.getString("log.file", "ncc.log");
+
+            logger = nccLogger.setFilename(logFile);
+            logger.setLevel(Level.toLevel(logLevel));
+
+            SQLLogfile = config.getString("sql.logfile", "SQL.log");
+            logQuery = config.getBoolean("sql.log.query", false);
 
             moduleRadius = config.getBoolean("module.radius", false);
             moduleDHCP = config.getBoolean("module.dhcp", false);
             moduleCLI = config.getBoolean("module.cli", true);
             moduleAPI = config.getBoolean("module.api", true);
-
-            logger.setLevel(Level.toLevel(logLevel));
-
-            FileAppender fileAppender = new FileAppender();
-            fileAppender.setName("NccFileLogger");
-            fileAppender.setFile(logFile);
-            fileAppender.setLayout(new PatternLayout("%d{ISO8601} [%-5p] %m%n"));
-            fileAppender.setAppend(true);
-            fileAppender.activateOptions();
-
-            Logger.getRootLogger().addAppender(fileAppender);
 
             logger.info("NCC system loading...");
 
@@ -99,9 +98,9 @@ public class Ncc {
         nccForceGC = config.getBoolean("ncc.global.gc_forced", false);
 
         if (moduleRadius) {
-            logger.info("Starting Radius");
             radiusTimer = config.getInt("radius.timer", 15);
             radiusLogLevel = config.getInt("radius.log.level", 5);
+            radiusLogfile = config.getString("radius.logfile", "radius.log");
             nccRadius = new NccRadius();
             nccRadius.startServer();
         }
@@ -110,10 +109,10 @@ public class Ncc {
             InetAddress localIP = InetAddress.getByName(config.getString("dhcp.server"));
             Integer port = config.getInt("dhcp.server.port", 67);
 
-            logger.info("Starting DHCP");
             dhcpTimer = config.getInt("dhcp.timer", 1);
             dhcpUnbindedCleanupTime = config.getInt("dhcp.unbinded.cleanup.time", 20);
             dhcpLogLevel = config.getInt("dhcp.log.level", 5);
+            dhcpLogfile = config.getString("dhcp.logfile", "dhcp.log");
             dhcpIgnoreBroadcast = config.getBoolean("dhcp.ignore.broadcast", true);
             nccDhcp = new NccDhcpServer(localIP, port);
             nccDhcp.start();
@@ -130,16 +129,17 @@ public class Ncc {
 
         if (moduleCLI) {
             cliSshPort = config.getInt("cli.ssh.port");
-            logger.info("Starting CLI on port " + cliSshPort);
+            cliLogfile = config.getString("cli.logfile", "cli.log");
+
             NccCLI nccCLI = new NccCLI(cliSshPort);
             nccCLI.start();
         }
 
         if (moduleAPI) {
-            Integer port = config.getInt("api.port", 8032);
+            apiPort = config.getInt("api.port", 8032);
+            apiLogfile = config.getString("api.logfile", "api.log");
 
-            logger.info("Starting API on port " + port);
-            nccAPI = new NccAPI(port);
+            nccAPI = new NccAPI(apiPort);
             nccAPI.start();
         }
     }

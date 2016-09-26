@@ -3,6 +3,7 @@ package com.NccDhcp;
 import com.Ncc;
 import com.NccPools.NccPoolData;
 import com.NccPools.NccPools;
+import com.NccSystem.NccLogger;
 import com.NccSystem.NccUtils;
 import org.apache.log4j.Logger;
 
@@ -12,7 +13,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class NccDhcpServer {
-    private static Logger logger = Logger.getLogger(NccDhcpServer.class);
+    private static NccLogger nccLogger = new NccLogger("DHCPLogger");
+    private static Logger logger = nccLogger.setFilename(Ncc.dhcpLogfile);
     private static InetAddress localIP;
     private static Integer port = 67;
     private static DatagramSocket dhcpSocket;
@@ -29,6 +31,8 @@ public class NccDhcpServer {
     }
 
     public void start() {
+
+        logger.info("Starting DHCP");
 
         try {
             this.dhcpSocket = new DatagramSocket(this.port);

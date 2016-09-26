@@ -1,6 +1,7 @@
 package com.NccSystem.SQL;
 
 import com.Ncc;
+import com.NccSystem.NccLogger;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
@@ -10,7 +11,8 @@ import java.util.ArrayList;
 public class NccQuery {
 
     private Connection sql;
-    private static Logger logger = Logger.getLogger(NccQuery.class);
+    private static NccLogger nccLogger = new NccLogger("SQLLogger");
+    private static Logger logger = nccLogger.setFilename(Ncc.SQLLogfile);
 
     public NccQuery() throws NccQueryException {
     }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 class AccountingThread implements Runnable {
 
-    private static Logger logger = Logger.getLogger(NccRadius.class);
+    private static Logger logger = Logger.getLogger("RadiusLogger");
 
     private volatile RadiusPacket radiusPacket = new RadiusPacket();
     private AccountingRequest accountingRequest;
@@ -251,7 +251,8 @@ class AccountingThread implements Runnable {
                     }
                 } else {
                     logger.info("No session to resume");
-                    NccRadius.disconnectUser(nasIP, userLogin, sessionID);
+
+                    new NccRadius().disconnectUser(nasIP, userLogin, sessionID);
                 }
             } catch (NccSessionsException e) {
                 e.printStackTrace();
@@ -303,7 +304,7 @@ class AccountingThread implements Runnable {
                             logger.error("Session not found: '" + sessionID + "'");
                         }
 
-                        NccRadius.disconnectUser(nasIP, userLogin, sessionID);
+                        new NccRadius().disconnectUser(nasIP, userLogin, sessionID);
 
                     } catch (NccSessionsException e) {
                         e.printStackTrace();

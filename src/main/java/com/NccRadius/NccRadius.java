@@ -14,6 +14,7 @@ import com.NccPools.NccPoolData;
 import com.NccSessions.NccSessionData;
 import com.NccSessions.NccSessions;
 import com.NccSessions.NccSessionsException;
+import com.NccSystem.NccLogger;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
@@ -46,7 +47,8 @@ import java.util.UUID;
 
 public class NccRadius extends RadiusServer {
 
-    private static Logger logger = Logger.getLogger(NccRadius.class);
+    private static NccLogger nccLogger = new NccLogger("RadiusLogger");
+    private static Logger logger = nccLogger.setFilename(Ncc.radiusLogfile);
     private static Integer radAuthPort = 1812;
     private static Integer radAcctPort = 1813;
     private static String radSecret = "";
@@ -54,7 +56,7 @@ public class NccRadius extends RadiusServer {
     private static NccAccounts nccAccounts;
     private static int pktId = 1;
 
-    public static void disconnectUser(String nasIP, String userLogin, String sessionID) {
+    public void disconnectUser(String nasIP, String userLogin, String sessionID) {
         try {
             NccNasData nasData = null;
             RadiusClient radiusClient = null;
@@ -236,6 +238,8 @@ public class NccRadius extends RadiusServer {
     }
 
     public void startServer() {
+
+        logger.info("Starting Radius");
 
         Thread radiusWatchThread = new Thread(new Runnable() {
             @Override

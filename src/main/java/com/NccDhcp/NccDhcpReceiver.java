@@ -14,7 +14,7 @@ import java.net.UnknownHostException;
 
 class NccDhcpReceiver extends Thread {
 
-    private static Logger logger = Logger.getLogger(NccDhcpServer.class);
+    private static Logger logger = Logger.getLogger("DHCPLogger");
     InetAddress localIP;
     private byte[] recv;
     private DatagramPacket inPkt;
