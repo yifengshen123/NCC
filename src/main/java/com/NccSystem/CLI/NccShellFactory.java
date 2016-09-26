@@ -2,6 +2,7 @@ package com.NccSystem.CLI;
 
 import jline.console.ConsoleReader;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.Environment;
 import org.apache.sshd.server.ExitCallback;
@@ -10,12 +11,11 @@ import org.apache.sshd.server.shell.ProcessShellFactory;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.Locale;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class NccShellFactory extends ProcessShellFactory {
+    private static Logger logger = Logger.getLogger("CLILogger");
+    public static boolean exitFlag = false;
 
     private static class NccCommand {
         String fullName;
@@ -24,6 +24,7 @@ public class NccShellFactory extends ProcessShellFactory {
         String autoComplete;
         String execMethod;
         ArrayList<NccCommand> subCommands;
+        Class[] argTypes;
 
         public NccCommand(String fullName, String desc, boolean hasArgs, ArrayList<NccCommand> subCommands, String execMethod) {
             this.fullName = fullName;
@@ -31,6 +32,15 @@ public class NccShellFactory extends ProcessShellFactory {
             this.hasArgs = hasArgs;
             this.subCommands = subCommands;
             this.execMethod = execMethod;
+        }
+
+        public NccCommand(String fullName, String desc, boolean hasArgs, Class[] argTypes, ArrayList<NccCommand> subCommands, String execMethod) {
+            this.fullName = fullName;
+            this.desc = desc;
+            this.hasArgs = hasArgs;
+            this.subCommands = subCommands;
+            this.execMethod = execMethod;
+            this.argTypes = argTypes;
         }
     }
 
@@ -66,13 +76,20 @@ public class NccShellFactory extends ProcessShellFactory {
             ArrayList<NccCommand> subs;
 
             subs = new ArrayList<>();
+            ArrayList<NccCommand> transSubs = new ArrayList<>();
+            transSubs.add(new NccCommand("restart", "Restart specified transponder", true, new Class[]{Integer.class}, null, "restartAstraTransponder"));
+            transSubs.add(new NccCommand("run", "Run specified transponder", true, new Class[]{Integer.class}, null, "runAstraTransponder"));
+            subs.add(new NccCommand("transponder", "Transponder commands", true, transSubs, null));
+            nccCommands.add(new NccCommand("astra", "Astra commands", false, subs, null));
+
+            subs = new ArrayList<>();
             subs.add(new NccCommand("dhcp", "Clear dhcp leases", true, null, "clearDhcpLeases"));
             subs.add(new NccCommand("session", "Clear sessions", true, null, "clearDhcpSessions"));
             nccCommands.add(new NccCommand("clear", "Clear commands", false, subs, null));
 
-            nccCommands.add(new NccCommand("exit", "Exit from CLI", false, null, null));
+            nccCommands.add(new NccCommand("exit", "Exit from CLI", false, null, "exitCLI"));
 
-            nccCommands.add(new NccCommand("quit", "Same as exit", false, null, null));
+            nccCommands.add(new NccCommand("quit", "Same as exit", false, null, "exitCLI"));
 
             subs = new ArrayList<>();
             ArrayList<NccCommand> dhcpSubs = new ArrayList<>();
@@ -102,6 +119,7 @@ public class NccShellFactory extends ProcessShellFactory {
                     if (token.trim().length() > cmd.fullName.length()) continue;
                     if (cmd.fullName.equals(token)) {
                         foundCommands.add(cmd);
+                        break;
                     }
                 }
 
@@ -118,29 +136,55 @@ public class NccShellFactory extends ProcessShellFactory {
                     continue;
                 }
 
-                if (cmd.subCommands == null) {
-                    if (!cmd.hasArgs) {
-                        NccCLICommands cliCommands = new NccCLICommandsImpl(writer);
+                Class[] ptypes = new Class[]{};
+                Object[] args = new Object[]{};
 
-                        if (cmd.execMethod == null) continue;
-                        try {
-                            Method m = cliCommands.getClass().getMethod(cmd.execMethod, new Class[]{});
-                            try {
-                                m.invoke(cliCommands, new Object[]{});
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        } catch (NoSuchMethodException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
+                if (cmd.subCommands == null) {
+                    NccCLICommands cliCommands = new NccCLICommandsImpl(writer);
+
+                    if (cmd.execMethod == null) continue;
+
+                    if (cmd.hasArgs) {
                         if (!st.hasMoreElements()) {
                             writer.println("Argument missing\r");
                             writer.flush();
                             return null;
                         }
+
+                        token = st.nextToken();
+
+                        ptypes = cmd.argTypes;
+                        System.out.println(ptypes);
+                        ArrayList<Object> tmp = new ArrayList<Object>(Arrays.asList(args));
+                        for (Class c : cmd.argTypes) {
+                            String type = c.getName();
+                            System.out.println(type);
+                            if (type.equals("java.lang.Integer")) {
+                                tmp.add(Integer.valueOf(token));
+                            } else if(type.equals("java.lang.String")) {
+                                tmp.add(token);
+                            } else {
+                                    logger.error("Unknown param type: " + type);
+                                    return null;
+                            }
+                        }
+                        args = tmp.toArray();
+                    } else {
+                        ptypes = new Class[]{};
+                        args = new Object[]{};
+                    }
+
+                    try {
+                        Method m = cliCommands.getClass().getMethod(cmd.execMethod, ptypes);
+                        try {
+                            m.invoke(cliCommands, args);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
                     }
                 } else {
 
@@ -353,6 +397,8 @@ public class NccShellFactory extends ProcessShellFactory {
                 ArrayList<String> history = new ArrayList<>();
                 Integer historyIndex = 0;
 
+                exitFlag = false;
+
                 while (true) {
                     Integer ch = reader.readCharacter();
 
@@ -412,6 +458,8 @@ public class NccShellFactory extends ProcessShellFactory {
                         }
 
                         executeCommand(line);
+
+                        if(exitFlag) break;
 
                         writer.print("#");
                         writer.flush();
