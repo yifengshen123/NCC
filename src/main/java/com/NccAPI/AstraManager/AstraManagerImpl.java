@@ -1,15 +1,8 @@
 package com.NccAPI.AstraManager;
 
-import com.Ncc;
 import com.NccAPI.NccAPI;
 import com.NccAstraManager.*;
-import com.NccSystem.NccUtils;
-import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class AstraManagerImpl implements AstraManagerService {
@@ -41,7 +34,7 @@ public class AstraManagerImpl implements AstraManagerService {
         return astraManager.stopTransponder(id);
     }
 
-    public NccAstraManager.TransponderStatus getAstraTransponderStatus(String apiKey, Integer id) {
+    public TransponderStatus getAstraTransponderStatus(String apiKey, Integer id) {
         NccAstraManager astraManager = new NccAstraManager();
 
         if (!new NccAPI().checkPermission(apiKey, "permAstraGetTransponderStatus")) return null;
@@ -97,12 +90,17 @@ public class AstraManagerImpl implements AstraManagerService {
         return astraManager.getCams();
     }
 
-    public ArrayList<ChannelData> getAstraChannels(String apiKey) {
+    public ApiChannelData getAstraChannels(String login, String key) {
+        if (!new NccAPI().checkPermission(login, key, "GetIptvChannels")) return null;
+
         NccAstraManager astraManager = new NccAstraManager();
 
-        if (!new NccAPI().checkPermission(apiKey, "permGetAstraChannels")) return null;
+        ApiChannelData apiChannelData = new ApiChannelData();
+        apiChannelData.data = astraManager.getChannels();
+        apiChannelData.status = 0;
+        apiChannelData.message = "success";
 
-        return astraManager.getChannels();
+        return apiChannelData;
     }
 
     public ArrayList<Integer> createAstraServer(String apiKey,

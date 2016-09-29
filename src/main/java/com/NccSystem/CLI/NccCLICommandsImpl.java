@@ -1,9 +1,9 @@
 package com.NccSystem.CLI;
 
+import com.NccAstraManager.ActiveChannel;
 import com.NccAstraManager.NccAstraManager;
 import com.NccAstraManager.TransponderData;
 import com.NccSystem.NccUtils;
-import com.NccUsers.NccUserData;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
@@ -76,12 +76,12 @@ public class NccCLICommandsImpl implements NccCLICommands {
     }
 
     public void showAstraActiveChannels(Integer id) {
-        ArrayList<NccAstraManager.ActiveChannel> channels = new NccAstraManager().getActiveChannelsByTransponderId(id);
+        ArrayList<ActiveChannel> channels = new NccAstraManager().getActiveChannelsByTransponderId(id);
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);
 
         writer.println(formatter.format("%-36s %-15s %-5s %-5s %-5s\r", "Channel name", "Channel IP", "Bps", "CC", "PES"));
-        for (NccAstraManager.ActiveChannel c : channels) {
+        for (ActiveChannel c : channels) {
             writer.println(formatter.format("%-36s %-15s %-5d %-5d %-5d\r", c.channelData.channelName, NccUtils.long2ip(c.channelData.channelIP), c.bitrate, c.ccCount, c.scrambledCount));
         }
     }

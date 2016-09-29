@@ -19,5 +19,5 @@ public class TransponderData {
     public String serverName;
     public String transponderLNB;
     public String transponderSat;
-    public NccAstraManager.TransponderStatus transponderStatus;
+    public TransponderStatus transponderStatus;
 }

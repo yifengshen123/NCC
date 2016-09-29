@@ -51,14 +51,6 @@ public class NccShellFactory extends ProcessShellFactory {
         private static final String SHELL_THREAD_NAME = "NccShell";
         private static final String SHELL_PROMPT = "ncc#";
 
-        private static final String SHELL_CMD_QUIT = "quit";
-        private static final String SHELL_CMD_EXIT = "exit";
-        private static final String SHELL_CMD_VERSION = "version";
-        private static final String SHELL_CMD_HELP = "help";
-        private static final String SHELL_CMD_SET = "set";
-        private static final String SHELL_CMD_SHOW = "show";
-        private static final String SHELL_CMD_CLEAR = "clear";
-
         private ArrayList<NccCommand> nccCommands = new ArrayList<>();
 
         private InputStream in;

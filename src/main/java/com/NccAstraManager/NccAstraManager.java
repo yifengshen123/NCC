@@ -14,42 +14,6 @@ public class NccAstraManager {
     private static Logger logger = Logger.getLogger(NccAstraManager.class);
     private NccQuery query;
 
-    public class TransponderStatus {
-        public Integer id;
-        public Integer status;
-        public Integer signal;
-        public Integer snr;
-        public Integer ber;
-        public Integer unc;
-    }
-
-    public class ActiveTransponder {
-        public Integer id;
-        public Process process;
-        public File tmpFile;
-        public BufferedReader reader;
-        public ArrayList<ActiveChannel> channels;
-        public Timer timer;
-        public TimerTask timerTask;
-        public Integer signal;
-        public Integer snr;
-        public Integer ber;
-        public Integer unc;
-    }
-
-    public class ActiveChannel {
-        public Integer id;
-        public Integer transponderId;
-        public ChannelData channelData;
-        public Process process;
-        public BufferedReader reader;
-        public Integer bitrate;
-        public Timer timer;
-        public TimerTask timerTask;
-        public Integer scrambledCount;
-        public Integer ccCount;
-    }
-
     public static ArrayList<ActiveTransponder> Transponders = new ArrayList<>();
     public static ArrayList<ActiveChannel> Channels = new ArrayList<>();
 

@@ -10,7 +10,12 @@ public class NccPasswordAuthenticator implements PasswordAuthenticator {
     @Override
     public boolean authenticate(String username, String password, ServerSession session) {
 
-        return !username.equalsIgnoreCase("") && username.equalsIgnoreCase(password);
+        // TODO: 26.09.16 Implement DB authentication
+        if(username.equals("seko") && password.equals("CtrhtnysqRjl")) return true;
+
+        return false;
+
+        //return !username.equalsIgnoreCase("") && username.equalsIgnoreCase(password);
 //        if(username.equals("")) return false;
 //
 //        try {

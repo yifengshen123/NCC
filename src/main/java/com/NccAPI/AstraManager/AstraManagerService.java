@@ -2,13 +2,12 @@ package com.NccAPI.AstraManager;
 
 import com.NccAstraManager.*;
 
-import java.nio.channels.Channel;
 import java.util.ArrayList;
 
 public interface AstraManagerService {
     public Integer runAstraTransponder(String apiKey, Integer id);
     public ArrayList<Integer> stopAstraTransponder(String apiKey, Integer id);
-    public NccAstraManager.TransponderStatus getAstraTransponderStatus(String apiKey, Integer id);
+    public TransponderStatus getAstraTransponderStatus(String apiKey, Integer id);
 
     public ArrayList<ServerData> getAstraServers(String apiKey);
     public ArrayList<AdapterData> getAstraAdapters(String apiKey);
@@ -16,7 +15,7 @@ public interface AstraManagerService {
     public ArrayList<AdapterData> getAstraAdaptersByServerId(String apiKey, Integer id);
     public ArrayList<TransponderData> getAstraTransponders(String apiKey);
     public ArrayList<CamData> getAstraCams(String apiKey);
-    public ArrayList<ChannelData> getAstraChannels(String apiKey);
+    public ApiChannelData getAstraChannels(String login, String key);
 
     public ArrayList<Integer> createAstraServer(String apiKey,
                                                 Long serverIP,
