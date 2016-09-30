@@ -46,8 +46,14 @@ public class ChannelData extends NccAbstractData<ChannelData> {
             channelData.channelPnr = rs.getInt("channelPnr");
             channelData.transponderId = rs.getInt("transponderId");
             channelData.channelIP = rs.getLong("channelIP");
+
             channelData.camName = rs.getString("camName");
             channelData.camId = rs.getInt("camId");
+            channelData.camServer = rs.getString("camServer");
+            channelData.camPort = rs.getInt("camPort");
+            channelData.camUser = rs.getString("camUser");
+            channelData.camPassword = rs.getString("camPassword");
+            channelData.camKey = rs.getString("camKey");
 
             channelData.transponderName = rs.getString("transponderName");
             channelData.transponderSat = rs.getString("transponderSat");

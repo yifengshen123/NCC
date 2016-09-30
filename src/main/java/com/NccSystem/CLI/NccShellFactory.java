@@ -69,10 +69,12 @@ public class NccShellFactory extends ProcessShellFactory {
 
             subs = new ArrayList<>();
             ArrayList<NccCommand> transSubs = new ArrayList<>();
-            transSubs.add(new NccCommand("restart", "Restart specified transponder", true, new Class[]{Integer.class}, null, "restartAstraTransponder"));
-            transSubs.add(new NccCommand("run", "Run specified transponder", true, new Class[]{Integer.class}, null, "runAstraTransponder"));
+            transSubs.add(new NccCommand("restart", "Restart specified transponder", true, new Class[]{Integer.class}, null, "restartIptvTransponder"));
+            transSubs.add(new NccCommand("run", "Run specified transponder", true, new Class[]{Integer.class}, null, "runIptvTransponder"));
+            ArrayList<NccCommand> camSubs = new ArrayList<>();
+            //subs.add(new NccCommand("cam", "Cam commands", true, camSubs, null));
             subs.add(new NccCommand("transponder", "Transponder commands", true, transSubs, null));
-            nccCommands.add(new NccCommand("astra", "Astra commands", false, subs, null));
+            nccCommands.add(new NccCommand("iptv", "IPTV commands", false, subs, null));
 
             subs = new ArrayList<>();
             subs.add(new NccCommand("dhcp", "Clear dhcp leases", true, null, "clearDhcpLeases"));
@@ -93,7 +95,9 @@ public class NccShellFactory extends ProcessShellFactory {
 
             ArrayList<NccCommand> iptvSubs = new ArrayList<>();
             iptvSubs.add(new NccCommand("activechannels", "Show active channel list at specified transponder", true, new Class[]{Integer.class}, null, "showIptvActiveChannels"));
-            iptvSubs.add(new NccCommand("transponders", "Show transponder list", false, null, "getIptvTransponders"));
+            iptvSubs.add(new NccCommand("cams", "Show CAM list", false, null, "showIptvCams"));
+            iptvSubs.add(new NccCommand("channels", "Show channel list", false, null, "showIptvChannels"));
+            iptvSubs.add(new NccCommand("transponders", "Show transponder list", false, null, "showIptvTransponders"));
             subs.add(new NccCommand("iptv", "IptvManager related info", true, iptvSubs, null));
             nccCommands.add(new NccCommand("show", "Show various options", false, subs, null));
 
