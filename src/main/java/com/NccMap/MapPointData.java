@@ -9,10 +9,25 @@ import java.sql.SQLException;
  */
 public class MapPointData extends NccAbstractData<MapPointData> {
     public Integer id;
-    public Double lat;
-    public Double lng;
+    public float lat;
+    public float lng;
     public Integer radius;
     public Integer state;
+
+    public MapPointData(){
+
+    }
+
+    public MapPointData(float lat, float lng){
+        this.lat = lat;
+        this.lng = lng;
+    }
+
+    public MapPointData(float lat, float lng, int radius){
+        this.lat = lat;
+        this.lng = lng;
+        this.radius = radius;
+    }
 
     @Override
     public MapPointData fillData(){
@@ -20,8 +35,8 @@ public class MapPointData extends NccAbstractData<MapPointData> {
 
         try {
             mapPointData.id = rs.getInt("id");
-            mapPointData.lat = rs.getDouble("lat");
-            mapPointData.lng = rs.getDouble("lng");
+            mapPointData.lat = rs.getFloat("lat");
+            mapPointData.lng = rs.getFloat("lng");
             mapPointData.radius = rs.getInt("radius");
             mapPointData.state = rs.getInt("active");
 
