@@ -1,4 +1,4 @@
-package com.NccAstraManager;
+package com.NccIptvManager;
 
 import java.io.BufferedReader;
 import java.io.File;

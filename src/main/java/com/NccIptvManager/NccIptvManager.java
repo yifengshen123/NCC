@@ -1,4 +1,4 @@
-package com.NccAstraManager;
+package com.NccIptvManager;
 
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
@@ -25,428 +25,48 @@ public class NccIptvManager {
         }
     }
 
-    private ServerData fillServerData(CachedRowSetImpl rs) {
-        ServerData serverData = new ServerData();
-
-        try {
-            serverData.id = rs.getInt("id");
-            serverData.serverIP = rs.getLong("serverIP");
-            serverData.serverSecret = rs.getString("serverSecret");
-            serverData.serverLocalAddress = rs.getLong("serverLocalAddress");
-            serverData.serverComment = rs.getString("serverComment");
-            serverData.serverName = rs.getString("serverName");
-
-            return serverData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private AdapterData fillAdapterData(CachedRowSetImpl rs) {
-        AdapterData adapterData = new AdapterData();
-
-        try {
-            adapterData.id = rs.getInt("id");
-            adapterData.adapterDevice = rs.getInt("adapterDevice");
-            adapterData.adapterType = rs.getInt("adapterType");
-            adapterData.serverId = rs.getInt("serverId");
-            adapterData.adapterComment = rs.getString("adapterComment");
-
-            return adapterData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private AdapterType fillAdapterType(CachedRowSetImpl rs) {
-        AdapterType adapterType = new AdapterType();
-
-        try {
-            adapterType.id = rs.getInt("id");
-            adapterType.cardName = rs.getString("cardName");
-            adapterType.chipName = rs.getString("chipName");
-
-            return adapterType;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private TransponderData fillTransponderData(CachedRowSetImpl rs) {
-        TransponderData transponderData = new TransponderData();
-
-        try {
-            transponderData.id = rs.getInt("id");
-            transponderData.transponderName = rs.getString("transponderName");
-            transponderData.transponderFreq = rs.getInt("transponderFreq");
-            transponderData.transponderPolarity = rs.getString("transponderPolarity");
-            transponderData.transponderFEC = rs.getString("transponderFEC");
-            transponderData.transponderSymbolrate = rs.getInt("transponderSymbolrate");
-            transponderData.transponderType = rs.getString("transponderType");
-            transponderData.adapterId = rs.getInt("adapterId");
-            transponderData.adapterDevice = rs.getInt("adapterDevice");
-            transponderData.adapterCard = rs.getString("adapterCard");
-            transponderData.adapterChip = rs.getString("adapterChip");
-            transponderData.serverId = rs.getInt("serverId");
-            transponderData.serverIP = rs.getLong("serverIP");
-            transponderData.serverSecret = rs.getString("serverSecret");
-            transponderData.serverLocalAddress = rs.getLong("serverLocalAddress");
-            transponderData.serverName = rs.getString("serverName");
-            transponderData.transponderLNB = rs.getString("transponderLNB");
-            transponderData.transponderSat = rs.getString("transponderSat");
-            transponderData.transponderStatus = getTransponderStatus(transponderData.id);
-
-            return transponderData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private CamData fillCamData(CachedRowSetImpl rs) {
-        CamData camData = new CamData();
-
-        try {
-            camData.id = rs.getInt("id");
-            camData.camName = rs.getString("camName");
-            camData.camServer = rs.getString("camServer");
-            camData.camPort = rs.getInt("camPort");
-            camData.camUser = rs.getString("camUser");
-            camData.camPassword = rs.getString("camPassword");
-            camData.camKey = rs.getString("camKey");
-
-            return camData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private ChannelData fillChannelData(CachedRowSetImpl rs) {
-        ChannelData channelData = new ChannelData();
-
-        try {
-            channelData.channelId = rs.getInt("channelId");
-            channelData.channelName = rs.getString("channelName");
-            channelData.channelPnr = rs.getInt("channelPnr");
-            channelData.transponderId = rs.getInt("transponderId");
-            channelData.channelIP = rs.getLong("channelIP");
-            channelData.camId = rs.getInt("camId");
-
-            return channelData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    private ChannelData fillChannelDataExtended(CachedRowSetImpl rs) {
-        ChannelData channelData = new ChannelData();
-
-        channelData = fillChannelData(rs);
-
-        try {
-            channelData.camName = rs.getString("camName");
-            channelData.camServer = rs.getString("camServer");
-            channelData.camPort = rs.getInt("camPort");
-            channelData.camUser = rs.getString("camUser");
-            channelData.camPassword = rs.getString("camPassword");
-            channelData.camKey = rs.getString("camKey");
-
-            channelData.transponderName = rs.getString("transponderName");
-            channelData.transponderSat = rs.getString("transponderSat");
-            channelData.transponderFreq = rs.getInt("transponderFreq");
-            channelData.transponderPolarity = rs.getString("transponderPolarity");
-            channelData.transponserFEC = rs.getString("transponderFEC");
-            channelData.transponderSymbolrate = rs.getInt("transponderSymbolrate");
-            channelData.transponderType = rs.getString("transponderType");
-
-            channelData.adapterDevice = rs.getInt("adapterDevice");
-            channelData.adapterType = rs.getString("adapterType");
-            channelData.adapterCard = rs.getString("adapterCard");
-
-            channelData.serverIP = rs.getLong("serverIP");
-            channelData.serverSecret = rs.getString("serverSecret");
-            channelData.serverName = rs.getString("serverName");
-            channelData.serverLocalAddress = rs.getLong("serverLocalAddress");
-
-            return channelData;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
     public ServerData getServerById(Integer id) {
-        ServerData serverData = new ServerData();
-
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccIptvServers WHERE id=" + id);
-
-            try {
-                if (rs.next()) {
-                    return fillServerData(rs);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new ServerData().getData("SELECT * FROM nccIptvServers WHERE id=" + id);
     }
 
     public ArrayList<ChannelData> getChannelsByTransponder(Integer id) {
-        ArrayList<ChannelData> channels = new ArrayList<>();
-
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccViewAstraManagerChannel WHERE transponderId=" + id);
-
-            try {
-                while (rs.next()) {
-                    ChannelData channelData = fillChannelDataExtended(rs);
-
-                    if (channelData != null) {
-                        channels.add(channelData);
-                    }
-                }
-
-                return channels;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new ChannelData().getDataList("SELECT * FROM nccViewAstraManagerChannel WHERE transponderId=" + id);
     }
 
     public ChannelData getChannelById(Integer id) {
-
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccViewAstraManagerChannel WHERE channelId=" + id);
-
-            try {
-                if (rs.next()) {
-                    ChannelData channelData = fillChannelDataExtended(rs);
-                    return channelData;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new ChannelData().getData("SELECT * FROM nccViewAstraManagerChannel WHERE channelId=" + id);
     }
 
     public ArrayList<ChannelData> getChannels() {
-        ArrayList<ChannelData> channels = new ArrayList<>();
-
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccViewAstraManagerChannel");
-
-            try {
-                while (rs.next()) {
-                    ChannelData channelData = fillChannelDataExtended(rs);
-
-                    if (channelData != null) {
-                        channels.add(channelData);
-                    }
-                }
-
-                return channels;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new ChannelData().getDataList("SELECT * FROM nccViewAstraManagerChannel");
     }
 
     public ArrayList<ServerData> getServers() {
-        ArrayList<ServerData> servers = new ArrayList<>();
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccIptvServers");
-
-            try {
-                while (rs.next()) {
-                    ServerData serverData = fillServerData(rs);
-                    servers.add(serverData);
-                }
-                return servers;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new ServerData().getDataList("SELECT * FROM nccIptvServers");
     }
 
     public ArrayList<AdapterData> getAdapters() {
-        ArrayList<AdapterData> adapters = new ArrayList<>();
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccIptvAdapters GROUP BY serverId, adapterDevice");
-
-            try {
-                while (rs.next()) {
-                    AdapterData adapterData = fillAdapterData(rs);
-                    adapters.add(adapterData);
-                }
-                return adapters;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new AdapterData().getDataList("SELECT * FROM nccIptvAdapters GROUP BY serverId, adapterDevice");
     }
 
     public ArrayList<AdapterData> getAdaptersByServerId(Integer id) {
-        ArrayList<AdapterData> adapters = new ArrayList<>();
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccIptvAdapters WHERE serverId=" + id);
-
-            try {
-                while (rs.next()) {
-                    AdapterData adapterData = fillAdapterData(rs);
-                    adapters.add(adapterData);
-                }
-                return adapters;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new AdapterData().getDataList("SELECT * FROM nccIptvAdapters WHERE serverId=" + id);
     }
 
     public ArrayList<AdapterType> getAdapterTypes() {
-        ArrayList<AdapterType> adapterTypes = new ArrayList<>();
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccIptvAdapterTypes");
-
-            try {
-                while (rs.next()) {
-                    AdapterType adapterType = fillAdapterType(rs);
-                    adapterTypes.add(adapterType);
-                }
-                return adapterTypes;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new AdapterType().getDataList("SELECT * FROM nccIptvAdapterTypes");
     }
 
     public ArrayList<TransponderData> getTransponders() {
-        ArrayList<TransponderData> transponders = new ArrayList<>();
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccViewAstraTransponders");
-
-            try {
-                while (rs.next()) {
-                    TransponderData transponderData = fillTransponderData(rs);
-                    transponders.add(transponderData);
-                }
-                return transponders;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new TransponderData().getDataList("SELECT * FROM nccViewAstraTransponders");
     }
 
     public TransponderData getTransponderById(Integer id) {
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccViewAstraTransponders WHERE id=" + id);
-
-            try {
-                if (rs.next()) {
-                    return fillTransponderData(rs);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new TransponderData().getData("SELECT * FROM nccViewAstraTransponders WHERE id=" + id);
     }
 
     public ArrayList<CamData> getCams() {
-        ArrayList<CamData> cams = new ArrayList<>();
-        CachedRowSetImpl rs;
-
-        try {
-            rs = query.selectQuery("SELECT * FROM nccIptvCam");
-
-            try {
-                while (rs.next()) {
-                    CamData camData = fillCamData(rs);
-                    cams.add(camData);
-                }
-                return cams;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        } catch (NccQueryException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new CamData().getDataList("SELECT * FROM nccIptvCam");
     }
 
     public ArrayList<Integer> createServer(ServerData serverData) {

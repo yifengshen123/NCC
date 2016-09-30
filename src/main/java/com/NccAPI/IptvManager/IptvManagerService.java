@@ -1,6 +1,6 @@
 package com.NccAPI.IptvManager;
 
-import com.NccAstraManager.*;
+import com.NccIptvManager.*;
 
 import java.util.ArrayList;
 

@@ -1,9 +1,5 @@
 package com.NccSystem.CLI;
 
-import com.NccAstraManager.TransponderData;
-
-import java.util.ArrayList;
-
 public interface NccCLICommands {
     public void exitCLI();
     public void sysShutdown();

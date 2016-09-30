@@ -1,8 +1,8 @@
 package com.NccSystem.CLI;
 
-import com.NccAstraManager.ActiveChannel;
-import com.NccAstraManager.NccIptvManager;
-import com.NccAstraManager.TransponderData;
+import com.NccIptvManager.ActiveChannel;
+import com.NccIptvManager.NccIptvManager;
+import com.NccIptvManager.TransponderData;
 import com.NccSystem.NccUtils;
 import org.apache.log4j.Logger;
 

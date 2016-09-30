@@ -1,6 +1,6 @@
 package com.NccAPI.IptvManager;
 
-import com.NccAstraManager.TransponderData;
+import com.NccIptvManager.TransponderData;
 
 import java.util.ArrayList;
 

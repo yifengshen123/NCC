@@ -1,4 +1,4 @@
-package com.NccAstraManager;
+package com.NccIptvManager;
 
 /**
  * Created by root on 27.09.16.
