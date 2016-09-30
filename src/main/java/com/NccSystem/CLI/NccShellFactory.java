@@ -91,10 +91,10 @@ public class NccShellFactory extends ProcessShellFactory {
             subs.add(new NccCommand("dhcp", "Show dhcp-related information", true, dhcpSubs, null));
             subs.add(new NccCommand("radius", "Show radius-related information", true, null, null));
 
-            ArrayList<NccCommand> astraSubs = new ArrayList<>();
-            astraSubs.add(new NccCommand("activechannels", "Show active channel list at specified transponder", true, new Class[]{Integer.class}, null, "showAstraActiveChannels"));
-            astraSubs.add(new NccCommand("transponders", "Show transponder list", false, null, "getAstraTransponders"));
-            subs.add(new NccCommand("astra", "AstraManager related info", true, astraSubs, null));
+            ArrayList<NccCommand> iptvSubs = new ArrayList<>();
+            iptvSubs.add(new NccCommand("activechannels", "Show active channel list at specified transponder", true, new Class[]{Integer.class}, null, "showIptvActiveChannels"));
+            iptvSubs.add(new NccCommand("transponders", "Show transponder list", false, null, "getIptvTransponders"));
+            subs.add(new NccCommand("iptv", "IptvManager related info", true, iptvSubs, null));
             nccCommands.add(new NccCommand("show", "Show various options", false, subs, null));
 
             nccCommands.add(new NccCommand("shutdown", "Gracefully shutdown NCC system", false, null, "sysShutdown"));

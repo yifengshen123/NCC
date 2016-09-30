@@ -1,8 +1,8 @@
 package com.NccAPI;
 
 import com.Ncc;
-import com.NccAPI.AstraManager.AstraManagerImpl;
-import com.NccAPI.AstraManager.AstraManagerService;
+import com.NccAPI.IptvManager.IptvManagerImpl;
+import com.NccAPI.IptvManager.IptvManagerService;
 import com.NccAPI.DhcpBinding.DhcpBindingService;
 import com.NccAPI.DhcpBinding.DhcpBindingServiceImpl;
 import com.NccAPI.DhcpLeases.DhcpLeasesService;
@@ -127,7 +127,7 @@ public class NccAPI {
             private SessionsService sessionsService;
             private NasService nasService;
             private ViewsService viewsService;
-            private AstraManagerService astraManagerService;
+            private IptvManagerService iptvManagerService;
             private DhcpRelayAgentService relayAgentService;
             private DhcpLeasesService dhcpLeasesService;
             private DhcpBindingService dhcpBindingService;
@@ -143,7 +143,7 @@ public class NccAPI {
                 sessionsService = new SessionsServiceImpl();
                 nasService = new NasServiceImpl();
                 viewsService = new ViewsServiceImpl();
-                astraManagerService = new AstraManagerImpl();
+                iptvManagerService = new IptvManagerImpl();
                 relayAgentService = new DhcpRelayAgentServiceImpl();
                 dhcpLeasesService = new DhcpLeasesServiceImpl();
                 dhcpBindingService = new DhcpBindingServiceImpl();
@@ -159,7 +159,7 @@ public class NccAPI {
                                 sessionsService,
                                 nasService,
                                 viewsService,
-                                astraManagerService,
+                                iptvManagerService,
                                 relayAgentService,
                                 dhcpLeasesService,
                                 dhcpBindingService,
@@ -173,7 +173,7 @@ public class NccAPI {
                                 SessionsService.class,
                                 NasService.class,
                                 ViewsService.class,
-                                AstraManagerService.class,
+                                IptvManagerService.class,
                                 DhcpRelayAgentService.class,
                                 DhcpLeasesService.class,
                                 DhcpBindingService.class,

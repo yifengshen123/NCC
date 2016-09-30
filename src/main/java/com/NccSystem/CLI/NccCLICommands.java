@@ -9,7 +9,8 @@ public interface NccCLICommands {
     public void sysShutdown();
     public void sysShutdown(Integer timeout);
 
-    public void getAstraTransponders();
-    public void runAstraTransponder(Integer id);
-    public void restartAstraTransponder(Integer id);
+    public void getIptvTransponders();
+    public void runIptvTransponder(Integer id);
+    public void restartIptvTransponder(Integer id);
+    public void showIptvActiveChannels(Integer id);
 }

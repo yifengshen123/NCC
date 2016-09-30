@@ -1,7 +1,7 @@
 package com.NccSystem.CLI;
 
 import com.NccAstraManager.ActiveChannel;
-import com.NccAstraManager.NccAstraManager;
+import com.NccAstraManager.NccIptvManager;
 import com.NccAstraManager.TransponderData;
 import com.NccSystem.NccUtils;
 import org.apache.log4j.Logger;
@@ -34,8 +34,8 @@ public class NccCLICommandsImpl implements NccCLICommands {
         System.out.println("Shutdown in " + timeout + " seconds");
     }
 
-    public void getAstraTransponders() {
-        NccAstraManager astraManager = new NccAstraManager();
+    public void getIptvTransponders() {
+        NccIptvManager astraManager = new NccIptvManager();
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);
 
@@ -44,10 +44,10 @@ public class NccCLICommandsImpl implements NccCLICommands {
         }
     }
 
-    public void runAstraTransponder(Integer id) {
+    public void runIptvTransponder(Integer id) {
         logger.info("Run transponder id=" + id);
 
-        final NccAstraManager astraManager = new NccAstraManager();
+        final NccIptvManager astraManager = new NccIptvManager();
         final Integer transponderId = id;
 
         Thread t = new Thread(new Runnable() {
@@ -59,10 +59,10 @@ public class NccCLICommandsImpl implements NccCLICommands {
         t.start();
     }
 
-    public void restartAstraTransponder(Integer id) {
+    public void restartIptvTransponder(Integer id) {
         logger.info("Restart transponder id=" + id);
 
-        final NccAstraManager astraManager = new NccAstraManager();
+        final NccIptvManager astraManager = new NccIptvManager();
         final Integer transponderId = id;
 
         astraManager.stopTransponder(id);
@@ -75,8 +75,8 @@ public class NccCLICommandsImpl implements NccCLICommands {
         t.start();
     }
 
-    public void showAstraActiveChannels(Integer id) {
-        ArrayList<ActiveChannel> channels = new NccAstraManager().getActiveChannelsByTransponderId(id);
+    public void showIptvActiveChannels(Integer id) {
+        ArrayList<ActiveChannel> channels = new NccIptvManager().getActiveChannelsByTransponderId(id);
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);
 

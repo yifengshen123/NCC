@@ -1,4 +1,4 @@
-package com.NccAPI.AstraManager;
+package com.NccAPI.IptvManager;
 
 import com.NccAstraManager.ChannelData;
 
