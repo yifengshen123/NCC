@@ -1,5 +1,7 @@
 package com.NccIptvManager;
 
+import com.Ncc;
+import com.NccSystem.NccLogger;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
@@ -11,7 +13,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public class NccIptvManager {
-    private static Logger logger = Logger.getLogger(NccIptvManager.class);
+    private static NccLogger nccLogger = new NccLogger("IptvManagerLogger");
+    private static Logger logger = nccLogger.setFilename(Ncc.iptvLogfile);
     private NccQuery query;
 
     public static ArrayList<ActiveTransponder> Transponders = new ArrayList<>();
@@ -368,9 +371,11 @@ public class NccIptvManager {
 
         ChannelData channelData = getChannelById(channelId);
 
+        logger.info("Running analyzer channelId=" + channelId + " transponderId=" + transponderId);
+
         Process p;
         try {
-            System.out.println("Starting Analyzer: udp://" + NccUtils.long2ip(channelData.serverLocalAddress) + "@" + NccUtils.long2ip(channelData.channelIP) + ":1234");
+            logger.info("Starting Analyzer: udp://" + NccUtils.long2ip(channelData.serverLocalAddress) + "@" + NccUtils.long2ip(channelData.channelIP) + ":1234");
             p = Runtime.getRuntime().exec("/usr/bin/astra --analyze udp://" + NccUtils.long2ip(channelData.serverLocalAddress) + "@" + NccUtils.long2ip(channelData.channelIP) + ":1234");
             final BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
@@ -396,26 +401,22 @@ public class NccIptvManager {
                             if (line.matches("(.*)Bitrate(.*)") || line.matches("(.*)ERROR(.*)")) break;
                         }
 
-                        //System.out.println("id=" + channelId + " Analyzer: " + line);
                         ActiveChannel channel = getActiveChannelById(channelId);
                         String[] parts = line.split("\\s");
 
                         if (parts[3].matches("(.*)INFO(.*)")) {
                             if (parts[4].matches("(.*)Bitrate(.*)")) {
                                 channel.bitrate = Integer.parseInt(parts[5]);
-
-//                            System.out.println("id=" + channel.id + " pid=" + channel.channelData.channelPnr + " bitrate=" + channel.bitrate);
                             }
                         }
 
                         if (parts[3].matches("(.*)ERROR(.*)")) {
                             if (parts[4].matches("(.*)Scrambled(.*)")) {
                                 channel.scrambledCount++;
-//                                System.out.println("Channel [" + channel.channelData.channelName + "] scrambled, count=" + channel.scrambledCount + " bitrate=" + channel.bitrate);
                             }
                             if (parts[4].matches("(.*)CC(.*)")) {
                                 channel.ccCount++;
-                                System.out.println("Channel [" + channel.channelData.channelName + "] CC ERROR, count=" + channel.ccCount + " bitrate=" + channel.bitrate);
+                                logger.debug("Channel [" + channel.channelData.channelName + "] CC ERROR, count=" + channel.ccCount + " bitrate=" + channel.bitrate);
                             }
                         }
                     } catch (IOException e) {
@@ -429,7 +430,7 @@ public class NccIptvManager {
             activeChannel.timer = timer;
             activeChannel.timerTask = timerTask;
 
-            System.out.println("Channel analyzer started id=" + channelId);
+            logger.info("Channel analyzer started id=" + channelId);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -440,6 +441,8 @@ public class NccIptvManager {
     public Process runTransponder(Integer id) {
         ArrayList<ChannelData> channelData = this.getChannelsByTransponder(id);
         TransponderData transponderData = this.getTransponderById(id);
+
+        logger.info("Running transponder id=" + id);
 
         File tmpFile = null;
         try {
@@ -514,10 +517,10 @@ public class NccIptvManager {
                             transponder.ber = Integer.parseInt(parts[12]);
                             transponder.unc = Integer.parseInt(parts[13]);
 
-                            System.out.println("Transponder lock: signal=" + transponder.signal + " snr=" + transponder.snr + " ber=" + transponder.ber + " unc=" + transponder.unc);
+                            logger.info("Transponder lock:: signal=" + transponder.signal + " snr=" + transponder.snr + " ber=" + transponder.ber + " unc=" + transponder.unc);
                         }
                     } catch (IOException e) {
-//                        e.printStackTrace();
+                        e.printStackTrace();
                     }
                 }
             };
@@ -527,13 +530,13 @@ public class NccIptvManager {
             activeTransponder.timer = timer;
             activeTransponder.timerTask = timerTask;
 
-            System.out.println("Transponder started. Active transponders: " + Transponders.size());
+            logger.info("Transponder started. Active transponders: " + Transponders.size());
 
             tmpFile.deleteOnExit();
 
             p.waitFor();
 
-            System.out.println("Astra process terminated");
+            logger.info("Astra process terminated");
             removeActiveTransponder(id);
         } catch (Exception e) {
 
@@ -630,6 +633,8 @@ public class NccIptvManager {
 
         ArrayList<Integer> stoppedTransponders = new ArrayList<>();
 
+        logger.info("Stop transponder id=" + id);
+
         Iterator<ActiveChannel> ait = Channels.iterator();
 
         while (ait.hasNext()) {
@@ -646,7 +651,7 @@ public class NccIptvManager {
                     e.printStackTrace();
                 }
                 ait.remove();
-                System.out.println("Stopped analyzer for channel: " + item.id);
+                logger.info("Stopped analyzer for channel: " + item.id);
             }
         }
 
@@ -669,7 +674,7 @@ public class NccIptvManager {
                 stoppedTransponders.add(item.id);
                 it.remove();
                 item.tmpFile.delete();
-                System.out.println("Stopped transponder: " + id + " Active transponders: " + Transponders.size());
+                logger.info("Stopped transponder: " + id + " Active transponders: " + Transponders.size());
             }
         }
 

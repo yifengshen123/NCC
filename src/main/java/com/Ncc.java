@@ -28,6 +28,7 @@ public class Ncc {
     private static boolean moduleDHCP = true;
     private static boolean moduleCLI = true;
     private static boolean moduleAPI = true;
+    private static boolean moduleIPTV = true;
     public static boolean logQuery = false;
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
@@ -44,6 +45,7 @@ public class Ncc {
     public static String dhcpLogfile = "dhcp.log";
     public static String apiLogfile = "api.log";
     public static String cliLogfile = "cli.log";
+    public static String iptvLogfile = "iptv.log";
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -66,11 +68,13 @@ public class Ncc {
 
             SQLLogfile = config.getString("sql.logfile", "SQL.log");
             logQuery = config.getBoolean("sql.log.query", false);
+            iptvLogfile = config.getString("iptv.logfile", "iptv.log");
 
             moduleRadius = config.getBoolean("module.radius", false);
             moduleDHCP = config.getBoolean("module.dhcp", false);
             moduleCLI = config.getBoolean("module.cli", true);
             moduleAPI = config.getBoolean("module.api", true);
+            moduleIPTV = config.getBoolean("module.iptv", false);
 
             logger.info("NCC system loading...");
 
