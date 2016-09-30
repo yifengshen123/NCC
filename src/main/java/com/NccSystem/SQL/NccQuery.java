@@ -39,7 +39,7 @@ public class NccQuery {
             if (rs != null) {
                 crs.populate(rs);
                 sql.close();
-                if(Ncc.logQuery) logger.info("Query complete");
+                if (Ncc.logQuery) logger.info("Query complete");
                 return crs;
             } else {
                 sql.close();
@@ -69,7 +69,7 @@ public class NccQuery {
             Integer updateRows = stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 
             ArrayList<Integer> ids = new ArrayList<>();
-            if (updateRows > 0) {
+            if ((updateRows > 0) && !stmt.isClosed()) {
                 ResultSet rs = stmt.getGeneratedKeys();
 
                 CachedRowSetImpl crs = new CachedRowSetImpl();
@@ -82,7 +82,7 @@ public class NccQuery {
             } else {
                 sql.close();
             }
-            if(Ncc.logQuery) logger.info("Query complete");
+            if (Ncc.logQuery) logger.info("Query complete");
             return ids;
 
         } catch (SQLException se) {

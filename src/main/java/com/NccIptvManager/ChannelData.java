@@ -10,8 +10,13 @@ public class ChannelData extends NccAbstractData<ChannelData> {
     public Integer channelPnr;
     public Integer transponderId;
     public Long channelIP;
-    public Integer camId;
+    public Integer currentState;
+    public Integer currentBitrate;
+    public Integer currentCC;
+    public Integer currentPES;
+    public Integer lastActive;
 
+    public Integer camId;
     public String camName;
     public String camServer;
     public Integer camPort;
@@ -46,6 +51,11 @@ public class ChannelData extends NccAbstractData<ChannelData> {
             channelData.channelPnr = rs.getInt("channelPnr");
             channelData.transponderId = rs.getInt("transponderId");
             channelData.channelIP = rs.getLong("channelIP");
+            channelData.currentState = rs.getInt("currentState");
+            channelData.currentBitrate = rs.getInt("currentBitrate");
+            channelData.currentCC = rs.getInt("currentCC");
+            channelData.currentPES = rs.getInt("currentPES");
+            channelData.lastActive = rs.getInt("lastActive");
 
             channelData.camName = rs.getString("camName");
             channelData.camId = rs.getInt("camId");

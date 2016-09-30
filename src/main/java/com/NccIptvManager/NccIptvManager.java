@@ -419,6 +419,8 @@ public class NccIptvManager {
                                 logger.debug("Channel [" + channel.channelData.channelName + "] CC ERROR, count=" + channel.ccCount + " bitrate=" + channel.bitrate);
                             }
                         }
+
+                        updateActiveChannel(channel);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -433,6 +435,20 @@ public class NccIptvManager {
             logger.info("Channel analyzer started id=" + channelId);
 
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void updateActiveChannel(ActiveChannel channel) {
+        ArrayList<Integer> ids;
+        try {
+            NccQuery query = new NccQuery();
+
+            ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=1, currentBitrate=" + channel.bitrate + ", currentCC=" + channel.ccCount + ", currentPES=" + channel.scrambledCount + ", lastActive=UNIX_TIMESTAMP(NOW()) WHERE id=" + channel.id);
+            ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=0, currentBitrate=0, currentCC=0, currentPES=0 WHERE lastActive+60<UNIX_TIMESTAMP(NOW())");
+
+        } catch (NccQueryException e) {
             e.printStackTrace();
         }
 
@@ -517,7 +533,7 @@ public class NccIptvManager {
                             transponder.ber = Integer.parseInt(parts[12]);
                             transponder.unc = Integer.parseInt(parts[13]);
 
-                            logger.info("Transponder lock:: signal=" + transponder.signal + " snr=" + transponder.snr + " ber=" + transponder.ber + " unc=" + transponder.unc);
+                            logger.info("Transponder lock: signal=" + transponder.signal + " snr=" + transponder.snr + " ber=" + transponder.ber + " unc=" + transponder.unc);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
