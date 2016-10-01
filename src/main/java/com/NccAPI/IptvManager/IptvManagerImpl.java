@@ -103,12 +103,35 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiChannelData;
     }
 
+    public ApiChannelData getIptvChannelById(String login, String key, Integer id) {
+        if (!new NccAPI().checkPermission(login, key, "GetIptvChannels")) return null;
+
+        ApiChannelData apiChannelData = new ApiChannelData();
+        apiChannelData.data = new ArrayList<ChannelData>();
+        apiChannelData.status = 1;
+        apiChannelData.message = "fault";
+
+        ChannelData channelData = new NccIptvManager().getChannelById(id);
+
+        if (channelData != null) {
+
+            if(channelData.channelId>0) {
+                apiChannelData.data = new ArrayList<ChannelData>();
+                apiChannelData.data.add(channelData);
+                apiChannelData.status = 0;
+                apiChannelData.message = "success";
+            }
+        }
+
+        return apiChannelData;
+    }
+
     public ArrayList<Integer> createIptvServer(String apiKey,
-                                                Long serverIP,
-                                                String serverSecret,
-                                                Long serverLocalAddress,
-                                                String serverComment,
-                                                String serverName) {
+                                               Long serverIP,
+                                               String serverSecret,
+                                               Long serverLocalAddress,
+                                               String serverComment,
+                                               String serverName) {
 
         NccIptvManager iptvManager = new NccIptvManager();
         ServerData serverData = new ServerData();
@@ -125,10 +148,10 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> createIptvAdapter(String apiKey,
-                                                 Integer adapterDevice,
-                                                 Integer adapterType,
-                                                 Integer serverId,
-                                                 String adapterComment) {
+                                                Integer adapterDevice,
+                                                Integer adapterType,
+                                                Integer serverId,
+                                                String adapterComment) {
         NccIptvManager iptvManager = new NccIptvManager();
         AdapterData adapterData = new AdapterData();
 
@@ -143,15 +166,15 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> createIptvTransponder(String apiKey,
-                                                     String transponderName,
-                                                     Integer transponderFreq,
-                                                     String transponderPolarity,
-                                                     String transponderFEC,
-                                                     Integer transponderSymbolrate,
-                                                     String transponderType,
-                                                     Integer adapterId,
-                                                     String transponderLNB,
-                                                     String transponderSat) {
+                                                    String transponderName,
+                                                    Integer transponderFreq,
+                                                    String transponderPolarity,
+                                                    String transponderFEC,
+                                                    Integer transponderSymbolrate,
+                                                    String transponderType,
+                                                    Integer adapterId,
+                                                    String transponderLNB,
+                                                    String transponderSat) {
         NccIptvManager iptvManager = new NccIptvManager();
         TransponderData transponderData = new TransponderData();
 
@@ -171,12 +194,12 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> createIptvCam(String apiKey,
-                                             String camServer,
-                                             Integer camPort,
-                                             String camUser,
-                                             String camPassword,
-                                             String camName,
-                                             String camKey) {
+                                            String camServer,
+                                            Integer camPort,
+                                            String camUser,
+                                            String camPassword,
+                                            String camName,
+                                            String camKey) {
 
         NccIptvManager iptvManager = new NccIptvManager();
         CamData camData = new CamData();
@@ -194,12 +217,12 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> createIptvChannel(String apiKey,
-                                                 String channelName,
-                                                 Integer channelTransponder,
-                                                 Integer channelPnr,
-                                                 Integer channelCam,
-                                                 Long channelIP,
-                                                 String channelComment) {
+                                                String channelName,
+                                                Integer channelTransponder,
+                                                Integer channelPnr,
+                                                Integer channelCam,
+                                                Long channelIP,
+                                                String channelComment) {
 
         NccIptvManager iptvManager = new NccIptvManager();
         ChannelData channelData = new ChannelData();
@@ -256,12 +279,12 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> updateIptvServer(String apiKey,
-                                                Integer id,
-                                                Long serverIP,
-                                                String serverSecret,
-                                                Long serverLocalAddress,
-                                                String serverComment,
-                                                String serverName) {
+                                               Integer id,
+                                               Long serverIP,
+                                               String serverSecret,
+                                               Long serverLocalAddress,
+                                               String serverComment,
+                                               String serverName) {
         NccIptvManager iptvManager = new NccIptvManager();
 
         ServerData serverData = new ServerData();
@@ -279,11 +302,11 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> updateIptvAdapter(String apiKey,
-                                                 Integer id,
-                                                 Integer adapterDevice,
-                                                 Integer adapterType,
-                                                 Integer serverId,
-                                                 String adapterComment) {
+                                                Integer id,
+                                                Integer adapterDevice,
+                                                Integer adapterType,
+                                                Integer serverId,
+                                                String adapterComment) {
         NccIptvManager iptvManager = new NccIptvManager();
 
         AdapterData adapterData = new AdapterData();
@@ -300,16 +323,16 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> updateIptvTransponder(String apiKey,
-                                                     Integer id,
-                                                     String transponderName,
-                                                     Integer transponderFreq,
-                                                     String transponderPolarity,
-                                                     String transponderFEC,
-                                                     Integer transponderSymbolrate,
-                                                     String transponderType,
-                                                     Integer adapterId,
-                                                     String transponderLNB,
-                                                     String transponderSat) {
+                                                    Integer id,
+                                                    String transponderName,
+                                                    Integer transponderFreq,
+                                                    String transponderPolarity,
+                                                    String transponderFEC,
+                                                    Integer transponderSymbolrate,
+                                                    String transponderType,
+                                                    Integer adapterId,
+                                                    String transponderLNB,
+                                                    String transponderSat) {
         NccIptvManager iptvManager = new NccIptvManager();
 
         TransponderData transponderData = new TransponderData();
@@ -331,13 +354,13 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> updateIptvCam(String apiKey,
-                                             Integer id,
-                                             String camServer,
-                                             Integer camPort,
-                                             String camUser,
-                                             String camPassword,
-                                             String camName,
-                                             String camKey) {
+                                            Integer id,
+                                            String camServer,
+                                            Integer camPort,
+                                            String camUser,
+                                            String camPassword,
+                                            String camName,
+                                            String camKey) {
 
         NccIptvManager iptvManager = new NccIptvManager();
         CamData camData = new CamData();
@@ -356,12 +379,12 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ArrayList<Integer> updateIptvChannel(String apiKey,
-                                                 Integer id,
-                                                 String channelName,
-                                                 Integer channelPnr,
-                                                 Integer transponderId,
-                                                 Long channelIP,
-                                                 Integer camId) {
+                                                Integer id,
+                                                String channelName,
+                                                Integer channelPnr,
+                                                Integer transponderId,
+                                                Long channelIP,
+                                                Integer camId) {
 
         NccIptvManager iptvManager = new NccIptvManager();
         ChannelData channelData = new ChannelData();

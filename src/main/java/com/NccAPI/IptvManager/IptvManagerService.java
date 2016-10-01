@@ -16,6 +16,7 @@ public interface IptvManagerService {
     public ArrayList<TransponderData> getIptvTransponders(String apiKey);
     public ArrayList<CamData> getIptvCams(String apiKey);
     public ApiChannelData getIptvChannels(String login, String key);
+    public ApiChannelData getIptvChannelById(String login, String key, Integer id);
 
     public ArrayList<Integer> createIptvServer(String apiKey,
                                                 Long serverIP,
