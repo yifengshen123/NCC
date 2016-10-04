@@ -39,9 +39,9 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NccAPI {
 
@@ -60,6 +60,10 @@ public class NccAPI {
 
                 public CompositeServer(Object handler) {
                     super(handler);
+                }
+
+                public void handleFiles(HttpServletRequest request, HttpServletResponse response) {
+
                 }
 
                 public void handleCORS(HttpServletRequest request, HttpServletResponse response)
@@ -185,16 +189,45 @@ public class NccAPI {
                 compositeServer = new CompositeServer(compositeService);
             }
 
+            private void getFile(String filename, HttpServletResponse response) {
+
+                String fname = filename.replaceAll("^\\/", "");
+
+                System.out.println("Get file: " + fname);
+                File file = new File(fname);
+
+                try {
+                    OutputStream outputStream = response.getOutputStream();
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+                    byte[] bytes = new byte[(int) file.length()];
+                    bufferedInputStream.read(bytes, 0, bytes.length);
+                    outputStream.write(bytes);
+                    outputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
             public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-                switch (target) {
-                    case "/api":
-                        compositeServer.handleCORS(request, response);
-                        break;
-                    default:
-                        compositeServer.handleCORS(request, response);
-                        break;
+                Pattern pattern = Pattern.compile("^\\/tiles\\/z\\d+\\/\\d+\\/\\d+\\.png$");
+                Matcher matcher = pattern.matcher(target);
+
+                if (matcher.matches()) {
+                    getFile(target, response);
+                    return;
                 }
+
+                pattern = Pattern.compile("^\\/files\\/.*");
+                matcher = pattern.matcher(target);
+
+                if (matcher.matches()) {
+                    getFile(target, response);
+                    return;
+                }
+
+                compositeServer.handleCORS(request, response);
             }
         }
 

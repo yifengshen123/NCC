@@ -93,12 +93,20 @@ public class IptvManagerImpl implements IptvManagerService {
     public ApiChannelData getIptvChannels(String login, String key) {
         if (!new NccAPI().checkPermission(login, key, "GetIptvChannels")) return null;
 
-        NccIptvManager iptvManager = new NccIptvManager();
-
         ApiChannelData apiChannelData = new ApiChannelData();
-        apiChannelData.data = iptvManager.getChannels();
-        apiChannelData.status = 0;
-        apiChannelData.message = "success";
+        apiChannelData.data = new ArrayList<ChannelData>();
+        apiChannelData.status = 1;
+        apiChannelData.message = "error";
+
+        ArrayList<ChannelData> channels = new NccIptvManager().getChannels();
+
+        if (channels != null) {
+            if (channels.size() > 0) {
+                apiChannelData.data = channels;
+                apiChannelData.status = 0;
+                apiChannelData.message = "success";
+            }
+        }
 
         return apiChannelData;
     }
@@ -109,13 +117,13 @@ public class IptvManagerImpl implements IptvManagerService {
         ApiChannelData apiChannelData = new ApiChannelData();
         apiChannelData.data = new ArrayList<ChannelData>();
         apiChannelData.status = 1;
-        apiChannelData.message = "fault";
+        apiChannelData.message = "error";
 
         ChannelData channelData = new NccIptvManager().getChannelById(id);
 
         if (channelData != null) {
 
-            if(channelData.channelId>0) {
+            if (channelData.channelId > 0) {
                 apiChannelData.data = new ArrayList<ChannelData>();
                 apiChannelData.data.add(channelData);
                 apiChannelData.status = 0;
