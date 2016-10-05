@@ -11,6 +11,8 @@ import com.NccAPI.Map.MapService;
 import com.NccAPI.Map.MapServiceImpl;
 import com.NccAPI.NAS.NasService;
 import com.NccAPI.NAS.NasServiceImpl;
+import com.NccAPI.NetworkDevices.NetworkDevicesService;
+import com.NccAPI.NetworkDevices.NetworkDevicesServiceImpl;
 import com.NccAPI.Pools.PoolsService;
 import com.NccAPI.Pools.PoolsServiceImpl;
 import com.NccAPI.DhcpRelayAgents.DhcpRelayAgentService;
@@ -137,6 +139,7 @@ public class NccAPI {
             private DhcpBindingService dhcpBindingService;
             private MapService mapService;
             private SystemService systemService;
+            private NetworkDevicesService networkDevicesService;
 
             private Object compositeService;
 
@@ -153,6 +156,7 @@ public class NccAPI {
                 dhcpBindingService = new DhcpBindingServiceImpl();
                 mapService = new MapServiceImpl();
                 systemService = new SystemServiceImpl();
+                networkDevicesService = new NetworkDevicesServiceImpl();
 
                 compositeService = ProxyUtil.createCompositeServiceProxy(
                         this.getClass().getClassLoader(),
@@ -168,6 +172,7 @@ public class NccAPI {
                                 dhcpLeasesService,
                                 dhcpBindingService,
                                 mapService,
+                                networkDevicesService,
                                 systemService
                         },
                         new Class<?>[]{
