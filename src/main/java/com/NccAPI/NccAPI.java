@@ -187,6 +187,7 @@ public class NccAPI {
                                 DhcpLeasesService.class,
                                 DhcpBindingService.class,
                                 MapService.class,
+                                NetworkDevicesService.class,
                                 SystemService.class
                         },
                         true);

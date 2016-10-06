@@ -13,6 +13,9 @@ public class NccNetworkDeviceData extends NccAbstractData<NccNetworkDeviceData> 
     public Long deviceIP;
     public String deviceName;
     public Integer deviceType;
+    public String snmpCommunity;
+    public String addressStreet;
+    public String addressBuild;
 
     @Override
     public NccNetworkDeviceData fillData(){
@@ -23,6 +26,9 @@ public class NccNetworkDeviceData extends NccAbstractData<NccNetworkDeviceData> 
             networkDeviceData.deviceIP = rs.getLong("deviceIP");
             networkDeviceData.deviceName = rs.getString("deviceName");
             networkDeviceData.deviceType = rs.getInt("deviceType");
+            networkDeviceData.snmpCommunity = rs.getString("snmpCommunity");
+            networkDeviceData.addressStreet = rs.getString("addressStreet");
+            networkDeviceData.addressBuild = rs.getString("addressBuild");
         } catch (SQLException e) {
             e.printStackTrace();
         }
