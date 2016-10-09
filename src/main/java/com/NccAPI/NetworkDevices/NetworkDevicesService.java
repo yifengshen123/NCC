@@ -17,4 +17,6 @@ public interface NetworkDevicesService {
                                     String addressBuild);
 
     public ApiNetworkDeviceData getNetworkDevices(String login, String key);
+
+    public void deleteNetworkDevice(String login, String key, Integer id);
 }

@@ -49,7 +49,15 @@ public class NccNetworkDevice {
         }
     }
 
-    public ArrayList<NccNetworkDeviceData> getNetworkDevices(){
+    public void deleteDevice(Integer id) {
+        try {
+            new NccQuery().updateQuery("DELETE FROM nccNetworkDevices WHERE id=" + id);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<NccNetworkDeviceData> getNetworkDevices() {
         return new NccNetworkDeviceData().getDataList("SELECT * FROM nccNetworkDevices");
     }
 }

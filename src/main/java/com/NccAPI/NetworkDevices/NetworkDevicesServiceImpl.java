@@ -75,4 +75,10 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
 
         return deviceData;
     }
+
+    public void deleteNetworkDevice(String login, String key, Integer id) {
+        if (!new NccAPI().checkPermission(login, key, "DeleteNetworkDevice")) return;
+
+        new NccNetworkDevice().deleteDevice(id);
+    }
 }
