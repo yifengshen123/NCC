@@ -16,5 +16,14 @@ public interface NetworkDevicesService {
 
     public ApiNetworkDeviceData getNetworkDevices(String login, String key);
 
+    public ApiNetworkDeviceData updateNetworkDevice(String login, String key,
+                                                    Integer id,
+                                                    String deviceName,
+                                                    String deviceIP,
+                                                    Integer deviceType,
+                                                    String snmpCommunity,
+                                                    String addressStreet,
+                                                    String addressBuild);
+
     public ApiNetworkDeviceData deleteNetworkDevice(String login, String key, Integer id);
 }

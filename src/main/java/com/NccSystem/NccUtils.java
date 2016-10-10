@@ -10,9 +10,17 @@ public class NccUtils {
 
         String[] ipAddressInArray = stringIp.split("\\.");
 
+        if (ipAddressInArray.length < 4) return null;
+
         for (int i = 3; i >= 0; i--) {
 
-            long ip = Long.parseLong(ipAddressInArray[3 - i]);
+            long ip = 0;
+            try {
+                ip = Long.parseLong(ipAddressInArray[3 - i]);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                return null;
+            }
             result |= ip << (i * 8);
         }
 
@@ -26,6 +34,7 @@ public class NccUtils {
             address = InetAddress.getByAddress(bb.array());
         } catch (UnknownHostException e) {
             e.printStackTrace();
+            return null;
         }
         return address.getHostAddress();
     }

@@ -49,6 +49,21 @@ public class NccNetworkDevice {
         }
     }
 
+    public void updateDevice(NccNetworkDeviceData device) {
+        try {
+            new NccQuery().updateQuery("UPDATE nccNetworkDevices SET " +
+                    "deviceName='" + device.deviceName + "', " +
+                    "deviceType=" + device.deviceType + ", " +
+                    "deviceIP=" + device.deviceIP + ", " +
+                    "addressStreet='" + device.addressStreet + "', " +
+                    "addressBuild='" + device.addressBuild + "', " +
+                    "snmpCommunity='" + device.snmpCommunity + "' " +
+                    "WHERE id=" + device.id);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void deleteDevice(Integer id) {
         try {
             new NccQuery().updateQuery("DELETE FROM nccNetworkDevices WHERE id=" + id);
