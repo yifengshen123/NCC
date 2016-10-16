@@ -12,6 +12,9 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.transport.TransportMappings;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * Created by root on 05.10.16.
@@ -37,7 +40,7 @@ public class NccSNMP {
             communityTarget.setVersion(SnmpConstants.version2c);
             communityTarget.setAddress(GenericAddress.parse("udp:" + ip + "/161"));
             communityTarget.setRetries(2);
-            communityTarget.setTimeout(1000);
+            communityTarget.setTimeout(500);
 
             snmp = new Snmp(transport);
         } catch (IOException e) {
@@ -54,7 +57,17 @@ public class NccSNMP {
         return pdu;
     }
 
-    private PDU send(String oid){
+    private PDU prepareBulk(OID oid) {
+        PDU pdu = new PDU();
+        pdu.add(new VariableBinding(new OID(oid)));
+        pdu.setType(PDU.GETBULK);
+        pdu.setMaxRepetitions(500);
+        pdu.setRequestID(new Integer32(1));
+
+        return pdu;
+    }
+
+    private PDU send(String oid) {
         try {
             ResponseEvent response = snmp.send(preparePDU(new OID(oid)), communityTarget, null);
 
@@ -80,11 +93,47 @@ public class NccSNMP {
         return null;
     }
 
-    public String getString(String oid) {
-        return send(oid).get(0).getVariable().toString();
+    private HashMap<String, String> getBulk(String oid) {
+        HashMap<String, String> items = new HashMap<>();
+
+        try {
+            ResponseEvent response = snmp.send(prepareBulk(new OID(oid)), communityTarget);
+
+            if (response != null) {
+                PDU responsePDU = response.getResponse();
+
+                if (responsePDU != null) {
+
+                    Vector vec = responsePDU.getVariableBindings();
+
+                    for (Integer i = 0; i < vec.size(); i++) {
+                        VariableBinding vb = (VariableBinding) vec.elementAt(i);
+                        String var = vb.getOid().toString();
+                        String val = vb.getVariable().toString();
+                        if (var.contains(oid)) {
+                            items.put(var, val);
+                        }
+                    }
+                    return items;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
-    public Integer getInteger(String oid){
-        return send(oid).get(0).getVariable().toInt();
+    public String getString(String oid) {
+        PDU data = send(oid);
+        if (data != null) {
+            return data.get(0).getVariable().toString();
+        }
+
+        return "";
+    }
+
+    public HashMap<String, String> getStrings(String oid) {
+        return getBulk(oid);
     }
 }

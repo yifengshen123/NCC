@@ -75,4 +75,8 @@ public class NccNetworkDevice {
     public ArrayList<NccNetworkDeviceData> getNetworkDevices() {
         return new NccNetworkDeviceData().getDataList("SELECT * FROM nccNetworkDevices");
     }
+
+    public NccNetworkDeviceData getNetworkDevices(Integer id) {
+        return new NccNetworkDeviceData().getData("SELECT * FROM nccNetworkDevices WHERE id=" + id);
+    }
 }

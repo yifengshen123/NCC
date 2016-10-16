@@ -1,8 +1,5 @@
 package com.NccAPI.NetworkDevices;
 
-import com.NccAPI.NccApiData;
-import com.NccNetworkDevices.NccNetworkDeviceData;
-
 public interface NetworkDevicesService {
     public ApiNetworkDeviceTypeData getNetworkDeviceTypes(String login, String key);
 
@@ -26,4 +23,7 @@ public interface NetworkDevicesService {
                                                     String addressBuild);
 
     public ApiNetworkDeviceData deleteNetworkDevice(String login, String key, Integer id);
+
+    public ApiSnmpString getNetworkDeviceSnmpValue(String login, String key, Integer id, String oid);
+    public ApiSnmpStrings getNetworkDeviceSnmpValues(String login, String key, Integer id, String oid);
 }

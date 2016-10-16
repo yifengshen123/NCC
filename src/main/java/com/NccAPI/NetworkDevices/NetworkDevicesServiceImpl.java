@@ -1,13 +1,15 @@
 package com.NccAPI.NetworkDevices;
 
-import com.NccAPI.NccApiData;
 import com.NccAPI.NccAPI;
 import com.NccNetworkDevices.NccNetworkDevice;
 import com.NccNetworkDevices.NccNetworkDeviceData;
 import com.NccNetworkDevices.NccNetworkDeviceType;
+import com.NccSNMP.NccSNMP;
 import com.NccSystem.NccUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetworkDevicesServiceImpl implements NetworkDevicesService {
     public ApiNetworkDeviceTypeData getNetworkDeviceTypes(String login, String key) {
@@ -116,7 +118,7 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
                                                     Integer deviceType,
                                                     String snmpCommunity,
                                                     String addressStreet,
-                                                    String addressBuild){
+                                                    String addressBuild) {
 
         ApiNetworkDeviceData deviceData = new ApiNetworkDeviceData();
         deviceData.data = new ArrayList<NccNetworkDeviceData>();
@@ -181,5 +183,49 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
         deviceData.status = 0;
         deviceData.message = "success";
         return deviceData;
+    }
+
+    public ApiSnmpString getNetworkDeviceSnmpValue(String login, String key, Integer id, String oid) {
+        ApiSnmpString snmpString = new ApiSnmpString();
+        snmpString.data = "";
+        snmpString.status = 1;
+        snmpString.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "GetNetworkDeviceSnmpValue")) {
+            snmpString.message = "Permission denied";
+            return snmpString;
+        }
+
+        NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
+
+        if (device != null) {
+            NccSNMP snmp = new NccSNMP(NccUtils.long2ip(device.deviceIP), device.snmpCommunity);
+            snmpString.data = snmp.getString(oid);
+            snmpString.status = 0;
+            snmpString.message = "success";
+        }
+        return snmpString;
+    }
+
+    public ApiSnmpStrings getNetworkDeviceSnmpValues(String login, String key, Integer id, String oid) {
+        ApiSnmpStrings snmpStrings = new ApiSnmpStrings();
+        snmpStrings.data = new HashMap<String, String>();
+        snmpStrings.status = 1;
+        snmpStrings.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "GetNetworkDeviceSnmpValue")) {
+            snmpStrings.message = "Permission denied";
+            return snmpStrings;
+        }
+
+        NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
+
+        if (device != null) {
+            NccSNMP snmp = new NccSNMP(NccUtils.long2ip(device.deviceIP), device.snmpCommunity);
+            snmpStrings.data = snmp.getStrings(oid);
+            snmpStrings.status = 0;
+            snmpStrings.message = "success";
+        }
+        return snmpStrings;
     }
 }
