@@ -182,7 +182,7 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> createChannel(ChannelData channelData) {
+    public ChannelData createChannel(ChannelData channelData) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("INSERT INTO nccIptvChannels (" +
@@ -199,7 +199,7 @@ public class NccIptvManager {
                     channelData.channelIP +
                     ")");
 
-            return ids;
+            return new NccIptvManager().getChannelById(ids.get(0));
         } catch (NccQueryException e) {
             e.printStackTrace();
         }

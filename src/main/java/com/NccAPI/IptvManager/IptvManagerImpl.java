@@ -252,26 +252,38 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.createCam(camData);
     }
 
-    public ArrayList<Integer> createIptvChannel(String apiKey,
-                                                String channelName,
-                                                Integer channelTransponder,
-                                                Integer channelPnr,
-                                                Integer channelCam,
-                                                Long channelIP,
-                                                String channelComment) {
+    public ApiChannelData createIptvChannel(String login, String key,
+                                            String channelName,
+                                            Integer channelPnr,
+                                            Integer channelTransponder,
+                                            Long channelIP,
+                                            Integer channelCam) {
 
-        NccIptvManager iptvManager = new NccIptvManager();
+        ApiChannelData apiChannelData = new ApiChannelData();
+        apiChannelData.data = new ArrayList<>();
+        apiChannelData.status = 1;
+        apiChannelData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "createIptvChannel")) {
+            apiChannelData.message = "Permission denied";
+            return apiChannelData;
+        }
+
         ChannelData channelData = new ChannelData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permCreateIptvChannel")) return null;
-
         channelData.channelName = channelName;
         channelData.transponderId = channelTransponder;
         channelData.channelPnr = channelPnr;
         channelData.camId = channelCam;
         channelData.channelIP = channelIP;
 
-        return iptvManager.createChannel(channelData);
+        ChannelData data = new NccIptvManager().createChannel(channelData);
+        if (data != null) {
+            apiChannelData.data.add(data);
+            apiChannelData.status = 0;
+            apiChannelData.message = "success";
+        }
+
+        return apiChannelData;
     }
 
     public ArrayList<Integer> deleteIptvServer(String apiKey, Integer id) {

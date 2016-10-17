@@ -50,13 +50,12 @@ public interface IptvManagerService {
                                              String camName,
                                              String camKey);
 
-    public ArrayList<Integer> createIptvChannel(String apiKey,
+    public ApiChannelData createIptvChannel(String login, String key,
                                              String channelName,
-                                             Integer channelTransponder,
                                              Integer channelPnr,
-                                             Integer channelCam,
+                                             Integer channelTransponder,
                                              Long channelIP,
-                                             String channelComment);
+                                             Integer channelCam);
 
     public ArrayList<Integer> updateIptvServer(String apiKey,
                                                 Integer id,
