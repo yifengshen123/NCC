@@ -106,6 +106,6 @@ public interface IptvManagerService {
     public ArrayList<Integer> deleteIptvAdapter(String apiKey, Integer id);
     public ArrayList<Integer> deleteIptvTransponder(String apiKey, Integer id);
     public ArrayList<Integer> deleteIptvCam(String apiKey, Integer id);
-    public ArrayList<Integer> deleteIptvChannel(String apiKey, Integer id);
+    public ApiChannelData deleteIptvChannel(String login, String key, Integer id);
 
 }

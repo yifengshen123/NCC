@@ -255,17 +255,17 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> deleteChannel(Integer id) {
+    public boolean deleteChannel(Integer id) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccIptvChannels WHERE id=" + id);
 
-            return ids;
+            return true;
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
     }
 
     public ArrayList<Integer> updateServer(ServerData serverData) {

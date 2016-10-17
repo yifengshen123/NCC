@@ -318,12 +318,25 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.deleteCam(id);
     }
 
-    public ArrayList<Integer> deleteIptvChannel(String apiKey, Integer id) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiChannelData deleteIptvChannel(String login, String key,
+                                                Integer id) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permDeleteIptvChannel")) return null;
+        ApiChannelData apiChannelData = new ApiChannelData();
+        apiChannelData.data = new ArrayList<>();
+        apiChannelData.status = 1;
+        apiChannelData.message = "error";
 
-        return iptvManager.deleteChannel(id);
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvChannel")){
+            apiChannelData.message = "Permission denied";
+            return apiChannelData;
+        }
+
+        if(new NccIptvManager().deleteChannel(id)){
+            apiChannelData.status = 0;
+            apiChannelData.message = "success";
+        }
+
+        return apiChannelData;
     }
 
     public ArrayList<Integer> updateIptvServer(String apiKey,
