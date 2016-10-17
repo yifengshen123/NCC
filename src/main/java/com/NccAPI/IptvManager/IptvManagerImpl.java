@@ -74,20 +74,48 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.getAdapterTypes();
     }
 
-    public ArrayList<TransponderData> getIptvTransponders(String apiKey) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiTransponderData getIptvTransponders(String login, String key) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permGetIptvTransponders")) return null;
+        ApiTransponderData apiTransponderData = new ApiTransponderData();
+        apiTransponderData.data = new ArrayList<>();
+        apiTransponderData.status = 1;
+        apiTransponderData.message = "error";
 
-        return iptvManager.getTransponders();
+        if (!new NccAPI().checkPermission(login, key, "GetIptvTransponders")) {
+            apiTransponderData.message = "Permission denied";
+            return apiTransponderData;
+        }
+
+        ArrayList<TransponderData> transponders = new NccIptvManager().getTransponders();
+        if (transponders != null) {
+            apiTransponderData.data = transponders;
+            apiTransponderData.status = 0;
+            apiTransponderData.message = "success";
+        }
+
+        return apiTransponderData;
     }
 
-    public ArrayList<CamData> getIptvCams(String apiKey) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiCamData getIptvCams(String login, String key) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permGetIptvCams")) return null;
+        ApiCamData apiCamData = new ApiCamData();
+        apiCamData.data = new ArrayList<>();
+        apiCamData.status = 1;
+        apiCamData.message = "error";
 
-        return iptvManager.getCams();
+        if (!new NccAPI().checkPermission(login, key, "GetIptvCams")) {
+            apiCamData.message = "Permission denied";
+            return apiCamData;
+        }
+
+        ArrayList<CamData> cams = new NccIptvManager().getCams();
+        if (cams != null) {
+            apiCamData.data = cams;
+            apiCamData.status = 0;
+            apiCamData.message = "success";
+        }
+
+        return apiCamData;
     }
 
     public ApiChannelData getIptvChannels(String login, String key) {

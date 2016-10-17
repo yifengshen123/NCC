@@ -13,8 +13,8 @@ public interface IptvManagerService {
     public ArrayList<AdapterData> getIptvAdapters(String apiKey);
     public ArrayList<AdapterType> getIptvAdapterTypes(String apiKey);
     public ArrayList<AdapterData> getIptvAdaptersByServerId(String apiKey, Integer id);
-    public ArrayList<TransponderData> getIptvTransponders(String apiKey);
-    public ArrayList<CamData> getIptvCams(String apiKey);
+    public ApiTransponderData getIptvTransponders(String login, String key);
+    public ApiCamData getIptvCams(String login, String key);
     public ApiChannelData getIptvChannels(String login, String key);
     public ApiChannelData getIptvChannelById(String login, String key, Integer id);
 
