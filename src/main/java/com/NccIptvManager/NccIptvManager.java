@@ -348,7 +348,7 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> updateChannel(ChannelData channelData) {
+    public ChannelData updateChannel(ChannelData channelData) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("UPDATE nccIptvChannels SET " +
@@ -359,7 +359,7 @@ public class NccIptvManager {
                     "camId=" + channelData.camId + " " +
                     "WHERE id=" + channelData.channelId);
 
-            return ids;
+            return new NccIptvManager().getChannelById(channelData.channelId);
         } catch (NccQueryException e) {
             e.printStackTrace();
         }

@@ -414,19 +414,26 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.updateCam(camData);
     }
 
-    public ArrayList<Integer> updateIptvChannel(String apiKey,
-                                                Integer id,
-                                                String channelName,
-                                                Integer channelPnr,
-                                                Integer transponderId,
-                                                Long channelIP,
-                                                Integer camId) {
+    public ApiChannelData updateIptvChannel(String login, String key,
+                                            Integer id,
+                                            String channelName,
+                                            Integer channelPnr,
+                                            Integer transponderId,
+                                            Long channelIP,
+                                            Integer camId) {
 
-        NccIptvManager iptvManager = new NccIptvManager();
+
+        ApiChannelData apiChannelData = new ApiChannelData();
+        apiChannelData.data = new ArrayList<>();
+        apiChannelData.status = 1;
+        apiChannelData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateIptvChannel")) {
+            apiChannelData.message = "Permission denied";
+            return apiChannelData;
+        }
+
         ChannelData channelData = new ChannelData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permUpdateIptvChannel")) return null;
-
         channelData.channelId = id;
         channelData.channelName = channelName;
         channelData.channelPnr = channelPnr;
@@ -434,6 +441,14 @@ public class IptvManagerImpl implements IptvManagerService {
         channelData.channelIP = channelIP;
         channelData.camId = camId;
 
-        return iptvManager.updateChannel(channelData);
+        ChannelData data = new NccIptvManager().updateChannel(channelData);
+        System.out.println(data);
+        if (data != null) {
+            apiChannelData.status = 0;
+            apiChannelData.message = "success";
+            apiChannelData.data.add(data);
+        }
+
+        return apiChannelData;
     }
 }

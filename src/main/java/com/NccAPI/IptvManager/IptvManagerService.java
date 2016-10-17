@@ -95,7 +95,7 @@ public interface IptvManagerService {
                                              String camName,
                                              String camKey);
 
-    public ArrayList<Integer> updateIptvChannel(String apiKey,
+    public ApiChannelData updateIptvChannel(String login, String key,
                                              Integer id,
                                              String channelName,
                                              Integer channelPnr,
