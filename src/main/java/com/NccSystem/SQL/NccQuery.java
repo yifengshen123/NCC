@@ -2,6 +2,7 @@ package com.NccSystem.SQL;
 
 import com.Ncc;
 import com.NccSystem.NccLogger;
+import com.sun.org.apache.regexp.internal.RE;
 import com.sun.rowset.CachedRowSetImpl;
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,7 @@ public class NccQuery {
     public NccQuery() throws NccQueryException {
     }
 
-    public CachedRowSetImpl selectQuery(String query) throws NccQueryException {
+    public NccCachedRowset selectQuery(String query) throws NccQueryException {
 
         if (Ncc.logQuery) logger.info("SQL: '" + query + "'");
 
@@ -30,7 +31,7 @@ public class NccQuery {
                 throw new NccQueryException("SQL error");
             }
 
-            CachedRowSetImpl crs = new CachedRowSetImpl();
+            NccCachedRowset crs = new NccCachedRowset();
 
             Statement stmt = sql.createStatement();
 

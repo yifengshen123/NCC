@@ -17,7 +17,7 @@ public interface IptvManagerService {
     public ApiTransponderTypes getIptvTransponderTypes(String login, String key);
 
     public ArrayList<ServerData> getIptvServers(String apiKey);
-    public ArrayList<AdapterData> getIptvAdapters(String apiKey);
+    public ApiAdapterData getIptvAdapters(String login, String key);
     public ArrayList<AdapterType> getIptvAdapterTypes(String apiKey);
     public ArrayList<AdapterData> getIptvAdaptersByServerId(String apiKey, Integer id);
     public ApiTransponderData getIptvTransponders(String login, String key);
@@ -47,7 +47,7 @@ public interface IptvManagerService {
                                                      String transponderType,
                                                      Integer adapterId,
                                                      String transponderLNB,
-                                                     String transponderSat);
+                                                     Integer transponderSat);
 
     public ArrayList<Integer> createIptvCam(String apiKey,
                                              String camServer,
@@ -80,7 +80,7 @@ public interface IptvManagerService {
                                                  Integer serverId,
                                                  String adapterComment);
 
-    public ArrayList<Integer> updateIptvTransponder(String apiKey,
+    public ArrayList<Integer> updateIptvTransponder(String login, String key,
                                                      Integer id,
                                                      String transponderName,
                                                      Integer transponderFreq,
@@ -90,7 +90,7 @@ public interface IptvManagerService {
                                                      String transponderType,
                                                      Integer adapterId,
                                                      String transponderLNB,
-                                                     String transponderSat);
+                                                     Integer transponderSat);
 
     public ArrayList<Integer> updateIptvCam(String apiKey,
                                              Integer id,

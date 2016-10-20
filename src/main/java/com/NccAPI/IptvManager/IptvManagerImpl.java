@@ -89,6 +89,23 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiTransponderTypes;
     }
 
+    public ApiAdapterData getIptvAdapters(String login, String key){
+        ApiAdapterData apiAdapterData = new ApiAdapterData();
+
+        if (!new NccAPI().checkPermission(login, key, "GetIptvAdapters")) {
+            apiAdapterData.data = new ArrayList<>();
+            apiAdapterData.status = 1;
+            apiAdapterData.message = "Permission denied";
+            return apiAdapterData;
+        }
+
+        apiAdapterData.data = new NccIptvManager().getAdapters();
+        apiAdapterData.status = 0;
+        apiAdapterData.message = "success";
+
+        return apiAdapterData;
+    }
+
     public TransponderStatus getIptvTransponderStatus(String apiKey, Integer id) {
         NccIptvManager iptvManager = new NccIptvManager();
 
@@ -265,7 +282,7 @@ public class IptvManagerImpl implements IptvManagerService {
                                                     String transponderType,
                                                     Integer adapterId,
                                                     String transponderLNB,
-                                                    String transponderSat) {
+                                                    Integer transponderSat) {
         NccIptvManager iptvManager = new NccIptvManager();
         TransponderData transponderData = new TransponderData();
 
@@ -438,7 +455,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.updateAdapter(adapterData);
     }
 
-    public ArrayList<Integer> updateIptvTransponder(String apiKey,
+    public ArrayList<Integer> updateIptvTransponder(String login, String key,
                                                     Integer id,
                                                     String transponderName,
                                                     Integer transponderFreq,
@@ -448,12 +465,12 @@ public class IptvManagerImpl implements IptvManagerService {
                                                     String transponderType,
                                                     Integer adapterId,
                                                     String transponderLNB,
-                                                    String transponderSat) {
+                                                    Integer transponderSat) {
         NccIptvManager iptvManager = new NccIptvManager();
 
         TransponderData transponderData = new TransponderData();
 
-        if (!new NccAPI().checkPermission(apiKey, "permUpdateIptvTransponder")) return null;
+        if (!new NccAPI().checkPermission(login, key, "permUpdateIptvTransponder")) return null;
 
         transponderData.id = id;
         transponderData.transponderName = transponderName;

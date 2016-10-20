@@ -22,7 +22,9 @@ public class TransponderData extends NccAbstractData<TransponderData> {
     public Long serverLocalAddress;
     public String serverName;
     public String transponderLNB;
-    public String transponderSat;
+    public Integer transponderSat;
+    public String satName;
+    public String satDeg;
     public TransponderStatus transponderStatus;
 
     @Override
@@ -48,7 +50,9 @@ public class TransponderData extends NccAbstractData<TransponderData> {
             transponderData.serverLocalAddress = rs.getLong("serverLocalAddress");
             transponderData.serverName = rs.getString("serverName");
             transponderData.transponderLNB = rs.getString("transponderLNB");
-            transponderData.transponderSat = rs.getString("transponderSat");
+            transponderData.transponderSat = rs.getInt("transponderSat");
+            transponderData.satName = rs.getString("satName");
+            transponderData.satDeg = rs.getString("satDeg");
             transponderData.transponderStatus = iptvManager.getTransponderStatus(transponderData.id);
 
         } catch (SQLException e) {

@@ -28,23 +28,23 @@ public class NccIptvManager {
         }
     }
 
-    public ArrayList<SymbolRatesData> getSymbolRates(){
+    public ArrayList<SymbolRatesData> getSymbolRates() {
         return new SymbolRatesData().getDataList("SELECT * FROM nccIptvSymbolRates");
     }
 
-    public ArrayList<LnbTypesData> getLnbTypes(){
+    public ArrayList<LnbTypesData> getLnbTypes() {
         return new LnbTypesData().getDataList("SELECT * FROM nccIptvLnbTypes");
     }
 
-    public ArrayList<FecTypesData> getFecTypes(){
+    public ArrayList<FecTypesData> getFecTypes() {
         return new FecTypesData().getDataList("SELECT * FROM nccIptvFecTypes");
     }
 
-    public ArrayList<PolarityTypesData> getPolarityTypes(){
+    public ArrayList<PolarityTypesData> getPolarityTypes() {
         return new PolarityTypesData().getDataList("SELECT * FROM nccIptvPolarityTypes");
     }
 
-    public ArrayList<TransponderTypesData> getTransponderTypes(){
+    public ArrayList<TransponderTypesData> getTransponderTypes() {
         return new TransponderTypesData().getDataList("SELECT * FROM nccIptvTransponderTypes");
     }
 
@@ -69,11 +69,38 @@ public class NccIptvManager {
     }
 
     public ArrayList<AdapterData> getAdapters() {
-        return new AdapterData().getDataList("SELECT * FROM nccIptvAdapters GROUP BY serverId, adapterDevice");
+        return new AdapterData().getDataList("SELECT " +
+                "a.id AS id, " +
+                "a.adapterDevice AS adapterDevice, " +
+                "a.adapterType AS adapterType, " +
+                "a.serverId AS serverId, " +
+                "a.adapterComment AS adapterComment, " +
+                "a.adapterSat AS adapterSat, " +
+                "s.serverIP AS serverIP, " +
+                "s.serverName AS serverName, " +
+                "sat.satName AS satName " +
+                "FROM nccIptvAdapters a " +
+                "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
+                "LEFT JOIN nccIptvSat sat ON sat.id=a.adapterSat " +
+                "GROUP BY a.serverId, a.adapterDevice");
     }
 
     public ArrayList<AdapterData> getAdaptersByServerId(Integer id) {
-        return new AdapterData().getDataList("SELECT * FROM nccIptvAdapters WHERE serverId=" + id);
+        return new AdapterData().getDataList("SELECT " +
+                "a.id AS id, " +
+                "a.adapterDevice AS adapterDevice, " +
+                "a.adapterType AS adapterType, " +
+                "a.serverId AS serverId, " +
+                "a.adapterComment AS adapterComment, " +
+                "a.adapterSat AS adapterSat, " +
+                "s.serverIP AS serverIP, " +
+                "s.serverName AS serverName, " +
+                "sat.satName AS satName " +
+                "FROM nccIptvAdapters a " +
+                "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
+                "LEFT JOIN nccIptvSat sat ON sat.id=a.adapterSat " +
+                "WHERE serverId=" + id + " " +
+                "GROUP BY a.serverId, a.adapterDevice");
     }
 
     public ArrayList<AdapterType> getAdapterTypes() {
@@ -81,11 +108,64 @@ public class NccIptvManager {
     }
 
     public ArrayList<TransponderData> getTransponders() {
-        return new TransponderData().getDataList("SELECT * FROM nccViewAstraTransponders");
+        return new TransponderData().getDataList("SELECT " +
+                "t.id AS id, " +
+                "t.transName AS transponderName, " +
+                "t.transFreq AS transponderFreq, " +
+                "t.transPolarity AS transponderPolarity, " +
+                "t.transFEC AS transponderFEC, " +
+                "t.transSymbolrate AS transponderSymbolrate, " +
+                "t.transType AS transponderType, " +
+                "t.adapterId AS adapterId, " +
+                "t.transLNB AS transponderLNB, " +
+                "t.transSat AS transponderSat, " +
+                "a.adapterDevice AS adapterDevice, " +
+                "at.cardName AS adapterCard, " +
+                "at.chipName AS adapterChip, " +
+                "s.id AS serverId, " +
+                "s.serverIP AS serverIP, " +
+                "s.serverSecret AS serverSecret, " +
+                "s.serverLocalAddress AS serverLocalAddress, " +
+                "s.serverName AS serverName, " +
+                "sat.satName AS satName, " +
+                "sat.satDeg AS satDeg " +
+                "FROM nccIptvTransponders t " +
+                "LEFT JOIN nccIptvAdapters a ON a.id=t.adapterId " +
+                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.id " +
+                "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
+                "LEFT JOIN nccIptvSat sat ON sat.id=t.transSat");
     }
 
     public TransponderData getTransponderById(Integer id) {
-        return new TransponderData().getData("SELECT * FROM nccViewAstraTransponders WHERE id=" + id);
+//        return new TransponderData().getData("SELECT * FROM nccViewAstraTransponders WHERE id=" + id);
+
+        return new TransponderData().getData("SELECT " +
+                "t.id AS id, " +
+                "t.transName AS transponderName, " +
+                "t.transFreq AS transponderFreq, " +
+                "t.transPolarity AS transponderPolarity, " +
+                "t.transFEC AS transponderFEC, " +
+                "t.transSymbolrate AS transponderSymbolrate, " +
+                "t.transType AS transponderType, " +
+                "t.adapterId AS adapterId, " +
+                "t.transLNB AS transponderLNB, " +
+                "t.transSat AS transponderSat, " +
+                "a.adapterDevice AS adapterDevice, " +
+                "at.cardName AS adapterCard, " +
+                "at.chipName AS adapterChip, " +
+                "s.id AS serverId, " +
+                "s.serverIP AS serverIP, " +
+                "s.serverSecret AS serverSecret, " +
+                "s.serverLocalAddress AS serverLocalAddress, " +
+                "s.serverName AS serverName, " +
+                "sat.satName AS satName, " +
+                "sat.satDeg AS satDeg " +
+                "FROM nccIptvTransponders t " +
+                "LEFT JOIN nccIptvAdapters a ON a.id=t.adapterId " +
+                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.id " +
+                "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
+                "LEFT JOIN nccIptvSat sat ON sat.id=t.transSat " +
+                "WHERE t.id=" + id);
     }
 
     public ArrayList<CamData> getCams() {

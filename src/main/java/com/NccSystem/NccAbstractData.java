@@ -1,5 +1,6 @@
 package com.NccSystem;
 
+import com.NccSystem.SQL.NccCachedRowset;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import com.sun.rowset.CachedRowSetImpl;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 
 public abstract class NccAbstractData<T> {
 
-    protected CachedRowSetImpl rs;
+    protected NccCachedRowset rs;
 
     public NccAbstractData() {
     }

@@ -10,6 +10,10 @@ public class AdapterData extends NccAbstractData<AdapterData> {
     public Integer adapterType;
     public Integer serverId;
     public String adapterComment;
+    public Integer adapterSat;
+    public Long serverIP;
+    public String serverName;
+    public String satName;
 
     @Override
     public AdapterData fillData() {
@@ -21,6 +25,10 @@ public class AdapterData extends NccAbstractData<AdapterData> {
             adapterData.adapterType = rs.getInt("adapterType");
             adapterData.serverId = rs.getInt("serverId");
             adapterData.adapterComment = rs.getString("adapterComment");
+            adapterData.adapterSat = rs.getInt("adapterSat");
+            adapterData.serverIP = rs.getLong("serverIP");
+            adapterData.serverName = rs.getString("serverName");
+            adapterData.satName = rs.getString("satName");
 
         } catch (SQLException e) {
             e.printStackTrace();
