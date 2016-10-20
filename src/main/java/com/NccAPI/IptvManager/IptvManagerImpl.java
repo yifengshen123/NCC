@@ -49,7 +49,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiSymbolRates;
     }
 
-    public ApiLnbTypes getIptvLnbTypes(String login, String key){
+    public ApiLnbTypes getIptvLnbTypes(String login, String key) {
         ApiLnbTypes apiLnbTypes = new ApiLnbTypes();
 
         apiLnbTypes.data = new NccIptvManager().getLnbTypes();
@@ -59,7 +59,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiLnbTypes;
     }
 
-    public ApiFecTypes getIptvFecTypes(String login, String key){
+    public ApiFecTypes getIptvFecTypes(String login, String key) {
         ApiFecTypes apiFecTypes = new ApiFecTypes();
 
         apiFecTypes.data = new NccIptvManager().getFecTypes();
@@ -69,7 +69,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiFecTypes;
     }
 
-    public ApiPolarityTypes getIptvPolarityTypes(String login, String key){
+    public ApiPolarityTypes getIptvPolarityTypes(String login, String key) {
         ApiPolarityTypes apiPolarityTypes = new ApiPolarityTypes();
 
         apiPolarityTypes.data = new NccIptvManager().getPolarityTypes();
@@ -79,7 +79,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiPolarityTypes;
     }
 
-    public ApiTransponderTypes getIptvTransponderTypes(String login, String key){
+    public ApiTransponderTypes getIptvTransponderTypes(String login, String key) {
         ApiTransponderTypes apiTransponderTypes = new ApiTransponderTypes();
 
         apiTransponderTypes.data = new NccIptvManager().getTransponderTypes();
@@ -89,7 +89,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiTransponderTypes;
     }
 
-    public ApiAdapterData getIptvAdapters(String login, String key){
+    public ApiAdapterData getIptvAdapters(String login, String key) {
         ApiAdapterData apiAdapterData = new ApiAdapterData();
 
         if (!new NccAPI().checkPermission(login, key, "GetIptvAdapters")) {
@@ -144,6 +144,16 @@ public class IptvManagerImpl implements IptvManagerService {
         if (!new NccAPI().checkPermission(apiKey, "permGetIptvAdapterTypes")) return null;
 
         return iptvManager.getAdapterTypes();
+    }
+
+    public ApiSatData getIptvSat(String login, String key) {
+        ApiSatData apiSatData = new ApiSatData();
+
+        apiSatData.data = new NccIptvManager().getSat();
+        apiSatData.status = 0;
+        apiSatData.message = "success";
+
+        return apiSatData;
     }
 
     public ApiTransponderData getIptvTransponders(String login, String key) {
@@ -273,7 +283,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.createAdapter(adapterData);
     }
 
-    public ArrayList<Integer> createIptvTransponder(String apiKey,
+    public ApiTransponderData createIptvTransponder(String login, String key,
                                                     String transponderName,
                                                     Integer transponderFreq,
                                                     String transponderPolarity,
@@ -283,10 +293,21 @@ public class IptvManagerImpl implements IptvManagerService {
                                                     Integer adapterId,
                                                     String transponderLNB,
                                                     Integer transponderSat) {
-        NccIptvManager iptvManager = new NccIptvManager();
-        TransponderData transponderData = new TransponderData();
 
-        if (!new NccAPI().checkPermission(apiKey, "permCreateIptvTransponder")) return null;
+        ApiTransponderData apiTransponderData = new ApiTransponderData();
+
+        apiTransponderData.data = new ArrayList<>();
+        apiTransponderData.status = 1;
+        apiTransponderData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "CreateIptvTransponder")) {
+            apiTransponderData.status = 1;
+            apiTransponderData.message = "Permission denied";
+
+            return apiTransponderData;
+        }
+
+        TransponderData transponderData = new TransponderData();
 
         transponderData.transponderName = transponderName;
         transponderData.transponderFreq = transponderFreq;
@@ -298,7 +319,15 @@ public class IptvManagerImpl implements IptvManagerService {
         transponderData.transponderLNB = transponderLNB;
         transponderData.transponderSat = transponderSat;
 
-        return iptvManager.createTransponder(transponderData);
+        TransponderData data = new NccIptvManager().createTransponder(transponderData);
+
+        if (data != null) {
+            apiTransponderData.data.add(data);
+            apiTransponderData.status = 0;
+            apiTransponderData.message = "success";
+        }
+
+        return apiTransponderData;
     }
 
     public ArrayList<Integer> createIptvCam(String apiKey,
@@ -374,12 +403,26 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.deleteAdapter(id);
     }
 
-    public ArrayList<Integer> deleteIptvTransponder(String apiKey, Integer id) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiTransponderData deleteIptvTransponder(String login, String key,
+                                                    Integer id) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permDeleteIptvTransponder")) return null;
+        ApiTransponderData apiTransponderData = new ApiTransponderData();
 
-        return iptvManager.deleteTransponder(id);
+        apiTransponderData.data = new ArrayList<>();
+        apiTransponderData.status = 1;
+        apiTransponderData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvTransponder")){
+            apiTransponderData.message = "Permission denied";
+            return apiTransponderData;
+        }
+
+        if(new NccIptvManager().deleteTransponder(id)){
+            apiTransponderData.status = 0;
+            apiTransponderData.message = "success";
+        }
+
+        return apiTransponderData;
     }
 
     public ArrayList<Integer> deleteIptvCam(String apiKey, Integer id) {
@@ -455,7 +498,7 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.updateAdapter(adapterData);
     }
 
-    public ArrayList<Integer> updateIptvTransponder(String login, String key,
+    public ApiTransponderData updateIptvTransponder(String login, String key,
                                                     Integer id,
                                                     String transponderName,
                                                     Integer transponderFreq,
@@ -466,11 +509,21 @@ public class IptvManagerImpl implements IptvManagerService {
                                                     Integer adapterId,
                                                     String transponderLNB,
                                                     Integer transponderSat) {
-        NccIptvManager iptvManager = new NccIptvManager();
+
+        ApiTransponderData apiTransponderData = new ApiTransponderData();
+
+        apiTransponderData.data = new ArrayList<>();
+        apiTransponderData.status = 1;
+        apiTransponderData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateIptvTransponder")) {
+            apiTransponderData.status = 1;
+            apiTransponderData.message = "Permission denied";
+
+            return apiTransponderData;
+        }
 
         TransponderData transponderData = new TransponderData();
-
-        if (!new NccAPI().checkPermission(login, key, "permUpdateIptvTransponder")) return null;
 
         transponderData.id = id;
         transponderData.transponderName = transponderName;
@@ -483,7 +536,15 @@ public class IptvManagerImpl implements IptvManagerService {
         transponderData.transponderLNB = transponderLNB;
         transponderData.transponderSat = transponderSat;
 
-        return iptvManager.updateTransponder(transponderData);
+        TransponderData data = new NccIptvManager().updateTransponder(transponderData);
+
+        if (data != null) {
+            apiTransponderData.data.add(data);
+            apiTransponderData.status = 0;
+            apiTransponderData.message = "success";
+        }
+
+        return apiTransponderData;
     }
 
     public ArrayList<Integer> updateIptvCam(String apiKey,

@@ -15,6 +15,7 @@ public interface IptvManagerService {
     public ApiFecTypes getIptvFecTypes(String login, String key);
     public ApiPolarityTypes getIptvPolarityTypes(String login, String key);
     public ApiTransponderTypes getIptvTransponderTypes(String login, String key);
+    public ApiSatData getIptvSat(String login, String key);
 
     public ArrayList<ServerData> getIptvServers(String apiKey);
     public ApiAdapterData getIptvAdapters(String login, String key);
@@ -38,7 +39,7 @@ public interface IptvManagerService {
                                                  Integer serverId,
                                                  String adapterComment);
 
-    public ArrayList<Integer> createIptvTransponder(String apiKey,
+    public ApiTransponderData createIptvTransponder(String login, String key,
                                                      String transponderName,
                                                      Integer transponderFreq,
                                                      String transponderPolarity,
@@ -80,7 +81,7 @@ public interface IptvManagerService {
                                                  Integer serverId,
                                                  String adapterComment);
 
-    public ArrayList<Integer> updateIptvTransponder(String login, String key,
+    public ApiTransponderData updateIptvTransponder(String login, String key,
                                                      Integer id,
                                                      String transponderName,
                                                      Integer transponderFreq,
@@ -111,7 +112,8 @@ public interface IptvManagerService {
 
     public ArrayList<Integer> deleteIptvServer(String apiKey, Integer id);
     public ArrayList<Integer> deleteIptvAdapter(String apiKey, Integer id);
-    public ArrayList<Integer> deleteIptvTransponder(String apiKey, Integer id);
+    public ApiTransponderData deleteIptvTransponder(String login, String key,
+                                                    Integer id);
     public ArrayList<Integer> deleteIptvCam(String apiKey, Integer id);
     public ApiChannelData deleteIptvChannel(String login, String key, Integer id);
 

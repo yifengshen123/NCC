@@ -107,6 +107,10 @@ public class NccIptvManager {
         return new AdapterType().getDataList("SELECT * FROM nccIptvAdapterTypes");
     }
 
+    public ArrayList<SatData> getSat(){
+        return new SatData().getDataList("SELECT * FROM nccIptvSat");
+    }
+
     public ArrayList<TransponderData> getTransponders() {
         return new TransponderData().getDataList("SELECT " +
                 "t.id AS id, " +
@@ -137,7 +141,6 @@ public class NccIptvManager {
     }
 
     public TransponderData getTransponderById(Integer id) {
-//        return new TransponderData().getData("SELECT * FROM nccViewAstraTransponders WHERE id=" + id);
 
         return new TransponderData().getData("SELECT " +
                 "t.id AS id, " +
@@ -220,7 +223,7 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> createTransponder(TransponderData transponderData) {
+    public TransponderData createTransponder(TransponderData transponderData) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("INSERT INTO nccIptvTransponders (" +
@@ -243,11 +246,11 @@ public class NccIptvManager {
                     "'" + transponderData.transponderType + "', " +
                     transponderData.adapterId + ", " +
                     "'" + transponderData.transponderLNB + "', " +
-                    "'" + transponderData.transponderSat + "', " +
-                    "1" +
+                    transponderData.transponderSat + ", " +
+                    "0" +
                     ")");
 
-            return ids;
+            return new NccIptvManager().getTransponderById(ids.get(0));
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
@@ -331,15 +334,15 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> deleteTransponder(Integer id) {
+    public boolean deleteTransponder(Integer id) {
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccIptvTransponders WHERE id=" + id);
 
-            return ids;
+            return true;
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
     public ArrayList<Integer> deleteCam(Integer id) {
@@ -405,7 +408,7 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> updateTransponder(TransponderData transponderData) {
+    public TransponderData updateTransponder(TransponderData transponderData) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("UPDATE nccIptvTransponders SET " +
@@ -417,10 +420,10 @@ public class NccIptvManager {
                     "transType='" + transponderData.transponderType + "', " +
                     "adapterId=" + transponderData.adapterId + ", " +
                     "transLNB='" + transponderData.transponderLNB + "', " +
-                    "transSat='" + transponderData.transponderSat + "' " +
+                    "transSat=" + transponderData.transponderSat + " " +
                     "WHERE id=" + transponderData.id);
 
-            return ids;
+            return new NccIptvManager().getTransponderById(transponderData.id);
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
