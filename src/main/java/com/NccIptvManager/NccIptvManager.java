@@ -28,6 +28,26 @@ public class NccIptvManager {
         }
     }
 
+    public ArrayList<SymbolRatesData> getSymbolRates(){
+        return new SymbolRatesData().getDataList("SELECT * FROM nccIptvSymbolRates");
+    }
+
+    public ArrayList<LnbTypesData> getLnbTypes(){
+        return new LnbTypesData().getDataList("SELECT * FROM nccIptvLnbTypes");
+    }
+
+    public ArrayList<FecTypesData> getFecTypes(){
+        return new FecTypesData().getDataList("SELECT * FROM nccIptvFecTypes");
+    }
+
+    public ArrayList<PolarityTypesData> getPolarityTypes(){
+        return new PolarityTypesData().getDataList("SELECT * FROM nccIptvPolarityTypes");
+    }
+
+    public ArrayList<TransponderTypesData> getTransponderTypes(){
+        return new TransponderTypesData().getDataList("SELECT * FROM nccIptvTransponderTypes");
+    }
+
     public ServerData getServerById(Integer id) {
         return new ServerData().getData("SELECT * FROM nccIptvServers WHERE id=" + id);
     }

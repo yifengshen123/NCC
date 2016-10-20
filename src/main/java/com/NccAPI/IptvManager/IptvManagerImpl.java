@@ -4,14 +4,19 @@ import com.NccAPI.NccAPI;
 import com.NccIptvManager.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class IptvManagerImpl implements IptvManagerService {
 
-    public Integer runIptvTransponder(String apiKey, Integer id) {
+    public Integer runIptvTransponder(String login, String key,
+                                      Integer id) {
+
         final NccIptvManager iptvManager = new NccIptvManager();
         final Integer transponderId = id;
 
-        if (!new NccAPI().checkPermission(apiKey, "permRunIptvTransponder")) return null;
+        if (!new NccAPI().checkPermission(login, key, "RunIptvTransponder")) {
+
+        }
 
         iptvManager.stopTransponder(id);
 
@@ -32,6 +37,56 @@ public class IptvManagerImpl implements IptvManagerService {
         if (!new NccAPI().checkPermission(apiKey, "permStopIptvTransponder")) return null;
 
         return iptvManager.stopTransponder(id);
+    }
+
+    public ApiSymbolRates getIptvSymbolRates(String login, String key) {
+        ApiSymbolRates apiSymbolRates = new ApiSymbolRates();
+
+        apiSymbolRates.data = new NccIptvManager().getSymbolRates();
+        apiSymbolRates.status = 0;
+        apiSymbolRates.message = "success";
+
+        return apiSymbolRates;
+    }
+
+    public ApiLnbTypes getIptvLnbTypes(String login, String key){
+        ApiLnbTypes apiLnbTypes = new ApiLnbTypes();
+
+        apiLnbTypes.data = new NccIptvManager().getLnbTypes();
+        apiLnbTypes.status = 0;
+        apiLnbTypes.message = "success";
+
+        return apiLnbTypes;
+    }
+
+    public ApiFecTypes getIptvFecTypes(String login, String key){
+        ApiFecTypes apiFecTypes = new ApiFecTypes();
+
+        apiFecTypes.data = new NccIptvManager().getFecTypes();
+        apiFecTypes.status = 0;
+        apiFecTypes.message = "success";
+
+        return apiFecTypes;
+    }
+
+    public ApiPolarityTypes getIptvPolarityTypes(String login, String key){
+        ApiPolarityTypes apiPolarityTypes = new ApiPolarityTypes();
+
+        apiPolarityTypes.data = new NccIptvManager().getPolarityTypes();
+        apiPolarityTypes.status = 0;
+        apiPolarityTypes.message = "success";
+
+        return apiPolarityTypes;
+    }
+
+    public ApiTransponderTypes getIptvTransponderTypes(String login, String key){
+        ApiTransponderTypes apiTransponderTypes = new ApiTransponderTypes();
+
+        apiTransponderTypes.data = new NccIptvManager().getTransponderTypes();
+        apiTransponderTypes.status = 0;
+        apiTransponderTypes.message = "success";
+
+        return apiTransponderTypes;
     }
 
     public TransponderStatus getIptvTransponderStatus(String apiKey, Integer id) {
@@ -319,19 +374,19 @@ public class IptvManagerImpl implements IptvManagerService {
     }
 
     public ApiChannelData deleteIptvChannel(String login, String key,
-                                                Integer id) {
+                                            Integer id) {
 
         ApiChannelData apiChannelData = new ApiChannelData();
         apiChannelData.data = new ArrayList<>();
         apiChannelData.status = 1;
         apiChannelData.message = "error";
 
-        if (!new NccAPI().checkPermission(login, key, "DeleteIptvChannel")){
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvChannel")) {
             apiChannelData.message = "Permission denied";
             return apiChannelData;
         }
 
-        if(new NccIptvManager().deleteChannel(id)){
+        if (new NccIptvManager().deleteChannel(id)) {
             apiChannelData.status = 0;
             apiChannelData.message = "success";
         }

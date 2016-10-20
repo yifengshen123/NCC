@@ -5,9 +5,16 @@ import com.NccIptvManager.*;
 import java.util.ArrayList;
 
 public interface IptvManagerService {
-    public Integer runIptvTransponder(String apiKey, Integer id);
+    public Integer runIptvTransponder(String login, String key,
+                                      Integer id);
     public ArrayList<Integer> stopIptvTransponder(String apiKey, Integer id);
     public TransponderStatus getIptvTransponderStatus(String apiKey, Integer id);
+
+    public ApiSymbolRates getIptvSymbolRates(String login, String key);
+    public ApiLnbTypes getIptvLnbTypes(String login, String key);
+    public ApiFecTypes getIptvFecTypes(String login, String key);
+    public ApiPolarityTypes getIptvPolarityTypes(String login, String key);
+    public ApiTransponderTypes getIptvTransponderTypes(String login, String key);
 
     public ArrayList<ServerData> getIptvServers(String apiKey);
     public ArrayList<AdapterData> getIptvAdapters(String apiKey);
