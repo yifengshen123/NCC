@@ -206,7 +206,7 @@ public class IptvManagerImpl implements IptvManagerService {
             return apiCamData;
         }
 
-        ArrayList<CamData> cams = new NccIptvManager().getCams();
+        ArrayList<CamData> cams = new NccIptvManager().getCam();
         if (cams != null) {
             apiCamData.data = cams;
             apiCamData.status = 0;
@@ -297,22 +297,39 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiServerData;
     }
 
-    public ArrayList<Integer> createIptvAdapter(String apiKey,
-                                                Integer adapterDevice,
-                                                Integer adapterType,
-                                                Integer serverId,
-                                                String adapterComment) {
-        NccIptvManager iptvManager = new NccIptvManager();
-        AdapterData adapterData = new AdapterData();
+    public ApiAdapterData createIptvAdapter(String login, String key,
+                                            Integer adapterDevice,
+                                            Integer adapterType,
+                                            Integer serverId,
+                                            String adapterComment) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permCreateIptvAdapter")) return null;
+        ApiAdapterData apiAdapterData = new ApiAdapterData();
+
+        apiAdapterData.data = new ArrayList<>();
+        apiAdapterData.status = 1;
+        apiAdapterData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "CreateIptvAdapter")) {
+            apiAdapterData.message = "Permission denied";
+            return apiAdapterData;
+        }
+
+        AdapterData adapterData = new AdapterData();
 
         adapterData.adapterDevice = adapterDevice;
         adapterData.adapterType = adapterType;
         adapterData.serverId = serverId;
         adapterData.adapterComment = adapterComment;
 
-        return iptvManager.createAdapter(adapterData);
+        AdapterData data = new NccIptvManager().createAdapter(adapterData);
+
+        if (data != null) {
+            apiAdapterData.data.add(data);
+            apiAdapterData.status = 0;
+            apiAdapterData.message = "success";
+        }
+
+        return apiAdapterData;
     }
 
     public ApiTransponderData createIptvTransponder(String login, String key,
@@ -362,18 +379,26 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiTransponderData;
     }
 
-    public ArrayList<Integer> createIptvCam(String apiKey,
-                                            String camServer,
-                                            Integer camPort,
-                                            String camUser,
-                                            String camPassword,
-                                            String camName,
-                                            String camKey) {
+    public ApiCamData createIptvCam(String login, String key,
+                                    String camServer,
+                                    Integer camPort,
+                                    String camUser,
+                                    String camPassword,
+                                    String camName,
+                                    String camKey) {
 
-        NccIptvManager iptvManager = new NccIptvManager();
+        ApiCamData apiCamData = new ApiCamData();
+
+        apiCamData.data = new ArrayList<>();
+        apiCamData.status = 1;
+        apiCamData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "CreateIptvCam")) {
+            apiCamData.message = "Permission denied";
+            return apiCamData;
+        }
+
         CamData camData = new CamData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permCreateIptvCam")) return null;
 
         camData.camServer = camServer;
         camData.camPort = camPort;
@@ -382,7 +407,15 @@ public class IptvManagerImpl implements IptvManagerService {
         camData.camName = camName;
         camData.camKey = camKey;
 
-        return iptvManager.createCam(camData);
+        CamData data = new NccIptvManager().createCam(camData);
+
+        if (data != null) {
+            apiCamData.data.add(camData);
+            apiCamData.status = 0;
+            apiCamData.message = "success";
+        }
+
+        return apiCamData;
     }
 
     public ApiChannelData createIptvChannel(String login, String key,
@@ -428,12 +461,12 @@ public class IptvManagerImpl implements IptvManagerService {
         apiServerData.status = 1;
         apiServerData.message = "error";
 
-        if (!new NccAPI().checkPermission(login, key, "DeleteIptvServer")){
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvServer")) {
             apiServerData.message = "Permission denied";
             return apiServerData;
         }
 
-        if(new NccIptvManager().deleteServer(id)){
+        if (new NccIptvManager().deleteServer(id)) {
             apiServerData.status = 0;
             apiServerData.message = "success";
         }
@@ -441,12 +474,26 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiServerData;
     }
 
-    public ArrayList<Integer> deleteIptvAdapter(String apiKey, Integer id) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiAdapterData deleteIptvAdapter(String login, String key,
+                                            Integer id) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permDeleteIptvAdapter")) return null;
+        ApiAdapterData apiAdapterData = new ApiAdapterData();
 
-        return iptvManager.deleteAdapter(id);
+        apiAdapterData.data = new ArrayList<>();
+        apiAdapterData.status = 1;
+        apiAdapterData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvAdapter")) {
+            apiAdapterData.message = "Permission denied";
+            return apiAdapterData;
+        }
+
+        if (new NccIptvManager().deleteAdapter(id)) {
+            apiAdapterData.status = 0;
+            apiAdapterData.message = "success";
+        }
+
+        return apiAdapterData;
     }
 
     public ApiTransponderData deleteIptvTransponder(String login, String key,
@@ -471,12 +518,26 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiTransponderData;
     }
 
-    public ArrayList<Integer> deleteIptvCam(String apiKey, Integer id) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiCamData deleteIptvCam(String login, String key,
+                                    Integer id) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permDeleteIptvCam")) return null;
+        ApiCamData apiCamData = new ApiCamData();
 
-        return iptvManager.deleteCam(id);
+        apiCamData.data = new ArrayList<>();
+        apiCamData.status = 1;
+        apiCamData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvCam")) {
+            apiCamData.message = "Permission denied";
+            return apiCamData;
+        }
+
+        if (new NccIptvManager().deleteCam(id)) {
+            apiCamData.status = 0;
+            apiCamData.message = "success";
+        }
+
+        return apiCamData;
     }
 
     public ApiChannelData deleteIptvChannel(String login, String key,
@@ -538,17 +599,25 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiServerData;
     }
 
-    public ArrayList<Integer> updateIptvAdapter(String apiKey,
-                                                Integer id,
-                                                Integer adapterDevice,
-                                                Integer adapterType,
-                                                Integer serverId,
-                                                String adapterComment) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiAdapterData updateIptvAdapter(String login, String key,
+                                            Integer id,
+                                            Integer adapterDevice,
+                                            Integer adapterType,
+                                            Integer serverId,
+                                            String adapterComment) {
+
+        ApiAdapterData apiAdapterData = new ApiAdapterData();
+
+        apiAdapterData.data = new ArrayList<>();
+        apiAdapterData.status = 1;
+        apiAdapterData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateIptvAdapter")) {
+            apiAdapterData.message = "Permission denied";
+            return apiAdapterData;
+        }
 
         AdapterData adapterData = new AdapterData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permUpdateIptvAdapter")) return null;
 
         adapterData.id = id;
         adapterData.adapterDevice = adapterDevice;
@@ -556,7 +625,15 @@ public class IptvManagerImpl implements IptvManagerService {
         adapterData.serverId = serverId;
         adapterData.adapterComment = adapterComment;
 
-        return iptvManager.updateAdapter(adapterData);
+        AdapterData data = new NccIptvManager().updateAdapter(adapterData);
+
+        if (data != null) {
+            apiAdapterData.data.add(data);
+            apiAdapterData.status = 0;
+            apiAdapterData.message = "success";
+        }
+
+        return apiAdapterData;
     }
 
     public ApiTransponderData updateIptvTransponder(String login, String key,
@@ -608,19 +685,27 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiTransponderData;
     }
 
-    public ArrayList<Integer> updateIptvCam(String apiKey,
-                                            Integer id,
-                                            String camServer,
-                                            Integer camPort,
-                                            String camUser,
-                                            String camPassword,
-                                            String camName,
-                                            String camKey) {
+    public ApiCamData updateIptvCam(String login, String key,
+                                    Integer id,
+                                    String camServer,
+                                    Integer camPort,
+                                    String camUser,
+                                    String camPassword,
+                                    String camName,
+                                    String camKey) {
 
-        NccIptvManager iptvManager = new NccIptvManager();
+        ApiCamData apiCamData = new ApiCamData();
+
+        apiCamData.data = new ArrayList<>();
+        apiCamData.status = 1;
+        apiCamData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateIptvCam")) {
+            apiCamData.message = "Permission denied";
+            return apiCamData;
+        }
+
         CamData camData = new CamData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permUpdateIptvCam")) return null;
 
         camData.id = id;
         camData.camServer = camServer;
@@ -630,7 +715,15 @@ public class IptvManagerImpl implements IptvManagerService {
         camData.camName = camName;
         camData.camKey = camKey;
 
-        return iptvManager.updateCam(camData);
+        CamData data = new NccIptvManager().updateCam(camData);
+
+        if (data != null) {
+            apiCamData.data.add(camData);
+            apiCamData.status = 0;
+            apiCamData.message = "success";
+        }
+
+        return apiCamData;
     }
 
     public ApiChannelData updateIptvChannel(String login, String key,

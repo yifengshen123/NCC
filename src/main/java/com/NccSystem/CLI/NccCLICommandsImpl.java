@@ -85,7 +85,7 @@ public class NccCLICommandsImpl implements NccCLICommands {
     }
 
     public void showIptvCams(){
-        ArrayList<CamData> cams = new NccIptvManager().getCams();
+        ArrayList<CamData> cams = new NccIptvManager().getCam();
         StringBuilder sb = new StringBuilder();
         Formatter formatter = new Formatter(sb, Locale.US);
 

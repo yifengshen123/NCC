@@ -7,8 +7,10 @@ import java.util.ArrayList;
 public interface IptvManagerService {
     public Integer runIptvTransponder(String login, String key,
                                       Integer id);
-    public ArrayList<Integer> stopIptvTransponder(String apiKey, Integer id);
-    public TransponderStatus getIptvTransponderStatus(String apiKey, Integer id);
+    public ArrayList<Integer> stopIptvTransponder(String apiKey,
+                                                  Integer id);
+    public TransponderStatus getIptvTransponderStatus(String apiKey,
+                                                      Integer id);
 
     public ApiSymbolRates getIptvSymbolRates(String login, String key);
     public ApiLnbTypes getIptvLnbTypes(String login, String key);
@@ -20,11 +22,13 @@ public interface IptvManagerService {
     public ApiServerData getIptvServers(String login, String key);
     public ApiAdapterData getIptvAdapters(String login, String key);
     public ArrayList<AdapterType> getIptvAdapterTypes(String apiKey);
-    public ArrayList<AdapterData> getIptvAdaptersByServerId(String apiKey, Integer id);
+    public ArrayList<AdapterData> getIptvAdaptersByServerId(String apiKey,
+                                                            Integer id);
     public ApiTransponderData getIptvTransponders(String login, String key);
     public ApiCamData getIptvCams(String login, String key);
     public ApiChannelData getIptvChannels(String login, String key);
-    public ApiChannelData getIptvChannelById(String login, String key, Integer id);
+    public ApiChannelData getIptvChannelById(String login, String key,
+                                             Integer id);
 
     public ApiServerData createIptvServer(String login, String key,
                                                 Long serverIP,
@@ -33,7 +37,7 @@ public interface IptvManagerService {
                                                 String serverComment,
                                                 String serverName);
 
-    public ArrayList<Integer> createIptvAdapter(String apiKey,
+    public ApiAdapterData createIptvAdapter(String login, String key,
                                                  Integer adapterDevice,
                                                  Integer adapterType,
                                                  Integer serverId,
@@ -50,7 +54,7 @@ public interface IptvManagerService {
                                                      String transponderLNB,
                                                      Integer transponderSat);
 
-    public ArrayList<Integer> createIptvCam(String apiKey,
+    public ApiCamData createIptvCam(String login, String key,
                                              String camServer,
                                              Integer camPort,
                                              String camUser,
@@ -74,7 +78,7 @@ public interface IptvManagerService {
                                                 String serverName);
 
 
-    public ArrayList<Integer> updateIptvAdapter(String apiKey,
+    public ApiAdapterData updateIptvAdapter(String login, String key,
                                                  Integer id,
                                                  Integer adapterDevice,
                                                  Integer adapterType,
@@ -93,7 +97,7 @@ public interface IptvManagerService {
                                                      String transponderLNB,
                                                      Integer transponderSat);
 
-    public ArrayList<Integer> updateIptvCam(String apiKey,
+    public ApiCamData updateIptvCam(String login, String key,
                                              Integer id,
                                              String camServer,
                                              Integer camPort,
@@ -112,10 +116,14 @@ public interface IptvManagerService {
 
     public ApiServerData deleteIptvServer(String login, String key,
                                                Integer id);
-    public ArrayList<Integer> deleteIptvAdapter(String apiKey, Integer id);
+    public ApiAdapterData deleteIptvAdapter(String login, String key,
+                                            Integer id);
     public ApiTransponderData deleteIptvTransponder(String login, String key,
                                                     Integer id);
-    public ArrayList<Integer> deleteIptvCam(String apiKey, Integer id);
-    public ApiChannelData deleteIptvChannel(String login, String key, Integer id);
+    public ApiCamData deleteIptvCam(String login, String key,
+                                    Integer id);
+    public ApiChannelData deleteIptvChannel(String login, String key,
+                                            Integer id);
+
 
 }
