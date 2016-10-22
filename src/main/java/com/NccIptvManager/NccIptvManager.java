@@ -175,7 +175,7 @@ public class NccIptvManager {
         return new CamData().getDataList("SELECT * FROM nccIptvCam");
     }
 
-    public ArrayList<Integer> createServer(ServerData serverData) {
+    public ServerData createServer(ServerData serverData) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("INSERT INTO nccIptvServers (" +
@@ -192,7 +192,7 @@ public class NccIptvManager {
                     "'" + serverData.serverName + "'" +
                     ")");
 
-            return ids;
+            return serverData;
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
@@ -310,16 +310,16 @@ public class NccIptvManager {
         return null;
     }
 
-    public ArrayList<Integer> deleteServer(Integer id) {
+    public boolean deleteServer(Integer id) {
         try {
             ArrayList<Integer> ids = query.updateQuery("DELETE FROM nccIptvServers WHERE id=" + id);
 
-            return ids;
+            return true;
         } catch (NccQueryException e) {
             e.printStackTrace();
         }
 
-        return null;
+        return false;
     }
 
     public ArrayList<Integer> deleteAdapter(Integer id) {
@@ -371,7 +371,7 @@ public class NccIptvManager {
         return false;
     }
 
-    public ArrayList<Integer> updateServer(ServerData serverData) {
+    public ServerData updateServer(ServerData serverData) {
 
         try {
             ArrayList<Integer> ids = query.updateQuery("UPDATE nccIptvServers SET " +
@@ -382,7 +382,7 @@ public class NccIptvManager {
                     "serverName='" + serverData.serverName + "' " +
                     "WHERE id=" + serverData.id);
 
-            return ids;
+            return new NccIptvManager().getServerById(serverData.id);
         } catch (NccQueryException e) {
             e.printStackTrace();
         }

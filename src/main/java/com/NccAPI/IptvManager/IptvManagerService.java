@@ -17,7 +17,7 @@ public interface IptvManagerService {
     public ApiTransponderTypes getIptvTransponderTypes(String login, String key);
     public ApiSatData getIptvSat(String login, String key);
 
-    public ArrayList<ServerData> getIptvServers(String apiKey);
+    public ApiServerData getIptvServers(String login, String key);
     public ApiAdapterData getIptvAdapters(String login, String key);
     public ArrayList<AdapterType> getIptvAdapterTypes(String apiKey);
     public ArrayList<AdapterData> getIptvAdaptersByServerId(String apiKey, Integer id);
@@ -26,7 +26,7 @@ public interface IptvManagerService {
     public ApiChannelData getIptvChannels(String login, String key);
     public ApiChannelData getIptvChannelById(String login, String key, Integer id);
 
-    public ArrayList<Integer> createIptvServer(String apiKey,
+    public ApiServerData createIptvServer(String login, String key,
                                                 Long serverIP,
                                                 String serverSecret,
                                                 Long serverLocalAddress,
@@ -65,7 +65,7 @@ public interface IptvManagerService {
                                              Long channelIP,
                                              Integer channelCam);
 
-    public ArrayList<Integer> updateIptvServer(String apiKey,
+    public ApiServerData updateIptvServer(String login, String key,
                                                 Integer id,
                                                 Long serverIP,
                                                 String serverSecret,
@@ -110,7 +110,8 @@ public interface IptvManagerService {
                                              Long channelIP,
                                              Integer camId);
 
-    public ArrayList<Integer> deleteIptvServer(String apiKey, Integer id);
+    public ApiServerData deleteIptvServer(String login, String key,
+                                               Integer id);
     public ArrayList<Integer> deleteIptvAdapter(String apiKey, Integer id);
     public ApiTransponderData deleteIptvTransponder(String login, String key,
                                                     Integer id);

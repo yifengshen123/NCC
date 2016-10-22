@@ -114,12 +114,28 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.getTransponderStatus(id);
     }
 
-    public ArrayList<ServerData> getIptvServers(String apiKey) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiServerData getIptvServers(String login, String key) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permGetIptvServers")) return null;
+        ApiServerData apiServerData = new ApiServerData();
 
-        return iptvManager.getServers();
+        apiServerData.data = new ArrayList<>();
+        apiServerData.status = 1;
+        apiServerData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "GetIptvServers")) {
+            apiServerData.message = "Permission denied";
+            return apiServerData;
+        }
+
+        ArrayList<ServerData> data = new NccIptvManager().getServers();
+
+        if (data != null) {
+            apiServerData.data = data;
+            apiServerData.status = 0;
+            apiServerData.message = "success";
+        }
+
+        return apiServerData;
     }
 
     public ArrayList<AdapterData> getIptvAdapters(String apiKey) {
@@ -244,17 +260,25 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiChannelData;
     }
 
-    public ArrayList<Integer> createIptvServer(String apiKey,
-                                               Long serverIP,
-                                               String serverSecret,
-                                               Long serverLocalAddress,
-                                               String serverComment,
-                                               String serverName) {
+    public ApiServerData createIptvServer(String login, String key,
+                                          Long serverIP,
+                                          String serverSecret,
+                                          Long serverLocalAddress,
+                                          String serverComment,
+                                          String serverName) {
 
-        NccIptvManager iptvManager = new NccIptvManager();
+        ApiServerData apiServerData = new ApiServerData();
+
+        apiServerData.data = new ArrayList<>();
+        apiServerData.status = 1;
+        apiServerData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "CreateIptvServer")) {
+            apiServerData.message = "Permission denied";
+            return apiServerData;
+        }
+
         ServerData serverData = new ServerData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permCreateIptvServer")) return null;
 
         serverData.serverIP = serverIP;
         serverData.serverSecret = serverSecret;
@@ -262,7 +286,15 @@ public class IptvManagerImpl implements IptvManagerService {
         serverData.serverComment = serverComment;
         serverData.serverName = serverName;
 
-        return iptvManager.createServer(serverData);
+        ServerData data = new NccIptvManager().createServer(serverData);
+
+        if (data != null) {
+            apiServerData.data.add(serverData);
+            apiServerData.status = 0;
+            apiServerData.message = "success";
+        }
+
+        return apiServerData;
     }
 
     public ArrayList<Integer> createIptvAdapter(String apiKey,
@@ -387,12 +419,26 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiChannelData;
     }
 
-    public ArrayList<Integer> deleteIptvServer(String apiKey, Integer id) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiServerData deleteIptvServer(String login, String key,
+                                          Integer id) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permDeleteIptvServer")) return null;
+        ApiServerData apiServerData = new ApiServerData();
 
-        return iptvManager.deleteServer(id);
+        apiServerData.data = new ArrayList<>();
+        apiServerData.status = 1;
+        apiServerData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvServer")){
+            apiServerData.message = "Permission denied";
+            return apiServerData;
+        }
+
+        if(new NccIptvManager().deleteServer(id)){
+            apiServerData.status = 0;
+            apiServerData.message = "success";
+        }
+
+        return apiServerData;
     }
 
     public ArrayList<Integer> deleteIptvAdapter(String apiKey, Integer id) {
@@ -412,12 +458,12 @@ public class IptvManagerImpl implements IptvManagerService {
         apiTransponderData.status = 1;
         apiTransponderData.message = "error";
 
-        if (!new NccAPI().checkPermission(login, key, "DeleteIptvTransponder")){
+        if (!new NccAPI().checkPermission(login, key, "DeleteIptvTransponder")) {
             apiTransponderData.message = "Permission denied";
             return apiTransponderData;
         }
 
-        if(new NccIptvManager().deleteTransponder(id)){
+        if (new NccIptvManager().deleteTransponder(id)) {
             apiTransponderData.status = 0;
             apiTransponderData.message = "success";
         }
@@ -454,18 +500,25 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiChannelData;
     }
 
-    public ArrayList<Integer> updateIptvServer(String apiKey,
-                                               Integer id,
-                                               Long serverIP,
-                                               String serverSecret,
-                                               Long serverLocalAddress,
-                                               String serverComment,
-                                               String serverName) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiServerData updateIptvServer(String login, String key,
+                                          Integer id,
+                                          Long serverIP,
+                                          String serverSecret,
+                                          Long serverLocalAddress,
+                                          String serverComment,
+                                          String serverName) {
+
+        ApiServerData apiServerData = new ApiServerData();
+        apiServerData.data = new ArrayList<>();
+        apiServerData.status = 1;
+        apiServerData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateIptvServer")) {
+            apiServerData.message = "Permission denied";
+            return apiServerData;
+        }
 
         ServerData serverData = new ServerData();
-
-        if (!new NccAPI().checkPermission(apiKey, "permUpdateIptvServer")) return null;
 
         serverData.id = id;
         serverData.serverIP = serverIP;
@@ -474,7 +527,15 @@ public class IptvManagerImpl implements IptvManagerService {
         serverData.serverComment = serverComment;
         serverData.serverName = serverName;
 
-        return iptvManager.updateServer(serverData);
+        ServerData data = new NccIptvManager().updateServer(serverData);
+
+        if (data != null) {
+            apiServerData.data.add(serverData);
+            apiServerData.status = 0;
+            apiServerData.message = "success";
+        }
+
+        return apiServerData;
     }
 
     public ArrayList<Integer> updateIptvAdapter(String apiKey,
