@@ -28,7 +28,7 @@ public class ChannelData extends NccAbstractData<ChannelData> {
     public String transponderSat;
     public Integer transponderFreq;
     public String transponderPolarity;
-    public String transponserFEC;
+    public String transponderFEC;
     public Integer transponderSymbolrate;
     public String transponderType;
 
@@ -69,7 +69,7 @@ public class ChannelData extends NccAbstractData<ChannelData> {
             channelData.transponderSat = rs.getString("transponderSat");
             channelData.transponderFreq = rs.getInt("transponderFreq");
             channelData.transponderPolarity = rs.getString("transponderPolarity");
-            channelData.transponserFEC = rs.getString("transponderFEC");
+            channelData.transponderFEC = rs.getString("transponderFEC");
             channelData.transponderSymbolrate = rs.getInt("transponderSymbolrate");
             channelData.transponderType = rs.getString("transponderType");
 

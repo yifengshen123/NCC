@@ -44,6 +44,9 @@ public interface IptvManagerService {
     public ApiChannelData getIptvChannelById(String login, String key,
                                              Integer id);
 
+    public ApiChannelData getIptvChannelsByTransponder(String login, String key,
+                                                       Integer id);
+    
     public ApiServerData createIptvServer(String login, String key,
                                           Long serverIP,
                                           String serverSecret,

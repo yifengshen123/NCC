@@ -157,7 +157,7 @@ public class NccIptvManager {
                 "sat.satDeg AS satDeg " +
                 "FROM nccIptvTransponders t " +
                 "LEFT JOIN nccIptvAdapters a ON a.id=t.adapterId " +
-                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.id " +
+                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.adapterType " +
                 "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
                 "LEFT JOIN nccIptvSat sat ON sat.id=t.transSat");
     }
@@ -187,7 +187,7 @@ public class NccIptvManager {
                 "sat.satDeg AS satDeg " +
                 "FROM nccIptvTransponders t " +
                 "LEFT JOIN nccIptvAdapters a ON a.id=t.adapterId " +
-                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.id " +
+                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.adapterType " +
                 "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
                 "LEFT JOIN nccIptvSat sat ON sat.id=t.transSat " +
                 "WHERE t.id=" + id);

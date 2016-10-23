@@ -239,7 +239,33 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiChannelData;
     }
 
+    public ApiChannelData getIptvChannelsByTransponder(String login, String key,
+                                                       Integer id) {
+
+        ApiChannelData apiChannelData = new ApiChannelData();
+
+        apiChannelData.data = new ArrayList<>();
+        apiChannelData.status = 1;
+        apiChannelData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "GetIptvChannels")) {
+            apiChannelData.message = "Permission denied";
+            return apiChannelData;
+        }
+
+        ArrayList<ChannelData> data = new NccIptvManager().getChannelsByTransponder(id);
+
+        if (data != null) {
+            apiChannelData.data = data;
+            apiChannelData.status = 0;
+            apiChannelData.message = "success";
+        }
+
+        return apiChannelData;
+    }
+
     public ApiChannelData getIptvChannelById(String login, String key, Integer id) {
+
         if (!new NccAPI().checkPermission(login, key, "GetIptvChannels")) return null;
 
         ApiChannelData apiChannelData = new ApiChannelData();
