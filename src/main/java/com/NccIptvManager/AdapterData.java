@@ -14,6 +14,8 @@ public class AdapterData extends NccAbstractData<AdapterData> {
     public Long serverIP;
     public String serverName;
     public String satName;
+    public String cardName;
+    public String chipName;
 
     @Override
     public AdapterData fillData() {
@@ -29,6 +31,8 @@ public class AdapterData extends NccAbstractData<AdapterData> {
             adapterData.serverIP = rs.getLong("serverIP");
             adapterData.serverName = rs.getString("serverName");
             adapterData.satName = rs.getString("satName");
+            adapterData.cardName = rs.getString("cardName");
+            adapterData.chipName = rs.getString("chipName");
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -79,10 +79,13 @@ public class NccIptvManager {
                 "a.adapterSat AS adapterSat, " +
                 "s.serverIP AS serverIP, " +
                 "s.serverName AS serverName, " +
-                "sat.satName AS satName " +
+                "sat.satName AS satName, " +
+                "at.cardName AS cardName, " +
+                "at.chipName AS chipName " +
                 "FROM nccIptvAdapters a " +
                 "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
                 "LEFT JOIN nccIptvSat sat ON sat.id=a.adapterSat " +
+                "LEFT JOIN nccIptvAdapterTypes at ON at.id=a.adapterType " +
                 "GROUP BY a.serverId, a.adapterDevice");
     }
 
@@ -100,7 +103,8 @@ public class NccIptvManager {
                 "FROM nccIptvAdapters a " +
                 "LEFT JOIN nccIptvServers s ON s.id=a.serverId " +
                 "LEFT JOIN nccIptvSat sat ON sat.id=a.adapterSat " +
-                "GROUP BY a.serverId, a.adapterDevice WHERE a.id=" + id);
+                "WHERE a.id=" + id + " " +
+                "GROUP BY a.serverId, a.adapterDevice");
     }
 
     public ArrayList<AdapterData> getAdaptersByServerId(Integer id) {
@@ -229,11 +233,13 @@ public class NccIptvManager {
                     "adapterDevice," +
                     "adapterType," +
                     "serverId, " +
+                    "adapterSat, " +
                     "adapterComment" +
                     ") VALUES (" +
                     adapterData.adapterDevice + ", " +
                     adapterData.adapterType + ", " +
                     adapterData.serverId + ", " +
+                    adapterData.adapterSat + ", " +
                     "'" + adapterData.adapterComment + "'" +
                     ")");
 
@@ -425,6 +431,7 @@ public class NccIptvManager {
                     "adapterDevice=" + adapterData.adapterDevice + ", " +
                     "adapterType=" + adapterData.adapterType + ", " +
                     "serverId=" + adapterData.serverId + "," +
+                    "adapterSat=" + adapterData.adapterSat + ", " +
                     "adapterComment='" + adapterData.adapterComment + "' " +
                     "WHERE id=" + adapterData.id);
 

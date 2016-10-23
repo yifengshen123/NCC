@@ -138,14 +138,6 @@ public class IptvManagerImpl implements IptvManagerService {
         return apiServerData;
     }
 
-    public ArrayList<AdapterData> getIptvAdapters(String apiKey) {
-        NccIptvManager iptvManager = new NccIptvManager();
-
-        if (!new NccAPI().checkPermission(apiKey, "permGetIptvAdapters")) return null;
-
-        return iptvManager.getAdapters();
-    }
-
     public ArrayList<AdapterData> getIptvAdaptersByServerId(String apiKey, Integer id) {
         NccIptvManager iptvManager = new NccIptvManager();
 
@@ -154,12 +146,22 @@ public class IptvManagerImpl implements IptvManagerService {
         return iptvManager.getAdaptersByServerId(id);
     }
 
-    public ArrayList<AdapterType> getIptvAdapterTypes(String apiKey) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiAdapterTypes getIptvAdapterTypes(String login, String key) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permGetIptvAdapterTypes")) return null;
+        ApiAdapterTypes apiAdapterTypes = new ApiAdapterTypes();
+        apiAdapterTypes.data = new ArrayList<>();
+        apiAdapterTypes.status = 1;
+        apiAdapterTypes.message = "error";
 
-        return iptvManager.getAdapterTypes();
+        ArrayList<AdapterType> data = new NccIptvManager().getAdapterTypes();
+
+        if (data != null) {
+            apiAdapterTypes.data = data;
+            apiAdapterTypes.status = 0;
+            apiAdapterTypes.message = "success";
+        }
+
+        return apiAdapterTypes;
     }
 
     public ApiSatData getIptvSat(String login, String key) {
@@ -301,6 +303,7 @@ public class IptvManagerImpl implements IptvManagerService {
                                             Integer adapterDevice,
                                             Integer adapterType,
                                             Integer serverId,
+                                            Integer adapterSat,
                                             String adapterComment) {
 
         ApiAdapterData apiAdapterData = new ApiAdapterData();
@@ -319,6 +322,7 @@ public class IptvManagerImpl implements IptvManagerService {
         adapterData.adapterDevice = adapterDevice;
         adapterData.adapterType = adapterType;
         adapterData.serverId = serverId;
+        adapterData.adapterSat = adapterSat;
         adapterData.adapterComment = adapterComment;
 
         AdapterData data = new NccIptvManager().createAdapter(adapterData);
@@ -604,6 +608,7 @@ public class IptvManagerImpl implements IptvManagerService {
                                             Integer adapterDevice,
                                             Integer adapterType,
                                             Integer serverId,
+                                            Integer adapterSat,
                                             String adapterComment) {
 
         ApiAdapterData apiAdapterData = new ApiAdapterData();
@@ -623,6 +628,7 @@ public class IptvManagerImpl implements IptvManagerService {
         adapterData.adapterDevice = adapterDevice;
         adapterData.adapterType = adapterType;
         adapterData.serverId = serverId;
+        adapterData.adapterSat = adapterSat;
         adapterData.adapterComment = adapterComment;
 
         AdapterData data = new NccIptvManager().updateAdapter(adapterData);
