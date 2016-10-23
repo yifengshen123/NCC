@@ -11,7 +11,6 @@ import org.apache.log4j.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.sql.*;
 
 public class Ncc {
@@ -146,5 +145,6 @@ public class Ncc {
             nccAPI = new NccAPI(apiPort);
             nccAPI.start();
         }
+
     }
 }
