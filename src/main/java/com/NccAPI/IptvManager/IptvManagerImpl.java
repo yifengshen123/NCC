@@ -8,14 +8,45 @@ import java.util.HashMap;
 
 public class IptvManagerImpl implements IptvManagerService {
 
-    public Integer runIptvTransponder(String login, String key,
-                                      Integer id) {
+    public ApiTransponderLock getIptvTransponderLock(String login, String key,
+                                                     Integer id) {
+
+        ApiTransponderLock apiTransponderLock = new ApiTransponderLock();
+
+        apiTransponderLock.data = new ArrayList<>();
+        apiTransponderLock.status = 1;
+        apiTransponderLock.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "GetIptvTransponderLock")) {
+            apiTransponderLock.message = "Permission denied";
+            return apiTransponderLock;
+        }
+
+        TransponderLockData data = new NccIptvManager().getTransponderLock(id);
+
+        if (data != null) {
+            apiTransponderLock.data.add(data);
+            apiTransponderLock.status = 0;
+            apiTransponderLock.message = "success";
+        }
+
+        return apiTransponderLock;
+    }
+
+    public ApiTransponderAction runIptvTransponder(String login, String key,
+                                                   Integer id) {
 
         final NccIptvManager iptvManager = new NccIptvManager();
         final Integer transponderId = id;
 
-        if (!new NccAPI().checkPermission(login, key, "RunIptvTransponder")) {
+        ApiTransponderAction apiTransponderAction = new ApiTransponderAction();
 
+        apiTransponderAction.status = 1;
+        apiTransponderAction.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "RunIptvTransponder")) {
+            apiTransponderAction.message = "Permission denied";
+            return apiTransponderAction;
         }
 
         iptvManager.stopTransponder(id);
@@ -28,15 +59,35 @@ public class IptvManagerImpl implements IptvManagerService {
         });
         t.start();
 
-        return 0;
+        apiTransponderAction.status = 0;
+        apiTransponderAction.message = "success";
+
+        return apiTransponderAction;
     }
 
-    public ArrayList<Integer> stopIptvTransponder(String apiKey, Integer id) {
-        NccIptvManager iptvManager = new NccIptvManager();
+    public ApiTransponderAction stopIptvTransponder(String login, String key,
+                                                    Integer id) {
 
-        if (!new NccAPI().checkPermission(apiKey, "permStopIptvTransponder")) return null;
+        ApiTransponderAction apiTransponderAction = new ApiTransponderAction();
 
-        return iptvManager.stopTransponder(id);
+        apiTransponderAction.status = 1;
+        apiTransponderAction.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "StopIptvTransponder")) {
+            apiTransponderAction.message = "Permission denied";
+            return apiTransponderAction;
+        }
+
+        ArrayList<Integer> data = new NccIptvManager().stopTransponder(id);
+
+        if (data != null) {
+            if (data.size() > 0) {
+                apiTransponderAction.status = 0;
+                apiTransponderAction.message = "success";
+            }
+        }
+
+        return apiTransponderAction;
     }
 
     public ApiSymbolRates getIptvSymbolRates(String login, String key) {

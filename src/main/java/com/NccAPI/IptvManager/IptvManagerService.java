@@ -5,10 +5,13 @@ import com.NccIptvManager.*;
 import java.util.ArrayList;
 
 public interface IptvManagerService {
-    public Integer runIptvTransponder(String login, String key,
+    public ApiTransponderLock getIptvTransponderLock(String login, String key,
+                                                     Integer id);
+
+    public ApiTransponderAction runIptvTransponder(String login, String key,
                                       Integer id);
 
-    public ArrayList<Integer> stopIptvTransponder(String apiKey,
+    public ApiTransponderAction stopIptvTransponder(String login, String key,
                                                   Integer id);
 
     public TransponderStatus getIptvTransponderStatus(String apiKey,
@@ -46,7 +49,7 @@ public interface IptvManagerService {
 
     public ApiChannelData getIptvChannelsByTransponder(String login, String key,
                                                        Integer id);
-    
+
     public ApiServerData createIptvServer(String login, String key,
                                           Long serverIP,
                                           String serverSecret,

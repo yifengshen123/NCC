@@ -600,7 +600,7 @@ public class NccIptvManager {
 
         File tmpFile = null;
         try {
-            tmpFile = File.createTempFile("tmp", ".lua", new File("/tmp"));
+            tmpFile = File.createTempFile("tmp-" + transponderData.transponderFreq + "-", ".lua", new File("/tmp"));
             FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
             Writer writer = new BufferedWriter(outputStreamWriter);
@@ -671,7 +671,9 @@ public class NccIptvManager {
                             transponder.ber = Integer.parseInt(parts[12]);
                             transponder.unc = Integer.parseInt(parts[13]);
 
-                            logger.info("Transponder lock: signal=" + transponder.signal + " snr=" + transponder.snr + " ber=" + transponder.ber + " unc=" + transponder.unc);
+                            setTransponderLock(new TransponderLockData(transponder.id, transponder.signal, transponder.snr, transponder.ber, transponder.unc));
+
+                            logger.info("Transponder lock: id=" + transponder.id + " signal=" + transponder.signal + " snr=" + transponder.snr + " ber=" + transponder.ber + " unc=" + transponder.unc);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -690,12 +692,57 @@ public class NccIptvManager {
 
             p.waitFor();
 
+            removeTransponderLock(id);
             logger.info("Astra process terminated");
             removeActiveTransponder(id);
         } catch (Exception e) {
 
         }
         return null;
+    }
+
+    public void setTransponderLock(TransponderLockData lockData) {
+        try {
+            NccQuery query = new NccQuery();
+
+            logger.info("set lock: id=" + lockData.transponderId);
+
+            query.updateQuery("INSERT INTO nccIptvTransponderLocks (transponderId, lastLock, signal, snr, ber, unc) VALUES (" +
+                    lockData.transponderId + ", " +
+                    "UNIX_TIMESTAMP(NOW()), " +
+                    lockData.signal + ", " +
+                    lockData.snr + ", " +
+                    lockData.ber + ", " +
+                    lockData.unc +
+                    ") ON DUPLICATE KEY UPDATE " +
+                    "lastLock=UNIX_TIMESTAMP(NOW()), " +
+                    "signal=" + lockData.signal + ", " +
+                    "snr=" + lockData.snr + ", " +
+                    "ber=" + lockData.ber + ", " +
+                    "unc=" + lockData.unc);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeTransponderLock(Integer id) {
+        try {
+            NccQuery query = new NccQuery();
+
+            query.updateQuery("UPDATE nccIptvTransponderLocks SET " +
+                    "lastLock=0, " +
+                    "signal=0, " +
+                    "snr=0, " +
+                    "ber=0, " +
+                    "unc=0 " +
+                    "WHERE transponderId=" + id);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public TransponderLockData getTransponderLock(Integer id) {
+        return new TransponderLockData().getData("SELECT * FROM nccIptvTransponderLocks WHERE transponderId=" + id);
     }
 
     public ActiveTransponder getActiveTransponderById(Integer id) {
