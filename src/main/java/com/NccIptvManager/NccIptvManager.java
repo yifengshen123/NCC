@@ -584,7 +584,7 @@ public class NccIptvManager {
             NccQuery query = new NccQuery();
 
             ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=1, currentBitrate=" + channel.bitrate + ", currentCC=" + channel.ccCount + ", currentPES=" + channel.scrambledCount + ", lastActive=UNIX_TIMESTAMP(NOW()) WHERE id=" + channel.id);
-            ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=0, currentBitrate=0, currentCC=0, currentPES=0 WHERE lastActive+60<UNIX_TIMESTAMP(NOW())");
+            //ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=0, currentBitrate=0, currentCC=0, currentPES=0 WHERE lastActive+60<UNIX_TIMESTAMP(NOW())");
 
         } catch (NccQueryException e) {
             e.printStackTrace();
