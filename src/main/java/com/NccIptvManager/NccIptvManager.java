@@ -18,6 +18,7 @@ public class NccIptvManager {
     private static Logger logger = nccLogger.setFilename(Ncc.iptvLogfile);
     private NccQuery query;
 
+    private static ArrayList<String> analyzerUpdates = new ArrayList<>();
     public static ArrayList<ActiveTransponder> Transponders = new ArrayList<>();
     public static ArrayList<ActiveChannel> Channels = new ArrayList<>();
 
@@ -583,7 +584,8 @@ public class NccIptvManager {
         try {
             NccQuery query = new NccQuery();
 
-            ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=1, currentBitrate=" + channel.bitrate + ", currentCC=" + channel.ccCount + ", currentPES=" + channel.scrambledCount + ", lastActive=UNIX_TIMESTAMP(NOW()) WHERE id=" + channel.id);
+            analyzerUpdates.add("UPDATE nccIptvChannels SET currentState=1, currentBitrate=" + channel.bitrate + ", currentCC=" + channel.ccCount + ", currentPES=" + channel.scrambledCount + ", lastActive=UNIX_TIMESTAMP(NOW()) WHERE id=" + channel.id);
+            //ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=1, currentBitrate=" + channel.bitrate + ", currentCC=" + channel.ccCount + ", currentPES=" + channel.scrambledCount + ", lastActive=UNIX_TIMESTAMP(NOW()) WHERE id=" + channel.id);
             //ids = query.updateQuery("UPDATE nccIptvChannels SET currentState=0, currentBitrate=0, currentCC=0, currentPES=0 WHERE lastActive+60<UNIX_TIMESTAMP(NOW())");
 
         } catch (NccQueryException e) {
@@ -647,6 +649,7 @@ public class NccIptvManager {
             TimerTask timerTask = new TimerTask() {
                 @Override
                 public void run() {
+
                     try {
                         String line = "";
 
@@ -685,6 +688,26 @@ public class NccIptvManager {
 
             activeTransponder.timer = timer;
             activeTransponder.timerTask = timerTask;
+
+            Timer updateTimer = new Timer();
+            TimerTask updateTask = new TimerTask() {
+                @Override
+                public void run() {
+                    if (analyzerUpdates.size() > 0) {
+                        try {
+                            NccQuery query = new NccQuery();
+                            ArrayList<String> updates = new ArrayList<>();
+                            updates.addAll(analyzerUpdates);
+                            analyzerUpdates.clear();
+                            query.updateBulkQuery(updates);
+                        } catch (NccQueryException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            };
+
+            updateTimer.schedule(updateTask, 1000, 1000);
 
             logger.info("Transponder started. Active transponders: " + Transponders.size());
 

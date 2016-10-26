@@ -2,7 +2,6 @@ package com.NccAPI.System;
 
 import com.NccAPI.NccAPI;
 import com.NccAccounts.AccountData;
-import com.NccAccounts.NccAccounts;
 
 public class SystemServiceImpl implements SystemService {
     public SystemData pingAPI() {
@@ -14,7 +13,7 @@ public class SystemServiceImpl implements SystemService {
     public boolean authRequest(String login, String key) {
         AccountData accountData = new NccAPI().checkKey(login, key);
 
-        if(accountData != null) return true;
+        if (accountData != null) return true;
 
         return false;
     }
@@ -22,4 +21,5 @@ public class SystemServiceImpl implements SystemService {
     public boolean checkPermission(String login, String key, String permission) {
         return new NccAPI().checkPermission(login, key, permission);
     }
+
 }

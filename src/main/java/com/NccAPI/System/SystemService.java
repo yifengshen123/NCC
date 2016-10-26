@@ -6,4 +6,5 @@ public interface SystemService {
     boolean authRequest(String login, String key);
 
     boolean checkPermission(String login, String key, String permission);
+
 }

@@ -1,6 +1,7 @@
 package com.NccAPI.NetworkDevices;
 
 import com.NccAPI.NccAPI;
+import com.NccNetworkDevices.IfaceData;
 import com.NccNetworkDevices.NccNetworkDevice;
 import com.NccNetworkDevices.NccNetworkDeviceData;
 import com.NccNetworkDevices.NccNetworkDeviceType;
@@ -9,7 +10,6 @@ import com.NccSystem.NccUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class NetworkDevicesServiceImpl implements NetworkDevicesService {
     public ApiNetworkDeviceTypeData getNetworkDeviceTypes(String login, String key) {
@@ -227,5 +227,74 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
             snmpStrings.message = "success";
         }
         return snmpStrings;
+    }
+
+    public ApiIfaceData getNetworkDeviceIfaces(String login, String key, Integer id) {
+        ApiIfaceData apiIfaceData = new ApiIfaceData();
+
+        apiIfaceData.data = new ArrayList<>();
+        apiIfaceData.status = 1;
+        apiIfaceData.message = "error";
+
+        NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
+
+        if (device != null) {
+
+            ArrayList<IfaceData> ifaces = new NccNetworkDevice().getIfaces(id);
+
+            if (ifaces != null) {
+                apiIfaceData.data = ifaces;
+                apiIfaceData.status = 0;
+                apiIfaceData.message = "success";
+            }
+        }
+
+        return apiIfaceData;
+    }
+
+    public ApiIfaceData updateNetworkDeviceIfaces(String login, String key, Integer id) {
+        ApiIfaceData apiIfaceData = new ApiIfaceData();
+
+        apiIfaceData.data = new ArrayList<>();
+        apiIfaceData.status = 1;
+        apiIfaceData.message = "error";
+
+        NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
+
+        if (device != null) {
+
+            ArrayList<IfaceData> ifaces = new NccNetworkDevice().updateIfaces(id);
+
+            if (ifaces != null) {
+                apiIfaceData.data = ifaces;
+                apiIfaceData.status = 0;
+                apiIfaceData.message = "success";
+            }
+        }
+
+        return apiIfaceData;
+    }
+
+    public ApiIfaceData discoverNetworkDeviceIfaces(String login, String key, Integer id) {
+        ApiIfaceData apiIfaceData = new ApiIfaceData();
+
+        apiIfaceData.data = new ArrayList<>();
+        apiIfaceData.status = 1;
+        apiIfaceData.message = "error";
+
+        NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
+
+        if (device != null) {
+
+            ArrayList<IfaceData> ifaces = new NccNetworkDevice().discoverIfaces(id);
+
+            if (ifaces != null) {
+                apiIfaceData.data = ifaces;
+                apiIfaceData.status = 0;
+                apiIfaceData.message = "success";
+            }
+        }
+
+        return apiIfaceData;
     }
 }

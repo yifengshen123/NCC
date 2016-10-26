@@ -124,6 +124,12 @@ public class NccSNMP {
         return null;
     }
 
+    public HashMap<String, String> snmpWalk(String oid){
+        HashMap<String, String> result = new HashMap<>();
+
+        return result;
+    }
+
     public String getString(String oid) {
         PDU data = send(oid);
         if (data != null) {

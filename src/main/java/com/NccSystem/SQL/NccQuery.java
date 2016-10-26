@@ -53,6 +53,30 @@ public class NccQuery {
         }
     }
 
+    public void updateBulkQuery(ArrayList<String> query) {
+
+
+        try {
+            sql = Ncc.sqlPool.getConnection();
+
+            sql.setAutoCommit(false);
+
+            Statement stmt = sql.createStatement();
+            for (String q : query) {
+                if (Ncc.logQuery) logger.info("SQL: '" + q + "'");
+                stmt.executeUpdate(q);
+            }
+
+            sql.commit();
+
+            sql.setAutoCommit(true);
+            sql.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public ArrayList<Integer> updateQuery(String query) throws NccQueryException {
 
         if (Ncc.logQuery) logger.info("SQL: '" + query + "'");

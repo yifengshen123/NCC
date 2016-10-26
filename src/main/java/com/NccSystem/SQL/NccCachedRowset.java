@@ -15,7 +15,6 @@ import java.util.Hashtable;
 public class NccCachedRowset extends CachedRowSetImpl {
 
     private static final long serialVersionUID = -9067504047398250113L;
-    private RowSetMetaDataImpl RowSetMD;
 
     public NccCachedRowset() throws SQLException {
         super();
@@ -26,11 +25,11 @@ public class NccCachedRowset extends CachedRowSetImpl {
     }
 
     private int getColIdxByName(String name) throws SQLException {
-        RowSetMD = (RowSetMetaDataImpl) this.getMetaData();
-        int cols = RowSetMD.getColumnCount();
+        RowSetMetaDataImpl rowSetMD = (RowSetMetaDataImpl) this.getMetaData();
+        int cols = rowSetMD.getColumnCount();
 
         for (int i = 1; i <= cols; ++i) {
-            String colName = RowSetMD.getColumnLabel(i);
+            String colName = rowSetMD.getColumnLabel(i);
             if (colName != null) if (name.equalsIgnoreCase(colName))
                 return (i);
             else

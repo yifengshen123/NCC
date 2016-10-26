@@ -1,6 +1,10 @@
 package com.NccAPI.NetworkDevices;
 
 public interface NetworkDevicesService {
+    public ApiIfaceData getNetworkDeviceIfaces(String login, String key, Integer id);
+    public ApiIfaceData updateNetworkDeviceIfaces(String login, String key, Integer id);
+    public ApiIfaceData discoverNetworkDeviceIfaces(String login, String key, Integer id);
+
     public ApiNetworkDeviceTypeData getNetworkDeviceTypes(String login, String key);
 
     public ApiNetworkDeviceData createNetworkDevice(String login, String key,
