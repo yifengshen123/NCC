@@ -19,9 +19,9 @@ public class RpcClient<T> {
 
     public RpcClient(String server, String login, String key) {
         try {
-            server = server;
-            login = login;
-            key = key;
+            this.server = server;
+            this.login = login;
+            this.key = key;
             auth = new Object[]{login, key};
             client = new JsonRpcHttpClient(new URL(server));
         } catch (MalformedURLException e) {
