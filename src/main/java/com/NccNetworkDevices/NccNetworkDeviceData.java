@@ -16,6 +16,7 @@ public class NccNetworkDeviceData extends NccAbstractData<NccNetworkDeviceData> 
     public String snmpCommunity;
     public String addressStreet;
     public String addressBuild;
+    public String typeName;
 
     @Override
     public NccNetworkDeviceData fillData(){
@@ -29,6 +30,7 @@ public class NccNetworkDeviceData extends NccAbstractData<NccNetworkDeviceData> 
             networkDeviceData.snmpCommunity = rs.getString("snmpCommunity");
             networkDeviceData.addressStreet = rs.getString("addressStreet");
             networkDeviceData.addressBuild = rs.getString("addressBuild");
+            networkDeviceData.typeName = rs.getString("typeName");
         } catch (SQLException e) {
             e.printStackTrace();
         }

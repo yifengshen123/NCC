@@ -236,6 +236,11 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
         apiIfaceData.status = 1;
         apiIfaceData.message = "error";
 
+        if (!new NccAPI().checkPermission(login, key, "GetNetworkDeviceIfaces")) {
+            apiIfaceData.message = "Permission denied";
+            return apiIfaceData;
+        }
+
         NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
 
         if (device != null) {
@@ -259,6 +264,11 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
         apiIfaceData.status = 1;
         apiIfaceData.message = "error";
 
+        if (!new NccAPI().checkPermission(login, key, "UpdateNetworkDeviceIfaces")) {
+            apiIfaceData.message = "Permission denied";
+            return apiIfaceData;
+        }
+
         NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
 
         if (device != null) {
@@ -281,6 +291,11 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
         apiIfaceData.data = new ArrayList<>();
         apiIfaceData.status = 1;
         apiIfaceData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "DiscoverNetworkDeviceIfaces")) {
+            apiIfaceData.message = "Permission denied";
+            return apiIfaceData;
+        }
 
         NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(id);
 

@@ -76,11 +76,32 @@ public class NccNetworkDevice {
     }
 
     public ArrayList<NccNetworkDeviceData> getNetworkDevices() {
-        return new NccNetworkDeviceData().getDataList("SELECT * FROM nccNetworkDevices");
+        return new NccNetworkDeviceData().getDataList("SELECT " +
+                "d.id AS id, " +
+                "d.deviceIP AS deviceIP, " +
+                "d.deviceName AS deviceName, " +
+                "d.deviceType AS deviceType, " +
+                "d.snmpCommunity AS snmpCommunity, " +
+                "d.addressStreet AS addressStreet, " +
+                "d.addressBuild AS addressBuild, " +
+                "t.typeName AS typeName " +
+                "FROM nccNetworkDevices d " +
+                "LEFT JOIN nccDeviceTypes t ON t.id=d.deviceType");
     }
 
     public NccNetworkDeviceData getNetworkDevices(Integer id) {
-        return new NccNetworkDeviceData().getData("SELECT * FROM nccNetworkDevices WHERE id=" + id);
+        return new NccNetworkDeviceData().getData("SELECT " +
+                "d.id AS id, " +
+                "d.deviceIP AS deviceIP, " +
+                "d.deviceName AS deviceName, " +
+                "d.deviceType AS deviceType, " +
+                "d.snmpCommunity AS snmpCommunity, " +
+                "d.addressStreet AS addressStreet, " +
+                "d.addressBuild AS addressBuild, " +
+                "t.typeName AS typeName " +
+                "FROM nccNetworkDevices d " +
+                "LEFT JOIN nccDeviceTypes t ON t.id=d.deviceType " +
+                "WHERE d.id=" + id);
     }
 
     public ArrayList<IfaceData> getIfaces(Integer id) {
