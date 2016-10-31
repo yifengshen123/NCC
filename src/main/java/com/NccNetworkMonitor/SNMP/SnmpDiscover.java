@@ -1,4 +1,4 @@
-package com.NccMonitor.SNMP;
+package com.NccNetworkMonitor.SNMP;
 
 import com.NccNetworkDevices.IfaceData;
 import com.NccSNMP.NccSNMP;
@@ -20,11 +20,13 @@ public class SnmpDiscover {
     private final String mibIfAdminStatus = "1.3.6.1.2.1.2.2.1.7";
     private final String mibIfOperStatus = "1.3.6.1.2.1.2.2.1.8";
     private final String mibIfInOctets = "1.3.6.1.2.1.2.2.1.10";
+    private final String mibIfHCInOctets = "1.3.6.1.2.1.31.1.1.1.6";
     private final String mibIfInUcastPkts = "1.3.6.1.2.1.2.2.1.11";
     private final String mibIfInNUcastPkts = "1.3.6.1.2.1.2.2.1.12";
     private final String mibIfInDiscards = "1.3.6.1.2.1.2.2.1.13";
     private final String mibIfInErrors = "1.3.6.1.2.1.2.2.1.14";
     private final String mibIfOutOctets = "1.3.6.1.2.1.2.2.1.16";
+    private final String mibIfHCOutOctets = "1.3.6.1.2.1.31.1.1.1.10";
     private final String mibIfOutUcastPkts = "1.3.6.1.2.1.2.2.1.17";
     private final String mibIfOutNUcastPkts = "1.3.6.1.2.1.2.2.1.18";
     private final String mibIfOutDiscards = "1.3.6.1.2.1.2.2.1.19";
@@ -40,23 +42,27 @@ public class SnmpDiscover {
         walkData = new HashMap<>();
 
         ifIndex = server.getStrings(mibIfIndex);
-        walkData.putAll(ifIndex);
-        walkData.putAll(server.getStrings(mibIfDescr));
-        walkData.putAll(server.getStrings(mibIfTypes));
-        walkData.putAll(server.getStrings(mibIfSpeed));
-        walkData.putAll(server.getStrings(mibIfAdminStatus));
-        walkData.putAll(server.getStrings(mibIfOperStatus));
-        walkData.putAll(server.getStrings(mibIfInOctets));
-        walkData.putAll(server.getStrings(mibIfOutOctets));
-        walkData.putAll(server.getStrings(mibIfPhysAddress));
-        walkData.putAll(server.getStrings(mibIfInErrors));
-        walkData.putAll(server.getStrings(mibIfOutErrors));
-        walkData.putAll(server.getStrings(mibIfInUcastPkts));
-        walkData.putAll(server.getStrings(mibIfOutUcastPkts));
-        walkData.putAll(server.getStrings(mibIfInDiscards));
-        walkData.putAll(server.getStrings(mibIfOutDiscards));
-        walkData.putAll(server.getStrings(mibIfInNUcastPkts));
-        walkData.putAll(server.getStrings(mibIfOutNUcastPkts));
+        if (ifIndex != null) {
+            walkData.putAll(ifIndex);
+            walkData.putAll(server.getStrings(mibIfDescr));
+            walkData.putAll(server.getStrings(mibIfTypes));
+            walkData.putAll(server.getStrings(mibIfSpeed));
+            walkData.putAll(server.getStrings(mibIfAdminStatus));
+            walkData.putAll(server.getStrings(mibIfOperStatus));
+            walkData.putAll(server.getStrings(mibIfInOctets));
+            walkData.putAll(server.getStrings(mibIfOutOctets));
+            walkData.putAll(server.getStrings(mibIfPhysAddress));
+            walkData.putAll(server.getStrings(mibIfInErrors));
+            walkData.putAll(server.getStrings(mibIfOutErrors));
+            walkData.putAll(server.getStrings(mibIfInUcastPkts));
+            walkData.putAll(server.getStrings(mibIfOutUcastPkts));
+            walkData.putAll(server.getStrings(mibIfInDiscards));
+            walkData.putAll(server.getStrings(mibIfOutDiscards));
+            walkData.putAll(server.getStrings(mibIfInNUcastPkts));
+            walkData.putAll(server.getStrings(mibIfOutNUcastPkts));
+            walkData.putAll(server.getStrings(mibIfHCInOctets));
+            walkData.putAll(server.getStrings(mibIfHCOutOctets));
+        }
     }
 
     public HashMap<String, String> getIfIndex() {
@@ -108,29 +114,32 @@ public class SnmpDiscover {
     public ArrayList<IfaceData> getIfaces() {
         ArrayList<IfaceData> ifaceData = new ArrayList<>();
 
-        for (Map.Entry<String, String> item : ifIndex.entrySet()) {
-            IfaceData idata = new IfaceData();
+        if(ifIndex!=null) {
+            for (Map.Entry<String, String> item : ifIndex.entrySet()) {
+                IfaceData idata = new IfaceData();
 
-            idata.ifIndex = Integer.parseInt(item.getValue());
-            idata.ifType = getInteger(mibIfTypes, idata.ifIndex);
-            idata.ifDescr = getString(mibIfDescr, idata.ifIndex);
-            idata.ifSpeed = getInteger(mibIfSpeed, idata.ifIndex);
-            idata.ifPhysAddress = getString(mibIfPhysAddress, idata.ifIndex);
-            idata.ifAdminStatus = getInteger(mibIfAdminStatus, idata.ifIndex);
-            idata.ifOperStatus = getInteger(mibIfOperStatus, idata.ifIndex);
-            idata.ifInOctets = getLong(mibIfInOctets, idata.ifIndex);
-            idata.ifOutOctets = getLong(mibIfOutOctets, idata.ifIndex);
-            idata.ifInErrors = getLong(mibIfInErrors, idata.ifIndex);
-            idata.ifOutErrors = getLong(mibIfOutErrors, idata.ifIndex);
-            idata.ifInDiscards = getLong(mibIfInDiscards, idata.ifIndex);
-            idata.ifOutDiscards = getLong(mibIfOutDiscards, idata.ifIndex);
-            idata.ifInUcastPkts = getLong(mibIfInUcastPkts, idata.ifIndex);
-            idata.ifOutUcastPkts = getLong(mibIfOutUcastPkts, idata.ifIndex);
-            idata.ifInNUcastPkts = getLong(mibIfInNUcastPkts, idata.ifIndex);
-            idata.ifOutNUcastPkts = getLong(mibIfOutNUcastPkts, idata.ifIndex);
+                idata.ifIndex = Integer.parseInt(item.getValue());
+                idata.ifType = getInteger(mibIfTypes, idata.ifIndex);
+                idata.ifDescr = getString(mibIfDescr, idata.ifIndex);
+                idata.ifSpeed = getInteger(mibIfSpeed, idata.ifIndex);
+                idata.ifPhysAddress = getString(mibIfPhysAddress, idata.ifIndex);
+                idata.ifAdminStatus = getInteger(mibIfAdminStatus, idata.ifIndex);
+                idata.ifOperStatus = getInteger(mibIfOperStatus, idata.ifIndex);
+                idata.ifInOctets = getLong(mibIfInOctets, idata.ifIndex);
+                idata.ifOutOctets = getLong(mibIfOutOctets, idata.ifIndex);
+                idata.ifInErrors = getLong(mibIfInErrors, idata.ifIndex);
+                idata.ifOutErrors = getLong(mibIfOutErrors, idata.ifIndex);
+                idata.ifInDiscards = getLong(mibIfInDiscards, idata.ifIndex);
+                idata.ifOutDiscards = getLong(mibIfOutDiscards, idata.ifIndex);
+                idata.ifInUcastPkts = getLong(mibIfInUcastPkts, idata.ifIndex);
+                idata.ifOutUcastPkts = getLong(mibIfOutUcastPkts, idata.ifIndex);
+                idata.ifInNUcastPkts = getLong(mibIfInNUcastPkts, idata.ifIndex);
+                idata.ifOutNUcastPkts = getLong(mibIfOutNUcastPkts, idata.ifIndex);
+                idata.ifHCInOctets = getLong(mibIfHCInOctets, idata.ifIndex);
+                idata.ifHCOutOctets = getLong(mibIfHCOutOctets, idata.ifIndex);
 
-
-            ifaceData.add(idata);
+                ifaceData.add(idata);
+            }
         }
 
         return ifaceData;

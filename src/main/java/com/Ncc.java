@@ -2,6 +2,7 @@ package com;
 
 import com.NccAPI.NccAPI;
 import com.NccDhcp.NccDhcpServer;
+import com.NccNetworkMonitor.NccNetworkMonitor;
 import com.NccRadius.NccRadius;
 import com.NccSystem.CLI.NccCLI;
 import com.NccSystem.NccLogger;
@@ -28,6 +29,7 @@ public class Ncc {
     private static boolean moduleCLI = true;
     private static boolean moduleAPI = true;
     private static boolean moduleIPTV = true;
+    private static boolean moduleNetmon = false;
     public static boolean logQuery = false;
     public static Integer dhcpTimer = 1;
     public static Integer radiusTimer = 60;
@@ -45,6 +47,7 @@ public class Ncc {
     public static String apiLogfile = "api.log";
     public static String cliLogfile = "cli.log";
     public static String iptvLogfile = "iptv.log";
+    public static String netmonLogfile = "netmon.log";
 
     public static void main(String[] args) throws InterruptedException, SQLException, IOException {
 
@@ -68,12 +71,14 @@ public class Ncc {
             SQLLogfile = config.getString("sql.logfile", "SQL.log");
             logQuery = config.getBoolean("sql.log.query", false);
             iptvLogfile = config.getString("iptv.logfile", "iptv.log");
+            netmonLogfile = config.getString("netmon.logfile", "netmon.log");
 
             moduleRadius = config.getBoolean("module.radius", false);
             moduleDHCP = config.getBoolean("module.dhcp", false);
             moduleCLI = config.getBoolean("module.cli", true);
             moduleAPI = config.getBoolean("module.api", true);
             moduleIPTV = config.getBoolean("module.iptv", false);
+            moduleNetmon = config.getBoolean("module.netmon", false);
 
             logger.info("NCC system loading...");
 
@@ -129,6 +134,11 @@ public class Ncc {
                 sqlPool.close();
             }
         });
+
+        if(moduleNetmon){
+            NccNetworkMonitor netmon = new NccNetworkMonitor();
+            netmon.start();
+        }
 
         if (moduleCLI) {
             cliSshPort = config.getInt("cli.ssh.port");

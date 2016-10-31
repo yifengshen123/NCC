@@ -1,7 +1,7 @@
 package com.NccNetworkDevices;
 
 import com.Ncc;
-import com.NccMonitor.SNMP.SnmpDiscover;
+import com.NccNetworkMonitor.SNMP.SnmpDiscover;
 import com.NccSNMP.NccSNMP;
 import com.NccSystem.NccLogger;
 import com.NccSystem.NccUtils;
@@ -129,7 +129,19 @@ public class NccNetworkDevice {
                         "ifOperStatus, " +
                         "ifAdminStatus, " +
                         "ifInOctets, " +
-                        "ifOutOctets) VALUES (" +
+                        "ifOutOctets," +
+                        "ifHCInOctets, " +
+                        "ifHCOutOctets, " +
+                        "ifInUcastPkts, " +
+                        "ifOutUcastPkts, " +
+                        "ifInErrors, " +
+                        "ifOutErrors, " +
+                        "ifInDiscards, " +
+                        "ifOutDiscards, " +
+                        "ifInNUcastPkts, " +
+                        "ifOutNUcastPkts, " +
+                        "ifPhysAddress, " +
+                        "lastUpdate) VALUES (" +
                         id + ", " +
                         iface.ifIndex + ", " +
                         iface.ifType + ", " +
@@ -138,7 +150,19 @@ public class NccNetworkDevice {
                         iface.ifOperStatus + ", " +
                         iface.ifAdminStatus + ", " +
                         iface.ifInOctets + ", " +
-                        iface.ifOutOctets + ") " +
+                        iface.ifOutOctets + ", " +
+                        iface.ifHCInOctets + ", " +
+                        iface.ifHCOutOctets + ", " +
+                        iface.ifInUcastPkts + ", " +
+                        iface.ifOutUcastPkts + ", " +
+                        iface.ifInErrors + ", " +
+                        iface.ifOutErrors + ", " +
+                        iface.ifInDiscards + ", " +
+                        iface.ifOutDiscards + ", " +
+                        iface.ifInNUcastPkts + ", " +
+                        iface.ifOutNUcastPkts + ", " +
+                        "'" + iface.ifPhysAddress + "', " +
+                        "UNIX_TIMESTAMP(NOW())) " +
                         "ON DUPLICATE KEY " +
                         "UPDATE " +
                         "ifIndex=" + iface.ifIndex + ", " +
@@ -147,7 +171,19 @@ public class NccNetworkDevice {
                         "ifOperStatus=" + iface.ifOperStatus + ", " +
                         "ifAdminStatus=" + iface.ifAdminStatus + ", " +
                         "ifInOctets=" + iface.ifInOctets + ", " +
-                        "ifOutOctets=" + iface.ifOutOctets);
+                        "ifOutOctets=" + iface.ifOutOctets + ", " +
+                        "ifHCInOctets=" + iface.ifHCInOctets + ", " +
+                        "ifHCOutOctets=" + iface.ifHCOutOctets + ", " +
+                        "ifInUcastPkts=" + iface.ifInUcastPkts + ", " +
+                        "ifOutUcastPkts=" + iface.ifOutUcastPkts + ", " +
+                        "ifInErrors=" + iface.ifInErrors + ", " +
+                        "ifOutErrors=" + iface.ifOutErrors + ", " +
+                        "ifInDiscards=" + iface.ifInDiscards + ", " +
+                        "ifOutDiscards=" + iface.ifOutDiscards + ", " +
+                        "ifInNUcastPkts=" + iface.ifInNUcastPkts + ", " +
+                        "ifOutNUcastPkts=" + iface.ifOutNUcastPkts + ", " +
+                        "ifPhysAddress='" + iface.ifPhysAddress + "', " +
+                        "lastUpdate=UNIX_TIMESTAMP(NOW())");
             }
 
             try {
@@ -159,7 +195,7 @@ public class NccNetworkDevice {
 
         }
 
-        return ifaces;
+        return new NccNetworkDevice().getIfaces(id);
     }
 
     public ArrayList<IfaceData> discoverIfaces(Integer id) {
@@ -183,7 +219,19 @@ public class NccNetworkDevice {
                         "ifOperStatus, " +
                         "ifAdminStatus, " +
                         "ifInOctets, " +
-                        "ifOutOctets) VALUES (" +
+                        "ifOutOctets," +
+                        "ifHCInOctets, " +
+                        "ifHCOutOctets, " +
+                        "ifInUcastPkts, " +
+                        "ifOutUcastPkts, " +
+                        "ifInErrors, " +
+                        "ifOutErrors, " +
+                        "ifInDiscards, " +
+                        "ifOutDiscards, " +
+                        "ifInNUcastPkts, " +
+                        "ifOutNUcastPkts, " +
+                        "ifPhysAddress, " +
+                        "lastUpdate) VALUES (" +
                         id + ", " +
                         iface.ifIndex + ", " +
                         iface.ifType + ", " +
@@ -192,7 +240,19 @@ public class NccNetworkDevice {
                         iface.ifOperStatus + ", " +
                         iface.ifAdminStatus + ", " +
                         iface.ifInOctets + ", " +
-                        iface.ifOutOctets + ") " +
+                        iface.ifOutOctets + ", " +
+                        iface.ifHCInOctets + ", " +
+                        iface.ifHCOutOctets + ", " +
+                        iface.ifInUcastPkts + ", " +
+                        iface.ifOutUcastPkts + ", " +
+                        iface.ifInErrors + ", " +
+                        iface.ifOutErrors + ", " +
+                        iface.ifInDiscards + ", " +
+                        iface.ifOutDiscards + ", " +
+                        iface.ifInNUcastPkts + ", " +
+                        iface.ifOutNUcastPkts + ", " +
+                        "'" + iface.ifPhysAddress + "', " +
+                        "UNIX_TIMESTAMP(NOW())) " +
                         "ON DUPLICATE KEY " +
                         "UPDATE " +
                         "ifIndex=" + iface.ifIndex + ", " +
@@ -202,7 +262,19 @@ public class NccNetworkDevice {
                         "ifOperStatus=" + iface.ifOperStatus + ", " +
                         "ifAdminStatus=" + iface.ifAdminStatus + ", " +
                         "ifInOctets=" + iface.ifInOctets + ", " +
-                        "ifOutOctets=" + iface.ifOutOctets);
+                        "ifOutOctets=" + iface.ifOutOctets + ", " +
+                        "ifHCInOctets=" + iface.ifHCInOctets + ", " +
+                        "ifHCOutOctets=" + iface.ifHCOutOctets + ", " +
+                        "ifInUcastPkts=" + iface.ifInUcastPkts + ", " +
+                        "ifOutUcastPkts=" + iface.ifOutUcastPkts + ", " +
+                        "ifInErrors=" + iface.ifInErrors + ", " +
+                        "ifOutErrors=" + iface.ifOutErrors + ", " +
+                        "ifInDiscards=" + iface.ifInDiscards + ", " +
+                        "ifOutDiscards=" + iface.ifOutDiscards + ", " +
+                        "ifInNUcastPkts=" + iface.ifInNUcastPkts + ", " +
+                        "ifOutNUcastPkts=" + iface.ifOutNUcastPkts + ", " +
+                        "ifPhysAddress='" + iface.ifPhysAddress + "', " +
+                        "lastUpdate=UNIX_TIMESTAMP(NOW())");
             }
 
             try {
@@ -214,6 +286,6 @@ public class NccNetworkDevice {
 
         }
 
-        return ifaces;
+        return new NccNetworkDevice().getIfaces(id);
     }
 }

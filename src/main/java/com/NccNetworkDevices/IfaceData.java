@@ -26,6 +26,9 @@ public class IfaceData extends NccAbstractData<IfaceData> {
     public Long ifInNUcastPkts;
     public Long ifOutNUcastPkts;
     public String ifPhysAddress;
+    public Long ifHCInOctets;
+    public Long ifHCOutOctets;
+    public Long lastUpdate;
 
     @Override
     public IfaceData fillData(){
@@ -40,6 +43,16 @@ public class IfaceData extends NccAbstractData<IfaceData> {
             ifaceData.ifAdminStatus = rs.getInt("ifAdminStatus");
             ifaceData.ifInOctets = rs.getLong("ifInOctets");
             ifaceData.ifOutOctets = rs.getLong("ifOutOctets");
+            ifaceData.ifInUcastPkts = rs.getLong("ifInUcastPkts");
+            ifaceData.ifOutUcastPkts = rs.getLong("ifOutUcastPkts");
+            ifaceData.ifInErrors = rs.getLong("ifInErrors");
+            ifaceData.ifOutErrors = rs.getLong("ifOutErrors");
+            ifaceData.ifInNUcastPkts = rs.getLong("ifInNUcastPkts");
+            ifaceData.ifOutNUcastPkts = rs.getLong("ifOutNUcastPkts");
+            ifaceData.ifPhysAddress = rs.getString("ifPhysAddress");
+            ifaceData.ifHCInOctets = rs.getLong("ifHCInOctets");
+            ifaceData.ifHCOutOctets = rs.getLong("ifHCOutOctets");
+            ifaceData.lastUpdate = rs.getLong("lastUpdate");
         } catch (SQLException e) {
             e.printStackTrace();
         }
