@@ -69,7 +69,9 @@ public class NccSNMP {
 
     private PDU send(String oid) {
         try {
+            if(!transport.isListening()) transport.listen();
             ResponseEvent response = snmp.send(preparePDU(new OID(oid)), communityTarget, null);
+            transport.close();
 
             if (response != null) {
                 PDU responsePDU = response.getResponse();
@@ -97,7 +99,9 @@ public class NccSNMP {
         HashMap<String, String> items = new HashMap<>();
 
         try {
+            if(!transport.isListening()) transport.listen();
             ResponseEvent response = snmp.send(prepareBulk(new OID(oid)), communityTarget);
+            transport.close();
 
             if (response != null) {
                 PDU responsePDU = response.getResponse();
