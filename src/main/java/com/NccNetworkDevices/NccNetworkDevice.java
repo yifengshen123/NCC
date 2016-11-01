@@ -7,6 +7,7 @@ import com.NccSystem.NccLogger;
 import com.NccSystem.NccUtils;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -106,6 +107,13 @@ public class NccNetworkDevice {
 
     public ArrayList<IfaceData> getIfaces(Integer id) {
         return new IfaceData().getDataList("SELECT * FROM nccNetworkDeviceIfaces WHERE deviceId=" + id);
+    }
+
+    public ArrayList<IfaceData> getIfaces(Integer id, ArrayList<Integer> types) {
+        String typesCondition = StringUtils.join(types, ", ");
+
+        return new IfaceData().getDataList("SELECT * FROM nccNetworkDeviceIfaces WHERE " +
+                "deviceId=" + id + " AND ifType IN (" + typesCondition + ")");
     }
 
     public ArrayList<IfaceData> updateIfaces(Integer id) {

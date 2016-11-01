@@ -9,6 +9,7 @@ import com.NccSNMP.NccSNMP;
 import com.NccSystem.NccUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class NetworkDevicesServiceImpl implements NetworkDevicesService {
@@ -245,7 +246,7 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
 
         if (device != null) {
 
-            ArrayList<IfaceData> ifaces = new NccNetworkDevice().getIfaces(id);
+            ArrayList<IfaceData> ifaces = new NccNetworkDevice().getIfaces(id, new ArrayList<Integer>(Arrays.asList(6, 117)));
 
             if (ifaces != null) {
                 apiIfaceData.data = ifaces;
