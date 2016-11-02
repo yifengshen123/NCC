@@ -77,6 +77,33 @@ public class NccQuery {
 
     }
 
+    public Long getSQLTime() {
+        Long sqlTime = System.currentTimeMillis();
+
+        try {
+            NccCachedRowset rs = selectQuery("SELECT UNIX_TIMESTAMP(NOW()) AS sqlTime");
+            if (rs != null) {
+                try {
+                    if(rs.next()) {
+                        try {
+                            sqlTime = rs.getLong("sqlTime");
+
+                            return sqlTime;
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+
+        return sqlTime;
+    }
+
     public ArrayList<Integer> updateQuery(String query) throws NccQueryException {
 
         if (Ncc.logQuery) logger.info("SQL: '" + query + "'");

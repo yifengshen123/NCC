@@ -30,7 +30,9 @@ public class NccMonitorSensors {
                     "sensorIntValue=" + sensorData.sensorIntValue + ", " +
                     "sensorStringValue='" + sensorData.sensorStringValue + "', " +
                     "sensorDoubleValue=" + sensorData.sensorDoubleValue + ", " +
-                    "sensorStatus=" + sensorData.sensorStatus + " " +
+                    "sensorStatus=" + sensorData.sensorStatus + "," +
+                    "pollInterval=" + sensorData.pollInterval + ", " +
+                    "lastUpdate=UNIX_TIMESTAMP(NOW()) " +
                     "WHERE id=" + sensorData.id);
         } catch (NccQueryException e) {
             e.printStackTrace();

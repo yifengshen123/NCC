@@ -5,6 +5,8 @@ import com.NccNetworkDevices.IfaceData;
 import com.NccNetworkDevices.NccNetworkDevice;
 import com.NccNetworkDevices.NccNetworkDeviceData;
 import com.NccSystem.NccLogger;
+import com.NccSystem.SQL.NccQuery;
+import com.NccSystem.SQL.NccQueryException;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -80,13 +82,32 @@ public class NccNetworkMonitor {
         @Override
         public void run() {
             for (NccMonitorSensorData sensor : new NccMonitorSensors().getSensors()) {
+                IfaceData ifaceData;
+                Long sqlTime = System.currentTimeMillis() / 1000;
+
+                try {
+                    sqlTime = new NccQuery().getSQLTime();
+                } catch (NccQueryException e1) {
+                    e1.printStackTrace();
+                }
+
+                if ((sqlTime - sensor.lastUpdate) < sensor.pollInterval) continue;
+
                 switch (sensor.sensorType) {
                     case 1:
                         break;
                     case 2:
-                        IfaceData ifaceData = new NccNetworkDevice().getIface(sensor.sensorSource);
+                        ifaceData = new NccNetworkDevice().getIface(sensor.sensorSource);
                         sensor.sensorLongValue = ifaceData.ifHCInOctets;
                         new NccMonitorSensorHistory().add(sensor);
+                        new NccMonitorSensors().updateSensor(sensor);
+                        logger.info("Sensor id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
+                        break;
+                    case 3:
+                        ifaceData = new NccNetworkDevice().getIface(sensor.sensorSource);
+                        sensor.sensorLongValue = ifaceData.ifHCOutOctets;
+                        new NccMonitorSensorHistory().add(sensor);
+                        new NccMonitorSensors().updateSensor(sensor);
                         break;
                     default:
                         break;
@@ -111,7 +132,7 @@ public class NccNetworkMonitor {
         logger.info("Starting NetworkMonitor");
 
         monitorTimer.schedule(monitorTask, 0, 1 * 10 * 1000);
-        sensorsTimer.schedule(sensorsTask, 0, 5 * 60 * 1000);
+        sensorsTimer.schedule(sensorsTask, 0, 1000);
     }
 
     public void stop() {
