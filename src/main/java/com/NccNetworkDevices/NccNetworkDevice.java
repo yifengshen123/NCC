@@ -85,7 +85,9 @@ public class NccNetworkDevice {
                 "d.snmpCommunity AS snmpCommunity, " +
                 "d.addressStreet AS addressStreet, " +
                 "d.addressBuild AS addressBuild, " +
-                "t.typeName AS typeName " +
+                "t.typeName AS typeName," +
+                "d.deviceStatus AS deviceStatus, " +
+                "d.lastUpdate AS lastUpdate " +
                 "FROM nccNetworkDevices d " +
                 "LEFT JOIN nccDeviceTypes t ON t.id=d.deviceType");
     }
@@ -99,7 +101,9 @@ public class NccNetworkDevice {
                 "d.snmpCommunity AS snmpCommunity, " +
                 "d.addressStreet AS addressStreet, " +
                 "d.addressBuild AS addressBuild, " +
-                "t.typeName AS typeName " +
+                "t.typeName AS typeName, " +
+                "d.deviceStatus AS deviceStatus, " +
+                "d.lastUpdate AS lastUpdate  " +
                 "FROM nccNetworkDevices d " +
                 "LEFT JOIN nccDeviceTypes t ON t.id=d.deviceType " +
                 "WHERE d.id=" + id);
@@ -116,9 +120,42 @@ public class NccNetworkDevice {
                 "deviceId=" + id + " AND ifType IN (" + typesCondition + ")");
     }
 
+    public String getUptime(Integer id) {
+        NccNetworkDeviceData deviceData = getNetworkDevices(id);
+
+        if (deviceData != null) {
+            return new NccSNMP(
+                    NccUtils.long2ip(deviceData.deviceIP),
+                    deviceData.snmpCommunity).getString("1.3.6.1.2.1.1.3.0");
+        }
+
+        return null;
+    }
+
+    public void setDeviceStatus(Integer id, Integer status) {
+        try {
+            NccQuery query = new NccQuery();
+            query.updateQuery("UPDATE nccNetworkDevices SET " +
+                    "lastUpdate=UNIX_TIMESTAMP(NOW()), " +
+                    "deviceStatus=" + status + " " +
+                    "WHERE id=" + id);
+        } catch (NccQueryException e) {
+            e.printStackTrace();
+        }
+    }
+
     public ArrayList<IfaceData> updateIfaces(Integer id) {
 
         NccNetworkDeviceData deviceData = getNetworkDevices(id);
+
+        String uptime = getUptime(id);
+
+        if (uptime == null) {
+            setDeviceStatus(id, 0);
+            return null;
+        } else {
+            setDeviceStatus(id, 1);
+        }
 
         ArrayList<IfaceData> ifaces = new SnmpDiscover(new NccSNMP(
                 NccUtils.long2ip(deviceData.deviceIP),

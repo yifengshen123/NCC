@@ -140,7 +140,7 @@ public class NccSNMP {
             return data.get(0).getVariable().toString();
         }
 
-        return "";
+        return null;
     }
 
     public HashMap<String, String> getStrings(String oid) {

@@ -12,7 +12,7 @@ public class IfaceData extends NccAbstractData<IfaceData> {
     public Integer ifIndex;
     public Integer ifType;
     public String ifDescr;
-    public Integer ifSpeed;
+    public Long ifSpeed;
     public Integer ifAdminStatus;
     public Integer ifOperStatus;
     public Long ifInOctets;
@@ -38,7 +38,7 @@ public class IfaceData extends NccAbstractData<IfaceData> {
             ifaceData.ifIndex = rs.getInt("ifIndex");
             ifaceData.ifType = rs.getInt("ifType");
             ifaceData.ifDescr = rs.getString("ifDescr");
-            ifaceData.ifSpeed = rs.getInt("ifSpeed");
+            ifaceData.ifSpeed = rs.getLong("ifSpeed");
             ifaceData.ifOperStatus = rs.getInt("ifOperStatus");
             ifaceData.ifAdminStatus = rs.getInt("ifAdminStatus");
             ifaceData.ifInOctets = rs.getLong("ifInOctets");

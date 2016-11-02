@@ -111,6 +111,10 @@ public class SnmpDiscover {
         return "";
     }
 
+    public Long getUptime(){
+        return 0L;
+    }
+
     public ArrayList<IfaceData> getIfaces() {
         ArrayList<IfaceData> ifaceData = new ArrayList<>();
 
@@ -121,7 +125,7 @@ public class SnmpDiscover {
                 idata.ifIndex = Integer.parseInt(item.getValue());
                 idata.ifType = getInteger(mibIfTypes, idata.ifIndex);
                 idata.ifDescr = getString(mibIfDescr, idata.ifIndex);
-                idata.ifSpeed = getInteger(mibIfSpeed, idata.ifIndex);
+                idata.ifSpeed = getLong(mibIfSpeed, idata.ifIndex);
                 idata.ifPhysAddress = getString(mibIfPhysAddress, idata.ifIndex);
                 idata.ifAdminStatus = getInteger(mibIfAdminStatus, idata.ifIndex);
                 idata.ifOperStatus = getInteger(mibIfOperStatus, idata.ifIndex);
