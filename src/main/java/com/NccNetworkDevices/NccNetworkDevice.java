@@ -109,6 +109,10 @@ public class NccNetworkDevice {
                 "WHERE d.id=" + id);
     }
 
+    public IfaceData getIface(Integer id) {
+        return new IfaceData().getData("SELECT * FROM nccNetworkDeviceIfaces WHERE id=" + id);
+    }
+
     public ArrayList<IfaceData> getIfaces(Integer id) {
         return new IfaceData().getDataList("SELECT * FROM nccNetworkDeviceIfaces WHERE deviceId=" + id);
     }

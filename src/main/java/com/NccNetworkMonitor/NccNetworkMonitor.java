@@ -76,18 +76,42 @@ public class NccNetworkMonitor {
         }
     }
 
+    private class SensorsTask extends TimerTask {
+        @Override
+        public void run() {
+            for (NccMonitorSensorData sensor : new NccMonitorSensors().getSensors()) {
+                switch (sensor.sensorType) {
+                    case 1:
+                        break;
+                    case 2:
+                        IfaceData ifaceData = new NccNetworkDevice().getIface(sensor.sensorSource);
+                        sensor.sensorLongValue = ifaceData.ifHCInOctets;
+                        new NccMonitorSensorHistory().add(sensor);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
     private MonitorTask monitorTask;
+    private SensorsTask sensorsTask;
     private Timer monitorTimer;
+    private Timer sensorsTimer;
 
     public NccNetworkMonitor() {
         monitorTask = new MonitorTask();
+        sensorsTask = new SensorsTask();
         monitorTimer = new Timer();
+        sensorsTimer = new Timer();
     }
 
     public void start() {
         logger.info("Starting NetworkMonitor");
 
         monitorTimer.schedule(monitorTask, 0, 1 * 10 * 1000);
+        sensorsTimer.schedule(sensorsTask, 0, 5 * 60 * 1000);
     }
 
     public void stop() {
