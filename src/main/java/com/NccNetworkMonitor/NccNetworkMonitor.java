@@ -8,6 +8,8 @@ import com.NccSystem.NccLogger;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import org.apache.log4j.Logger;
+import org.python.core.PyInteger;
+import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -58,12 +60,6 @@ public class NccNetworkMonitor {
             if (devices != null) {
                 e = Executors.newFixedThreadPool(devices.size());
                 for (NccNetworkDeviceData data : devices) {
-
-/*
-                    DeviceMonitor t = new DeviceMonitor(data);
-                    t.start();
-*/
-
                     Future f = e.submit(new DevicePoller(data));
                 }
                 e.shutdown();
@@ -75,6 +71,17 @@ public class NccNetworkMonitor {
             }
 
             logger.info("Processed " + devices.size() + " devices in " + (System.currentTimeMillis() - startTime) + " ms");
+        }
+    }
+
+    private void testTrigger(NccMonitorSensorData sensor){
+        PythonInterpreter pi = new PythonInterpreter();
+        ArrayList<NccMonitorTriggerData> triggers = new NccMonitorTrigger().getTriggersBySensor(sensor.id);
+
+        for(NccMonitorTriggerData triggerData: triggers){
+            pi.set("sensor", sensor);
+            pi.exec(triggerData.triggerCode);
+            PyInteger result = (PyInteger) pi.get("result");
         }
     }
 
@@ -101,17 +108,20 @@ public class NccNetworkMonitor {
                         sensor.sensorLongValue = ifaceData.ifHCInOctets;
                         new NccMonitorSensorHistory().add(sensor);
                         new NccMonitorSensors().updateSensor(sensor);
-                        logger.info("Sensor id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
+                        logger.info("Sensor type=" + sensor.sensorType + " id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
                         break;
                     case 3:
                         ifaceData = new NccNetworkDevice().getIface(sensor.sensorSource);
                         sensor.sensorLongValue = ifaceData.ifHCOutOctets;
                         new NccMonitorSensorHistory().add(sensor);
                         new NccMonitorSensors().updateSensor(sensor);
+                        logger.info("Sensor type=" + sensor.sensorType + " id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
                         break;
                     default:
                         break;
                 }
+
+                testTrigger(sensor);
             }
         }
     }
@@ -133,6 +143,26 @@ public class NccNetworkMonitor {
 
         monitorTimer.schedule(monitorTask, 0, 1 * 10 * 1000);
         sensorsTimer.schedule(sensorsTask, 0, 1000);
+    }
+
+    private void setTrigger(int val) {
+        System.out.println("set trigger val=" + val);
+    }
+
+    private void test() {
+        PythonInterpreter pythonInterpreter = new PythonInterpreter();
+
+        pythonInterpreter.set("val", 3);
+        pythonInterpreter.exec("" +
+                "if val>0:\n" +
+                "   result=1\n" +
+                "else:\n" +
+                "   result=5\n" +
+                "");
+
+        PyInteger result = (PyInteger) pythonInterpreter.get("result");
+
+        System.out.println(result.toString());
     }
 
     public void stop() {
