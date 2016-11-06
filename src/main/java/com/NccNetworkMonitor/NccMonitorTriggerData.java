@@ -12,6 +12,7 @@ public class NccMonitorTriggerData extends NccAbstractData<NccMonitorTriggerData
     public String triggerName;
     public String triggerCode;
     public Integer triggerSensor;
+    public Integer triggerStatus;
 
     @Override
     public NccMonitorTriggerData fillData() {
@@ -22,6 +23,7 @@ public class NccMonitorTriggerData extends NccAbstractData<NccMonitorTriggerData
             data.triggerName = rs.getString("triggerName");
             data.triggerCode = rs.getString("triggerCode");
             data.triggerSensor = rs.getInt("triggerSensor");
+            data.triggerStatus = rs.getInt("triggerStatus");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -74,14 +74,18 @@ public class NccNetworkMonitor {
         }
     }
 
-    private void testTrigger(NccMonitorSensorData sensor){
-        PythonInterpreter pi = new PythonInterpreter();
-        ArrayList<NccMonitorTriggerData> triggers = new NccMonitorTrigger().getTriggersBySensor(sensor.id);
+    private class TriggerTask extends TimerTask {
+        @Override
+        public void run() {
+            ArrayList<NccMonitorTriggerData> triggers = new NccMonitorTrigger().getTriggers();
+            PythonInterpreter pi = new PythonInterpreter();
 
-        for(NccMonitorTriggerData triggerData: triggers){
-            pi.set("sensor", sensor);
-            pi.exec(triggerData.triggerCode);
-            PyInteger result = (PyInteger) pi.get("result");
+            for (NccMonitorTriggerData trigger : triggers) {
+                NccMonitorSensorData sensor = new NccMonitorSensors().getSensors(trigger.triggerSensor);
+                pi.set("sensor", sensor);
+                pi.set("trigger", trigger);
+                pi.exec(trigger.triggerCode);
+            }
         }
     }
 
@@ -120,22 +124,25 @@ public class NccNetworkMonitor {
                     default:
                         break;
                 }
-
-                testTrigger(sensor);
             }
         }
+
     }
 
     private MonitorTask monitorTask;
     private SensorsTask sensorsTask;
+    private TriggerTask triggerTask;
     private Timer monitorTimer;
     private Timer sensorsTimer;
+    private Timer triggerTimer;
 
     public NccNetworkMonitor() {
         monitorTask = new MonitorTask();
         sensorsTask = new SensorsTask();
+        triggerTask = new TriggerTask();
         monitorTimer = new Timer();
         sensorsTimer = new Timer();
+        triggerTimer = new Timer();
     }
 
     public void start() {
@@ -143,26 +150,7 @@ public class NccNetworkMonitor {
 
         monitorTimer.schedule(monitorTask, 0, 1 * 10 * 1000);
         sensorsTimer.schedule(sensorsTask, 0, 1000);
-    }
-
-    private void setTrigger(int val) {
-        System.out.println("set trigger val=" + val);
-    }
-
-    private void test() {
-        PythonInterpreter pythonInterpreter = new PythonInterpreter();
-
-        pythonInterpreter.set("val", 3);
-        pythonInterpreter.exec("" +
-                "if val>0:\n" +
-                "   result=1\n" +
-                "else:\n" +
-                "   result=5\n" +
-                "");
-
-        PyInteger result = (PyInteger) pythonInterpreter.get("result");
-
-        System.out.println(result.toString());
+        triggerTimer.schedule(triggerTask, 0, 1000);
     }
 
     public void stop() {
