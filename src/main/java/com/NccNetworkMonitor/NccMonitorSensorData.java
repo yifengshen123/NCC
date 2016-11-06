@@ -19,6 +19,7 @@ public class NccMonitorSensorData extends NccAbstractData<NccMonitorSensorData> 
     public Integer sensorStatus;
     public Integer pollInterval;
     public Long lastUpdate;
+    public Integer deviceId;
 
     @Override
     public NccMonitorSensorData fillData() {
@@ -36,6 +37,7 @@ public class NccMonitorSensorData extends NccAbstractData<NccMonitorSensorData> 
             data.sensorStatus = rs.getInt("sensorStatus");
             data.pollInterval = rs.getInt("pollInterval");
             data.lastUpdate = rs.getLong("lastUpdate");
+            data.deviceId = rs.getInt("deviceId");
         } catch (SQLException e) {
             e.printStackTrace();
         }

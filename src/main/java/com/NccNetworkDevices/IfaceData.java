@@ -9,6 +9,8 @@ import java.util.ArrayList;
  * Created by root on 26.10.16.
  */
 public class IfaceData extends NccAbstractData<IfaceData> {
+    public Integer id;
+    public Integer deviceId;
     public Integer ifIndex;
     public Integer ifType;
     public String ifDescr;
@@ -35,6 +37,8 @@ public class IfaceData extends NccAbstractData<IfaceData> {
         IfaceData ifaceData = new IfaceData();
 
         try {
+            ifaceData.id = rs.getInt("id");
+            ifaceData.deviceId = rs.getInt("deviceId");
             ifaceData.ifIndex = rs.getInt("ifIndex");
             ifaceData.ifType = rs.getInt("ifType");
             ifaceData.ifDescr = rs.getString("ifDescr");

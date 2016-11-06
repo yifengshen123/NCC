@@ -8,7 +8,6 @@ import com.NccSystem.NccLogger;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
 import org.apache.log4j.Logger;
-import org.python.core.PyInteger;
 import org.python.util.PythonInterpreter;
 
 import java.util.ArrayList;
@@ -16,34 +15,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 
-/**
- * Created by root on 26.10.16.
- */
 public class NccNetworkMonitor {
 
     private static NccLogger netmonLogger = new NccLogger("NetmonLogger");
     private static Logger logger = netmonLogger.setFilename(Ncc.netmonLogfile);
-
-    private ExecutorService e;
-
-    private class DeviceMonitor extends Thread {
-
-        private NccNetworkDeviceData data;
-
-        public DeviceMonitor(NccNetworkDeviceData data) {
-            this.data = data;
-            this.setName("DeviceMonitor-" + data.id);
-        }
-
-        @Override
-        public void run() {
-            Long startTime = System.currentTimeMillis();
-
-            ArrayList<IfaceData> ifaces = new NccNetworkDevice().updateIfaces(data.id);
-
-            logger.info("Processed " + ifaces.size() + " interfaces on " + data.typeName + "(" + data.id + ") in " + (System.currentTimeMillis() - startTime) + " ms");
-        }
-    }
 
     private class MonitorTask extends TimerTask {
 
@@ -58,7 +33,7 @@ public class NccNetworkMonitor {
             ArrayList<NccNetworkDeviceData> devices = networkDevice.getNetworkDevices();
 
             if (devices != null) {
-                e = Executors.newFixedThreadPool(devices.size());
+                ExecutorService e = Executors.newFixedThreadPool(devices.size());
                 for (NccNetworkDeviceData data : devices) {
                     Future f = e.submit(new DevicePoller(data));
                 }
@@ -68,9 +43,9 @@ public class NccNetworkMonitor {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
+                logger.info("Processed " + devices.size() + " devices in " + (System.currentTimeMillis() - startTime) + " ms");
             }
 
-            logger.info("Processed " + devices.size() + " devices in " + (System.currentTimeMillis() - startTime) + " ms");
         }
     }
 
