@@ -43,7 +43,7 @@ public class NccNetworkMonitor {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                logger.info("Processed " + devices.size() + " devices in " + (System.currentTimeMillis() - startTime) + " ms");
+                logger.debug("Processed " + devices.size() + " devices in " + (System.currentTimeMillis() - startTime) + " ms");
             }
 
         }
@@ -87,14 +87,14 @@ public class NccNetworkMonitor {
                         sensor.sensorLongValue = ifaceData.ifHCInOctets;
                         new NccMonitorSensorHistory().add(sensor);
                         new NccMonitorSensors().updateSensor(sensor);
-                        logger.info("Sensor type=" + sensor.sensorType + " id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
+                        logger.debug("Sensor type=" + sensor.sensorType + " id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
                         break;
                     case 3:
                         ifaceData = new NccNetworkDevice().getIface(sensor.sensorSource);
                         sensor.sensorLongValue = ifaceData.ifHCOutOctets;
                         new NccMonitorSensorHistory().add(sensor);
                         new NccMonitorSensors().updateSensor(sensor);
-                        logger.info("Sensor type=" + sensor.sensorType + " id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
+                        logger.debug("Sensor type=" + sensor.sensorType + " id=" + sensor.id + " updated with val=" + sensor.sensorLongValue);
                         break;
                     default:
                         break;

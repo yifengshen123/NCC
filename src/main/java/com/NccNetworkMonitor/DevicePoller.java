@@ -32,7 +32,7 @@ class DevicePoller implements Callable<ArrayList<IfaceData>> {
         ArrayList<IfaceData> ifaces = new ArrayList<>();
         ifaces = nccNetworkDevice.updateIfaces(data.id);
 
-        logger.info("Processed " + ifaces.size() + " interfaces on " + data.typeName + "(" + data.id + ") in " + (System.currentTimeMillis() - startTime) + " ms");
+        logger.debug("Processed " + ifaces.size() + " interfaces on " + data.typeName + "(" + data.id + ") in " + (System.currentTimeMillis() - startTime) + " ms");
         return ifaces;
     }
 }

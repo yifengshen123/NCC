@@ -313,4 +313,29 @@ public class NetworkDevicesServiceImpl implements NetworkDevicesService {
 
         return apiIfaceData;
     }
+
+    public ApiIfaceData setIfaceState(String login, String key, Integer deviceId, Integer iface, Integer state) {
+        ApiIfaceData apiIfaceData = new ApiIfaceData();
+
+        apiIfaceData.data = new ArrayList<>();
+        apiIfaceData.status = 1;
+        apiIfaceData.message = "error";
+
+        if (!new NccAPI().checkPermission(login, key, "UpdateNetworkDeviceIfaces")) {
+            apiIfaceData.message = "Permission denied";
+            return apiIfaceData;
+        }
+
+        NccNetworkDeviceData device = new NccNetworkDevice().getNetworkDevices(deviceId);
+
+        if (device != null) {
+
+            new NccNetworkDevice().setIfaceState(deviceId, iface, state);
+
+            apiIfaceData.status = 0;
+            apiIfaceData.message = "success";
+        }
+
+        return apiIfaceData;
+    }
 }

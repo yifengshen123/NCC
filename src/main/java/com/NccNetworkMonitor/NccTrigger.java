@@ -12,6 +12,6 @@ public class NccTrigger {
     private static Logger logger = triggerLogger.setFilename(Ncc.netmonLogfile);
 
     public void setTrigger(NccMonitorTriggerData trigger, NccMonitorSensorData sensor) {
-        logger.info("sensor[" + sensor.id + "][" + sensor.sensorLongValue + "] trigger[" + trigger.id + "][" + trigger.triggerStatus + "]");
+        logger.debug("sensor[" + sensor.id + "][" + sensor.sensorLongValue + "] trigger[" + trigger.id + "][" + trigger.triggerStatus + "]");
     }
 }

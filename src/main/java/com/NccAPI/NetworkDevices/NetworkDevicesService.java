@@ -1,33 +1,38 @@
 package com.NccAPI.NetworkDevices;
 
 public interface NetworkDevicesService {
-    public ApiIfaceData getNetworkDeviceIfaces(String login, String key, Integer id);
-    public ApiIfaceData updateNetworkDeviceIfaces(String login, String key, Integer id);
-    public ApiIfaceData discoverNetworkDeviceIfaces(String login, String key, Integer id);
+    ApiIfaceData setIfaceState(String login, String key, Integer deviceId, Integer iface, Integer state);
 
-    public ApiNetworkDeviceTypeData getNetworkDeviceTypes(String login, String key);
+    ApiIfaceData getNetworkDeviceIfaces(String login, String key, Integer id);
 
-    public ApiNetworkDeviceData createNetworkDevice(String login, String key,
-                                    String deviceName,
-                                    String deviceIP,
-                                    Integer deviceType,
-                                    String snmpCommunity,
-                                    String addressStreet,
-                                    String addressBuild);
+    ApiIfaceData updateNetworkDeviceIfaces(String login, String key, Integer id);
 
-    public ApiNetworkDeviceData getNetworkDevices(String login, String key);
+    ApiIfaceData discoverNetworkDeviceIfaces(String login, String key, Integer id);
 
-    public ApiNetworkDeviceData updateNetworkDevice(String login, String key,
-                                                    Integer id,
-                                                    String deviceName,
-                                                    String deviceIP,
-                                                    Integer deviceType,
-                                                    String snmpCommunity,
-                                                    String addressStreet,
-                                                    String addressBuild);
+    ApiNetworkDeviceTypeData getNetworkDeviceTypes(String login, String key);
 
-    public ApiNetworkDeviceData deleteNetworkDevice(String login, String key, Integer id);
+    ApiNetworkDeviceData createNetworkDevice(String login, String key,
+                                             String deviceName,
+                                             String deviceIP,
+                                             Integer deviceType,
+                                             String snmpCommunity,
+                                             String addressStreet,
+                                             String addressBuild);
 
-    public ApiSnmpString getNetworkDeviceSnmpValue(String login, String key, Integer id, String oid);
-    public ApiSnmpStrings getNetworkDeviceSnmpValues(String login, String key, Integer id, String oid);
+    ApiNetworkDeviceData getNetworkDevices(String login, String key);
+
+    ApiNetworkDeviceData updateNetworkDevice(String login, String key,
+                                             Integer id,
+                                             String deviceName,
+                                             String deviceIP,
+                                             Integer deviceType,
+                                             String snmpCommunity,
+                                             String addressStreet,
+                                             String addressBuild);
+
+    ApiNetworkDeviceData deleteNetworkDevice(String login, String key, Integer id);
+
+    ApiSnmpString getNetworkDeviceSnmpValue(String login, String key, Integer id, String oid);
+
+    ApiSnmpStrings getNetworkDeviceSnmpValues(String login, String key, Integer id, String oid);
 }

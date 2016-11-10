@@ -35,9 +35,13 @@ public class SnmpDiscover {
     private HashMap<String, String> ifIndex;
     private HashMap<String, String> walkData;
 
+    private NccSNMP snmpServer;
+
     private ArrayList<IfaceData> ifaces;
 
     public SnmpDiscover(NccSNMP server) {
+
+        snmpServer = server;
 
         walkData = new HashMap<>();
 
@@ -111,14 +115,14 @@ public class SnmpDiscover {
         return "";
     }
 
-    public Long getUptime(){
+    public Long getUptime() {
         return 0L;
     }
 
     public ArrayList<IfaceData> getIfaces() {
         ArrayList<IfaceData> ifaceData = new ArrayList<>();
 
-        if(ifIndex!=null) {
+        if (ifIndex != null) {
             for (Map.Entry<String, String> item : ifIndex.entrySet()) {
                 IfaceData idata = new IfaceData();
 
@@ -147,5 +151,9 @@ public class SnmpDiscover {
         }
 
         return ifaceData;
+    }
+
+    public void setIfaceState(Integer iface, Integer state) {
+        snmpServer.setInt(mibIfAdminStatus + "." + iface, state);
     }
 }

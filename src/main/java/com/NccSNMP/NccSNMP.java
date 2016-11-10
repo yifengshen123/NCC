@@ -69,7 +69,7 @@ public class NccSNMP {
 
     private PDU send(String oid) {
         try {
-            if(!transport.isListening()) transport.listen();
+            if (!transport.isListening()) transport.listen();
             ResponseEvent response = snmp.send(preparePDU(new OID(oid)), communityTarget, null);
             transport.close();
 
@@ -99,7 +99,7 @@ public class NccSNMP {
         HashMap<String, String> items = new HashMap<>();
 
         try {
-            if(!transport.isListening()) transport.listen();
+            if (!transport.isListening()) transport.listen();
             ResponseEvent response = snmp.send(prepareBulk(new OID(oid)), communityTarget);
             transport.close();
 
@@ -128,7 +128,7 @@ public class NccSNMP {
         return null;
     }
 
-    public HashMap<String, String> snmpWalk(String oid){
+    public HashMap<String, String> snmpWalk(String oid) {
         HashMap<String, String> result = new HashMap<>();
 
         return result;
@@ -145,5 +145,38 @@ public class NccSNMP {
 
     public HashMap<String, String> getStrings(String oid) {
         return getBulk(oid);
+    }
+
+    public void setInt(String oid, Integer val) {
+        PDU pdu = new PDU();
+        pdu.add(new VariableBinding(new OID(oid), new Integer32(val)));
+        pdu.setType(PDU.SET);
+        pdu.setRequestID(new Integer32(1));
+
+        try {
+            if (!transport.isListening()) transport.listen();
+            ResponseEvent response = snmp.send(pdu, communityTarget);
+            System.out.println(response);
+            transport.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setString(String oid, String val) {
+        PDU pdu = new PDU();
+        pdu.add(new VariableBinding(new OID(oid), new OctetString(val)));
+        pdu.setType(PDU.SET);
+        pdu.setRequestID(new Integer32(1));
+
+        try {
+            if (!transport.isListening()) transport.listen();
+            ResponseEvent response = snmp.send(pdu, communityTarget, null);
+            transport.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -328,4 +328,13 @@ public class NccNetworkDevice {
 
         return new NccNetworkDevice().getIfaces(id);
     }
+
+    public void setIfaceState(Integer deviceId, Integer iface, Integer state){
+        NccNetworkDeviceData deviceData = getNetworkDevices(deviceId);
+
+        new SnmpDiscover(new NccSNMP(
+                NccUtils.long2ip(deviceData.deviceIP),
+                deviceData.snmpCommunity)).setIfaceState(iface, state);
+
+    }
 }
