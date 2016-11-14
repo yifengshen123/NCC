@@ -26,21 +26,23 @@ public class NccMonitorSensors {
         return new NccMonitorSensorData().getData("SELECT * FROM nccMonitorSensors WHERE id=" + id);
     }
 
+    public NccMonitorSensorData getSensors(String name) {
+        return new NccMonitorSensorData().getData("SELECT * FROM nccMonitorSensors WHERE sensorName='" + name + "'");
+    }
+
     public NccMonitorSensorData updateSensor(NccMonitorSensorData sensorData) {
 
         try {
             NccQuery query = new NccQuery();
             query.updateQuery("UPDATE nccMonitorSensors SET " +
                     "sensorName='" + sensorData.sensorName + "', " +
-                    "sensorType=" + sensorData.sensorType + ", " +
-                    "sensorSource=" + sensorData.sensorSource + ", " +
+                    "sensorCode='" + sensorData.sensorCode + "', " +
                     "sensorLongValue=" + sensorData.sensorLongValue + ", " +
                     "sensorIntValue=" + sensorData.sensorIntValue + ", " +
                     "sensorStringValue='" + sensorData.sensorStringValue + "', " +
                     "sensorDoubleValue=" + sensorData.sensorDoubleValue + ", " +
                     "sensorStatus=" + sensorData.sensorStatus + "," +
                     "pollInterval=" + sensorData.pollInterval + ", " +
-                    "deviceId=" + sensorData.deviceId + ", " +
                     "lastUpdate=UNIX_TIMESTAMP(NOW()) " +
                     "WHERE id=" + sensorData.id);
         } catch (NccQueryException e) {
@@ -57,20 +59,17 @@ public class NccMonitorSensors {
             NccQuery query = new NccQuery();
             query.updateQuery("INSERT INTO nccMonitorSensors (" +
                     "sensorName, " +
-                    "sensorType, " +
-                    "sensorSource, " +
+                    "sensorCode, " +
                     "sensorLongValue, " +
                     "sensorIntValue, " +
                     "sensorStringValue, " +
                     "sensorDoubleValue, " +
                     "sensorStatus, " +
                     "pollInterval, " +
-                    "deviceId, " +
                     "lastUpdate " +
                     ") VALUES (" +
                     "'" + sensorData.sensorName + "', " +
-                    sensorData.sensorType + ", " +
-                    sensorData.sensorSource + ", " +
+                    "'" + sensorData.sensorCode + "', " +
                     sensorData.sensorLongValue + ", " +
                     sensorData.sensorIntValue + ", " +
                     "'" + sensorData.sensorStringValue + "', " +
@@ -80,15 +79,13 @@ public class NccMonitorSensors {
                     "UNIX_TIMESTAMP(NOW())" +
                     ") ON DUPLICATE KEY UPDATE " +
                     "sensorName='" + sensorData.sensorName + "', " +
-                    "sensorType=" + sensorData.sensorType + ", " +
-                    "sensorSource=" + sensorData.sensorSource + ", " +
+                    "sensorCode='" + sensorData.sensorCode + "', " +
                     "sensorLongValue=" + sensorData.sensorLongValue + ", " +
                     "sensorIntValue=" + sensorData.sensorIntValue + ", " +
                     "sensorStringValue='" + sensorData.sensorStringValue + "', " +
                     "sensorDoubleValue=" + sensorData.sensorDoubleValue + ", " +
                     "sensorStatus=" + sensorData.sensorStatus + "," +
                     "pollInterval=" + sensorData.pollInterval + ", " +
-                    "deviceId=" + sensorData.deviceId + ", " +
                     "lastUpdate=UNIX_TIMESTAMP(NOW())");
 
             return sensorData;
@@ -115,25 +112,28 @@ public class NccMonitorSensors {
     public ArrayList<NccMonitorSensorData> discoverSensors(Integer deviceId) {
         ArrayList<NccMonitorSensorData> data = new ArrayList<>();
         NccNetworkDeviceData deviceData = new NccNetworkDevice().getNetworkDevices(deviceId);
+        NccMonitorSensorData sensor = new NccMonitorSensorData();
+
+        sensor.pollInterval = 5;
+        sensor.sensorStatus = 0;
+        sensor.sensorCode = "sensor.setIntValue(device.get(\"" + deviceData.deviceName + "\").isAlive())";
+        sensor.sensorName = deviceData.id + "_" + deviceData.deviceName + "_alive";
+
+        data.add(createSensor(sensor));
 
         for (IfaceData iface : new NccNetworkDevice().getIfaces(deviceId)) {
-            NccMonitorSensorData sensor = new NccMonitorSensorData();
 
             sensor.pollInterval = 30;
-            sensor.deviceId = deviceId;
             sensor.sensorStatus = 0;
-            sensor.sensorType = 2;
-            sensor.sensorSource = iface.id;
-            sensor.sensorName = deviceData.id + "-In-" + iface.ifIndex;
+            sensor.sensorCode = "sensor.setLongValue(device.get(\"" + deviceData.deviceName + "\").getHCInOctets(" + iface.ifIndex + "))";
+            sensor.sensorName = deviceData.id + "_" + deviceData.deviceName + "_port_" + iface.ifIndex + "_in";
 
             data.add(createSensor(sensor));
 
             sensor.pollInterval = 30;
-            sensor.deviceId = deviceId;
             sensor.sensorStatus = 0;
-            sensor.sensorType = 3;
-            sensor.sensorSource = iface.id;
-            sensor.sensorName = deviceData.id + "-Out-" + iface.ifIndex;
+            sensor.sensorCode = "sensor.setLongValue(device.get(\"" + deviceData.deviceName + "\").getHCOutOctets(" + iface.ifIndex + "))";
+            sensor.sensorName = deviceData.id + "_" + deviceData.deviceName + "_port_" + iface.ifIndex + "_out";
 
             data.add(createSensor(sensor));
         }

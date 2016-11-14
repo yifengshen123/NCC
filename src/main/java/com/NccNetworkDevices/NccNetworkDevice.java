@@ -100,6 +100,23 @@ public class NccNetworkDevice {
                 "WHERE d.id=" + id);
     }
 
+    public NccNetworkDeviceData getNetworkDevices(String name) {
+        return new NccNetworkDeviceData().getData("SELECT " +
+                "d.id AS id, " +
+                "d.deviceIP AS deviceIP, " +
+                "d.deviceName AS deviceName, " +
+                "d.deviceType AS deviceType, " +
+                "d.snmpCommunity AS snmpCommunity, " +
+                "d.addressStreet AS addressStreet, " +
+                "d.addressBuild AS addressBuild, " +
+                "t.typeName AS typeName, " +
+                "d.deviceStatus AS deviceStatus, " +
+                "d.lastUpdate AS lastUpdate  " +
+                "FROM nccNetworkDevices d " +
+                "LEFT JOIN nccDeviceTypes t ON t.id=d.deviceType " +
+                "WHERE d.deviceName='" + name + "'");
+    }
+
     public IfaceData getIface(Integer id) {
         return new IfaceData().getData("SELECT * FROM nccNetworkDeviceIfaces WHERE id=" + id);
     }
@@ -329,7 +346,7 @@ public class NccNetworkDevice {
         return new NccNetworkDevice().getIfaces(id);
     }
 
-    public void setIfaceState(Integer deviceId, Integer iface, Integer state){
+    public void setIfaceState(Integer deviceId, Integer iface, Integer state) {
         NccNetworkDeviceData deviceData = getNetworkDevices(deviceId);
 
         new SnmpDiscover(new NccSNMP(

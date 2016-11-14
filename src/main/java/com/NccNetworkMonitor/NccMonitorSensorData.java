@@ -10,8 +10,7 @@ import java.sql.SQLException;
 public class NccMonitorSensorData extends NccAbstractData<NccMonitorSensorData> {
     public Integer id;
     public String sensorName;
-    public Integer sensorType;
-    public Integer sensorSource;
+    public String sensorCode;
     public Long sensorLongValue;
     public Integer sensorIntValue;
     public String sensorStringValue;
@@ -19,7 +18,6 @@ public class NccMonitorSensorData extends NccAbstractData<NccMonitorSensorData> 
     public Integer sensorStatus;
     public Integer pollInterval;
     public Long lastUpdate;
-    public Integer deviceId;
 
     @Override
     public NccMonitorSensorData fillData() {
@@ -28,8 +26,6 @@ public class NccMonitorSensorData extends NccAbstractData<NccMonitorSensorData> 
         try {
             data.id = rs.getInt("id");
             data.sensorName = rs.getString("sensorName");
-            data.sensorType = rs.getInt("sensorType");
-            data.sensorSource = rs.getInt("sensorSource");
             data.sensorLongValue = rs.getLong("sensorLongValue");
             data.sensorIntValue = rs.getInt("sensorIntValue");
             data.sensorStringValue = rs.getString("sensorStringValue");
@@ -37,7 +33,7 @@ public class NccMonitorSensorData extends NccAbstractData<NccMonitorSensorData> 
             data.sensorStatus = rs.getInt("sensorStatus");
             data.pollInterval = rs.getInt("pollInterval");
             data.lastUpdate = rs.getLong("lastUpdate");
-            data.deviceId = rs.getInt("deviceId");
+            data.sensorCode = rs.getString("sensorCode");
         } catch (SQLException e) {
             e.printStackTrace();
         }

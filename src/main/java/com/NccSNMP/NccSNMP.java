@@ -27,6 +27,26 @@ public class NccSNMP {
     private CommunityTarget communityTarget;
     private Snmp snmp;
 
+    public static final String ifIndex = "1.3.6.1.2.1.2.2.1.1";
+    public static final String ifDescr = "1.3.6.1.2.1.2.2.1.2";
+    public static final String ifType = "1.3.6.1.2.1.2.2.1.3";
+    public static final String ifSpeed = "1.3.6.1.2.1.2.2.1.5";
+    public static final String ifPhysAddress = "1.3.6.1.2.1.2.2.1.6";
+    public static final String ifAdminStatus = "1.3.6.1.2.1.2.2.1.7";
+    public static final String ifOperStatus = "1.3.6.1.2.1.2.2.1.8";
+    public static final String ifInOctets = "1.3.6.1.2.1.2.2.1.10";
+    public static final String ifHCInOctets = "1.3.6.1.2.1.31.1.1.1.6";
+    public static final String ifInUcastPkts = "1.3.6.1.2.1.2.2.1.11";
+    public static final String ifInNUcastPkts = "1.3.6.1.2.1.2.2.1.12";
+    public static final String ifInDiscards = "1.3.6.1.2.1.2.2.1.13";
+    public static final String ifInErrors = "1.3.6.1.2.1.2.2.1.14";
+    public static final String ifOutOctets = "1.3.6.1.2.1.2.2.1.16";
+    public static final String ifHCOutOctets = "1.3.6.1.2.1.31.1.1.1.10";
+    public static final String ifOutUcastPkts = "1.3.6.1.2.1.2.2.1.17";
+    public static final String ifOutNUcastPkts = "1.3.6.1.2.1.2.2.1.18";
+    public static final String ifOutDiscards = "1.3.6.1.2.1.2.2.1.19";
+    public static final String ifOutErrors = "1.3.6.1.2.1.2.2.1.20";
+
     public NccSNMP(String ip, String community) {
         this.ip = ip;
         this.community = community;
@@ -140,7 +160,7 @@ public class NccSNMP {
             return data.get(0).getVariable().toString();
         }
 
-        return null;
+        return "";
     }
 
     public HashMap<String, String> getStrings(String oid) {

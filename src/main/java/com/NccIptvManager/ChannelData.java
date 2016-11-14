@@ -42,7 +42,7 @@ public class ChannelData extends NccAbstractData<ChannelData> {
     public Long serverLocalAddress;
 
     @Override
-    public ChannelData fillData(){
+    public ChannelData fillData() {
         ChannelData channelData = new ChannelData();
 
         try {
