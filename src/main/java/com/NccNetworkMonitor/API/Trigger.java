@@ -29,6 +29,14 @@ public class Trigger {
         return this;
     }
 
+    public NccMonitorTriggerData getData(){
+        return this.triggerData;
+    }
+
+    public Integer getStatus(){
+        return this.triggerData.triggerStatus;
+    }
+
     public void setStatus(Integer status) {
         this.triggerData.triggerStatus = status;
         new NccMonitorTrigger().updateTrigger(this.triggerData);

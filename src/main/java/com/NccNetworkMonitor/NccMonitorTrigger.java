@@ -33,7 +33,9 @@ public class NccMonitorTrigger {
                     "triggerName='" + triggerData.triggerName + "', " +
                     "triggerCode='" + triggerData.triggerCode + "', " +
                     "triggerSensor=" + triggerData.triggerSensor + ", " +
-                    "triggerStatus=" + triggerData.triggerStatus + " " +
+                    "triggerStatus=" + triggerData.triggerStatus + ", " +
+                    "pollInterval=" + triggerData.pollInterval + ", " +
+                    "lastUpdate=UNIX_TIMESTAMP(NOW()) " +
                     "WHERE id=" + triggerData.id);
 
         } catch (NccQueryException e) {

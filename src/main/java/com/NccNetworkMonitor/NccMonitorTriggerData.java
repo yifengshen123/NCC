@@ -13,6 +13,8 @@ public class NccMonitorTriggerData extends NccAbstractData<NccMonitorTriggerData
     public String triggerCode;
     public Integer triggerSensor;
     public Integer triggerStatus;
+    public Integer pollInterval;
+    public Long lastUpdate;
 
     @Override
     public NccMonitorTriggerData fillData() {
@@ -24,6 +26,8 @@ public class NccMonitorTriggerData extends NccAbstractData<NccMonitorTriggerData
             data.triggerCode = rs.getString("triggerCode");
             data.triggerSensor = rs.getInt("triggerSensor");
             data.triggerStatus = rs.getInt("triggerStatus");
+            data.pollInterval = rs.getInt("pollInterval");
+            data.lastUpdate = rs.getLong("lastUpdate");
         } catch (SQLException e) {
             e.printStackTrace();
         }

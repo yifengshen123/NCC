@@ -5,6 +5,7 @@ import com.NccNetworkDevices.IfaceData;
 import com.NccNetworkDevices.NccNetworkDevice;
 import com.NccNetworkDevices.NccNetworkDeviceData;
 import com.NccNetworkMonitor.API.Device;
+import com.NccNetworkMonitor.API.Event;
 import com.NccNetworkMonitor.API.Sensor;
 import com.NccNetworkMonitor.API.Trigger;
 import com.NccSystem.NccLogger;
@@ -52,23 +53,52 @@ public class NccNetworkMonitor {
     }
 
     private class TriggerTask implements Runnable {
+
+        private NccMonitorTrigger monitorTrigger = new NccMonitorTrigger();
+        private PythonInterpreter pi = new PythonInterpreter();
+
         @Override
         public void run() {
-            ArrayList<NccMonitorTriggerData> triggers = new NccMonitorTrigger().getTriggers();
-            PythonInterpreter pi = new PythonInterpreter();
+            ArrayList<NccMonitorTriggerData> triggers = monitorTrigger.getTriggers();
+            Long startTime = System.currentTimeMillis();
+            Long triggerCount = 0L;
+
+            Long sqlTime = System.currentTimeMillis() / 1000;
+
+            try {
+                sqlTime = new NccQuery().getSQLTime();
+            } catch (NccQueryException e) {
+                e.printStackTrace();
+            }
 
             for (NccMonitorTriggerData trigger : triggers) {
+
+                if ((sqlTime - trigger.lastUpdate) < trigger.pollInterval) continue;
+
                 if (!trigger.triggerCode.isEmpty()) {
                     pi.set("device", new Device());
                     pi.set("sensor", new Sensor());
                     pi.set("trigger", new Trigger(trigger.id));
+                    pi.set("event", new Event(new Trigger(trigger.id)));
                     pi.exec(trigger.triggerCode);
+                    pi.cleanup();
+                    triggerCount++;
                 }
             }
+
+            if (triggerCount > 0)
+                logger.info("Processed " + triggerCount + " triggers in " + (System.currentTimeMillis() - startTime) + "ms");
         }
     }
 
     private class SensorsTask implements Runnable {
+
+        private PythonInterpreter pi = new PythonInterpreter();
+        private NccMonitorSensors monitorSensors = new NccMonitorSensors();
+
+        public SensorsTask() {
+        }
+
         @Override
         public void run() {
 
@@ -86,19 +116,19 @@ public class NccNetworkMonitor {
                     Long startTime = System.currentTimeMillis();
                     Long sensorCount = 0L;
 
-                    for (NccMonitorSensorData sensor : sensors) {
-                        Long sqlTime = System.currentTimeMillis() / 1000;
+                    Long sqlTime = System.currentTimeMillis() / 1000;
 
-                        try {
-                            sqlTime = new NccQuery().getSQLTime();
-                        } catch (NccQueryException e1) {
-                            e1.printStackTrace();
-                        }
+                    try {
+                        sqlTime = new NccQuery().getSQLTime();
+                    } catch (NccQueryException e) {
+                        e.printStackTrace();
+                    }
+
+                    for (NccMonitorSensorData sensor : sensors) {
 
                         if ((sqlTime - sensor.lastUpdate) < sensor.pollInterval) continue;
 
                         if (!sensor.sensorCode.isEmpty()) {
-                            PythonInterpreter pi = new PythonInterpreter();
                             pi.set("device", new Device());
                             pi.set("sensor", new Sensor(sensor.id));
                             pi.set("trigger", new Trigger());
@@ -116,7 +146,7 @@ public class NccNetworkMonitor {
                 }
             }
 
-            ArrayList<NccMonitorSensorData> sensors = new NccMonitorSensors().getSensors();
+            ArrayList<NccMonitorSensorData> sensors = monitorSensors.getSensors();
 
             ExecutorService es = Executors.newCachedThreadPool();
             es.submit(new SensorPoller(sensors));
