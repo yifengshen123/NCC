@@ -51,7 +51,7 @@ public class NccNetworkMonitor {
         }
     }
 
-    private class TriggerTask extends TimerTask {
+    private class TriggerTask implements Runnable {
         @Override
         public void run() {
             ArrayList<NccMonitorTriggerData> triggers = new NccMonitorTrigger().getTriggers();
@@ -68,61 +68,86 @@ public class NccNetworkMonitor {
         }
     }
 
-    private class SensorsTask extends TimerTask {
+    private class SensorsTask implements Runnable {
         @Override
         public void run() {
-            ArrayList<NccMonitorSensorData> sensors = new NccMonitorSensors().getSensors();
-            Long startTime = System.currentTimeMillis();
-            Long sensorCount = 0L;
 
-            for (NccMonitorSensorData sensor : sensors) {
-                Long sqlTime = System.currentTimeMillis() / 1000;
+            class SensorPoller implements Callable<ArrayList<NccMonitorSensorData>> {
 
-                try {
-                    sqlTime = new NccQuery().getSQLTime();
-                } catch (NccQueryException e1) {
-                    e1.printStackTrace();
+                private ArrayList<NccMonitorSensorData> sensors;
+
+                public SensorPoller(ArrayList<NccMonitorSensorData> sensors) {
+                    this.sensors = sensors;
                 }
 
-                if ((sqlTime - sensor.lastUpdate) < sensor.pollInterval) continue;
+                @Override
+                public ArrayList<NccMonitorSensorData> call() {
 
-                sensorCount++;
-                if (!sensor.sensorCode.isEmpty()) {
-                    PythonInterpreter pi = new PythonInterpreter();
-                    pi.set("device", new Device());
-                    pi.set("sensor", new Sensor(sensor.id));
-                    pi.exec(sensor.sensorCode);
+                    Long startTime = System.currentTimeMillis();
+                    Long sensorCount = 0L;
+
+                    for (NccMonitorSensorData sensor : sensors) {
+                        Long sqlTime = System.currentTimeMillis() / 1000;
+
+                        try {
+                            sqlTime = new NccQuery().getSQLTime();
+                        } catch (NccQueryException e1) {
+                            e1.printStackTrace();
+                        }
+
+                        if ((sqlTime - sensor.lastUpdate) < sensor.pollInterval) continue;
+
+                        if (!sensor.sensorCode.isEmpty()) {
+                            PythonInterpreter pi = new PythonInterpreter();
+                            pi.set("device", new Device());
+                            pi.set("sensor", new Sensor(sensor.id));
+                            pi.set("trigger", new Trigger());
+                            pi.exec(sensor.sensorCode);
+                            pi.cleanup();
+                        }
+
+                        sensorCount++;
+                    }
+
+                    if (sensorCount > 0)
+                        logger.info("Processed " + sensorCount + " sensors in " + (System.currentTimeMillis() - startTime) + "ms");
+
+                    return sensors;
                 }
             }
 
-            if (sensorCount > 0)
-                System.out.println("Processed " + sensorCount + " sensors in " + (System.currentTimeMillis() - startTime) + "ms");
+            ArrayList<NccMonitorSensorData> sensors = new NccMonitorSensors().getSensors();
+
+            ExecutorService es = Executors.newCachedThreadPool();
+            es.submit(new SensorPoller(sensors));
+            es.shutdown();
+            try {
+                es.awaitTermination(10, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }
 
-    private SensorsTask sensorsTask;
-    private TriggerTask triggerTask;
-    private Timer sensorsTimer;
-    private Timer triggerTimer;
+    private ScheduledExecutorService sensorService;
+    private ScheduledExecutorService triggerService;
 
     public NccNetworkMonitor() {
-        sensorsTask = new SensorsTask();
-        triggerTask = new TriggerTask();
-
-        sensorsTimer = new Timer();
-        triggerTimer = new Timer();
+        sensorService = Executors.newScheduledThreadPool(10);
+        triggerService = Executors.newScheduledThreadPool(5);
     }
 
     public void start() {
         logger.info("Starting NetworkMonitor");
 
-        sensorsTimer.schedule(sensorsTask, 0, 1000);
-        triggerTimer.schedule(triggerTask, 0, 1000);
+        sensorService.scheduleAtFixedRate(new SensorsTask(), 0, 1, TimeUnit.SECONDS);
+
+        triggerService.scheduleAtFixedRate(new TriggerTask(), 0, 1, TimeUnit.SECONDS);
     }
 
     public void stop() {
-        sensorsTimer.cancel();
-        triggerTimer.cancel();
+        triggerService.shutdown();
+        sensorService.shutdown();
     }
 }

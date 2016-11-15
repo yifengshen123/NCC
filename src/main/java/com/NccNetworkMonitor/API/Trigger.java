@@ -33,4 +33,8 @@ public class Trigger {
         this.triggerData.triggerStatus = status;
         new NccMonitorTrigger().updateTrigger(this.triggerData);
     }
+
+    public void fireEvent(Sensor sensor, String event) {
+        System.out.println("Event '" + event + "' for sensor id=" + sensor.getData().id);
+    }
 }

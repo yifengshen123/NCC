@@ -47,18 +47,21 @@ public class Device {
     public Long getHCInOctets(Integer iface) {
         NccSNMP snmp = new NccSNMP(NccUtils.long2ip(this.deviceData.deviceIP), this.deviceData.snmpCommunity);
         String val = snmp.getString(NccSNMP.ifHCInOctets + "." + iface.toString());
+        snmp.close();
         return val.isEmpty() ? 0L : Long.parseLong(val);
     }
 
     public Long getHCOutOctets(Integer iface) {
         NccSNMP snmp = new NccSNMP(NccUtils.long2ip(this.deviceData.deviceIP), this.deviceData.snmpCommunity);
         String val = snmp.getString(NccSNMP.ifHCOutOctets + "." + iface.toString());
+        snmp.close();
         return val.isEmpty() ? 0L : Long.parseLong(val);
     }
 
     public Integer getOperStatus(Integer iface) {
         NccSNMP snmp = new NccSNMP(NccUtils.long2ip(this.deviceData.deviceIP), this.deviceData.snmpCommunity);
         String val = snmp.getString(NccSNMP.ifOperStatus + "." + iface.toString());
+        snmp.close();
         return val.isEmpty() ? 0 : Integer.parseInt(val);
     }
 }

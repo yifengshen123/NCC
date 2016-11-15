@@ -1,6 +1,7 @@
 package com.NccNetworkMonitor.API;
 
 import com.NccNetworkMonitor.NccMonitorSensorData;
+import com.NccNetworkMonitor.NccMonitorSensorHistory;
 import com.NccNetworkMonitor.NccMonitorSensors;
 
 public class Sensor {
@@ -40,6 +41,7 @@ public class Sensor {
     public void setLongValue(Long val) {
         this.sensorData.sensorLongValue = val;
         new NccMonitorSensors().updateSensor(getData());
+        new NccMonitorSensorHistory().add(getData());
     }
 
     public Integer getIntValue() {
@@ -49,5 +51,11 @@ public class Sensor {
     public void setIntValue(Integer val) {
         this.sensorData.sensorIntValue = val;
         new NccMonitorSensors().updateSensor(getData());
+        NccMonitorSensorData sensor = getData();
+        new NccMonitorSensorHistory().add(sensor);
+    }
+
+    public Long getLongAvg(Integer last) {
+        return 0L;
     }
 }

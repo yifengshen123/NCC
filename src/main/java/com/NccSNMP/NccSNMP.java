@@ -68,6 +68,14 @@ public class NccSNMP {
         }
     }
 
+    public void close(){
+        try {
+            snmp.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private PDU preparePDU(OID oid) {
         PDU pdu = new PDU();
         pdu.add(new VariableBinding(new OID(oid)));
