@@ -11,4 +11,8 @@ public interface MonitorService {
             String login,
             String key,
             Integer deviceId);
+
+    ApiMonitorTriggerData getMonitorActiveTriggers(
+            String login,
+            String key);
 }

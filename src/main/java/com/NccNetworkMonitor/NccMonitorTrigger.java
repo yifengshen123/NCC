@@ -26,6 +26,10 @@ public class NccMonitorTrigger {
         return new NccMonitorTriggerData().getData("SELECT * FROM nccMonitorTriggers WHERE triggerName='" + name + "'");
     }
 
+    public ArrayList<NccMonitorTriggerData> getActiveTriggers() {
+        return new NccMonitorTriggerData().getDataList("SELECT * FROM nccMonitorTriggers WHERE triggerStatus=1");
+    }
+
     public NccMonitorTriggerData updateTrigger(NccMonitorTriggerData triggerData) {
         try {
             NccQuery query = new NccQuery();

@@ -7,6 +7,8 @@ import com.NccAPI.DhcpBinding.DhcpBindingService;
 import com.NccAPI.DhcpBinding.DhcpBindingServiceImpl;
 import com.NccAPI.DhcpLeases.DhcpLeasesService;
 import com.NccAPI.DhcpLeases.DhcpLeasesServiceImpl;
+import com.NccAPI.Issues.IssuesService;
+import com.NccAPI.Issues.IssuesServiceImpl;
 import com.NccAPI.Map.MapService;
 import com.NccAPI.Map.MapServiceImpl;
 import com.NccAPI.Monitor.MonitorService;
@@ -143,6 +145,7 @@ public class NccAPI {
             private SystemService systemService;
             private NetworkDevicesService networkDevicesService;
             private MonitorService monitorService;
+            private IssuesService issuesService;
 
             private Object compositeService;
 
@@ -161,6 +164,7 @@ public class NccAPI {
                 systemService = new SystemServiceImpl();
                 networkDevicesService = new NetworkDevicesServiceImpl();
                 monitorService = new MonitorServiceImpl();
+                issuesService = new IssuesServiceImpl();
 
                 compositeService = ProxyUtil.createCompositeServiceProxy(
                         this.getClass().getClassLoader(),
@@ -178,6 +182,7 @@ public class NccAPI {
                                 mapService,
                                 networkDevicesService,
                                 monitorService,
+                                issuesService,
                                 systemService
                         },
                         new Class<?>[]{
@@ -194,6 +199,7 @@ public class NccAPI {
                                 MapService.class,
                                 NetworkDevicesService.class,
                                 MonitorService.class,
+                                IssuesService.class,
                                 SystemService.class
                         },
                         true);

@@ -26,6 +26,7 @@ dependencies {
     compile "org.eclipse.jetty.aggregate:jetty-server:7.6.0.RC5"
     compile "org.snmp4j:snmp4j:2.5.2"
     compile "jython:jython:2.1"
+    compile "org.syslog4j:syslog4j:0.9.30"
 }
 
 jar {
