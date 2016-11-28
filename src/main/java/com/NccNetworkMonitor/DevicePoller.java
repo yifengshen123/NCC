@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by root on 01.11.16.
  */
-class DevicePoller implements Callable<ArrayList<IfaceData>> {
+public class DevicePoller implements Callable<ArrayList<IfaceData>> {
 
     private static NccLogger devicePollerLogger = new NccLogger("DevicePollerLogger");
     private static Logger logger = devicePollerLogger.setFilename(Ncc.netmonLogfile);

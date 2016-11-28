@@ -47,12 +47,14 @@ public class NccMonitorSensorHistory {
                     "WHERE sensorId=" + id + " " +
                     "ORDER BY historyTime DESC " +
                     "LIMIT " + count);
-            if(rs!=null){
+            if (rs != null) {
                 try {
-                    if(rs.next()){
-                        if(type.equals(Sensor.SENSOR_LONG)) return rs.getDouble("longAvg");
-                        if(type.equals(Sensor.SENSOR_INT)) return rs.getDouble("intAvg");
-                        if(type.equals(Sensor.SENSOR_DOUBLE)) return rs.getDouble("doubleAvg");
+                    if (rs.next()) {
+                        Double result = 0D;
+                        if (type.equals(Sensor.SENSOR_LONG)) result = rs.getDouble("longAvg");
+                        if (type.equals(Sensor.SENSOR_INT)) result = rs.getDouble("intAvg");
+                        if (type.equals(Sensor.SENSOR_DOUBLE)) result = rs.getDouble("doubleAvg");
+                        return result;
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

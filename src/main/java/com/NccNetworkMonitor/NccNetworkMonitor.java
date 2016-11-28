@@ -4,10 +4,7 @@ import com.Ncc;
 import com.NccNetworkDevices.IfaceData;
 import com.NccNetworkDevices.NccNetworkDevice;
 import com.NccNetworkDevices.NccNetworkDeviceData;
-import com.NccNetworkMonitor.API.Device;
-import com.NccNetworkMonitor.API.Event;
-import com.NccNetworkMonitor.API.Sensor;
-import com.NccNetworkMonitor.API.Trigger;
+import com.NccNetworkMonitor.API.*;
 import com.NccSystem.NccLogger;
 import com.NccSystem.SQL.NccQuery;
 import com.NccSystem.SQL.NccQueryException;
@@ -77,9 +74,10 @@ public class NccNetworkMonitor {
 
                 if (!trigger.triggerCode.isEmpty()) {
                     pi.set("device", new Device());
-                    pi.set("sensor", new Sensor());
+                    pi.set("sensor", new Sensor(trigger.triggerSensor));
                     pi.set("trigger", new Trigger(trigger.id));
                     pi.set("event", new Event(new Trigger(trigger.id)));
+                    pi.set("iptv", new IPTV());
                     pi.exec(trigger.triggerCode);
                     pi.cleanup();
                     triggerCount++;
@@ -132,6 +130,7 @@ public class NccNetworkMonitor {
                             pi.set("device", new Device());
                             pi.set("sensor", new Sensor(sensor.id));
                             pi.set("trigger", new Trigger());
+                            pi.set("iptv", new IPTV());
                             pi.exec(sensor.sensorCode);
                             pi.cleanup();
                         }

@@ -533,6 +533,7 @@ public class NccIptvManager {
             TimerTask timerTask = new TimerTask() {
                 @Override
                 public void run() {
+
                     try {
                         String line = "";
 
