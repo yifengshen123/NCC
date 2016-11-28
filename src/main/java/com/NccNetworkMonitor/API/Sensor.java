@@ -6,6 +6,8 @@ import com.NccNetworkMonitor.NccMonitorSensors;
 
 public class Sensor {
 
+    public static final Integer SENSOR_PROCESSED = 50;
+
     public static final Integer SENSOR_LONG = 1;
     public static final Integer SENSOR_INT = 2;
     public static final Integer SENSOR_DOUBLE = 3;
@@ -61,5 +63,10 @@ public class Sensor {
 
     public Double getAvg(Integer type, Integer count) {
         return new NccMonitorSensorHistory().getAvg(getData().id, type, count);
+    }
+
+    public void setStatus(Integer status){
+        this.sensorData.sensorStatus = status;
+        new NccMonitorSensors().updateSensor(getData());
     }
 }

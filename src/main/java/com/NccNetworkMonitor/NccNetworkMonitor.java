@@ -131,7 +131,7 @@ public class NccNetworkMonitor {
                             pi.set("sensor", new Sensor(sensor.id));
                             pi.set("trigger", new Trigger());
                             pi.set("iptv", new IPTV());
-                            pi.exec(sensor.sensorCode);
+                            pi.exec(sensor.sensorCode + "\nsensor.setStatus(sensor.SENSOR_PROCESSED)");
                             pi.cleanup();
                         }
 
