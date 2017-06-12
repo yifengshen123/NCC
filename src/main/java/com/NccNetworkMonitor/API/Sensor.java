@@ -19,7 +19,7 @@ public class Sensor {
     }
 
     public Sensor(Integer id) {
-        get(id);
+        this.sensorData = new NccMonitorSensors().getSensors(id);
     }
 
     public Sensor(String name) {
@@ -27,13 +27,15 @@ public class Sensor {
     }
 
     public Sensor get(Integer id) {
-        this.sensorData = new NccMonitorSensors().getSensors(id);
-        return this;
+        Sensor sensor = new Sensor();
+        sensor.sensorData = new NccMonitorSensors().getSensors(id);
+        return sensor;
     }
 
     public Sensor get(String name) {
-        this.sensorData = new NccMonitorSensors().getSensors(name);
-        return this;
+        Sensor sensor = new Sensor();
+        sensor.sensorData = new NccMonitorSensors().getSensors(name);
+        return sensor;
     }
 
     public NccMonitorSensorData getData() {

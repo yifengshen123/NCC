@@ -30,14 +30,14 @@ public class NccUsers {
                 if (rs.next()) {
                     NccUserData userData = new NccUserData();
 
-                    userData.userLogin = rs.getString("id");
-                    userData.id = rs.getInt("uid");
+                    userData.userLogin = rs.getString("userLogin");
+                    userData.id = rs.getInt("userId");
                     userData.userPassword = rs.getString("userPassword");
-                    userData.userStatus = rs.getBoolean("disable") ? 0 : 1;
-                    userData.userIP = rs.getLong("ip");
-                    userData.userTariff = rs.getInt("tp_id");
-                    userData.userCredit = rs.getFloat("credit");
-                    userData.userDeposit = rs.getFloat("deposit");
+                    userData.userStatus = rs.getBoolean("userStatus") ? 0 : 1;
+                    userData.userIP = rs.getLong("userIP");
+                    userData.userTariff = rs.getInt("userTariff");
+                    userData.userCredit = rs.getFloat("userCredit");
+                    userData.userDeposit = rs.getFloat("userDeposit");
 
                     return userData;
                 } else {
@@ -49,6 +49,34 @@ public class NccUsers {
         } else {
             throw new NccUsersException("User not found");
         }
+    }
+
+    public NccUserData getUserByIP(Long ip) throws NccUsersException {
+        CachedRowSetImpl rs;
+
+        try {
+            rs = query.selectQuery("SELECT " +
+                    "u.id AS userLogin, " +
+                    "0 AS accountId, " +
+                    "DECODE(u.password, '" + DB_DECODE_KEY + "') AS userPassword, " +
+                    "u.credit AS userCredit, " +
+                    "u.disable AS userStatus, " +
+                    "u.bill_id AS billId, " +
+                    "u.uid AS userId, " +
+                    "u.gid AS groupId, " +
+                    "d.ip AS userIP, " +
+                    "d.tp_id AS userTariff, " +
+                    "d.cid AS userMAC, " +
+                    "b.deposit AS userDeposit " +
+                    "FROM users u " +
+                    "LEFT JOIN bills b ON b.id=u.bill_id " +
+                    "LEFT JOIN dv_main d ON d.uid=u.uid " +
+                    "WHERE d.ip=" + ip);
+        } catch (NccQueryException e) {
+            throw new NccUsersException("SQL error: " + e.getMessage());
+        }
+
+        return fillUserData(rs);
     }
 
     public NccUserData getUser(Integer uid) throws NccUsersException {

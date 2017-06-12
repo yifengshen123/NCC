@@ -123,15 +123,19 @@ public class NccNetworkMonitor {
                     }
 
                     for (NccMonitorSensorData sensor : sensors) {
+                        Long delta = sqlTime - sensor.lastUpdate;
 
-                        if ((sqlTime - sensor.lastUpdate) < sensor.pollInterval) continue;
+                        if (delta < sensor.pollInterval) continue;
 
                         if (!sensor.sensorCode.isEmpty()) {
                             pi.set("device", new Device());
                             pi.set("sensor", new Sensor(sensor.id));
                             pi.set("trigger", new Trigger());
                             pi.set("iptv", new IPTV());
-                            pi.exec(sensor.sensorCode + "\nsensor.setStatus(sensor.SENSOR_PROCESSED)");
+                            pi.setErr(System.err);
+                            pi.setOut(System.out);
+                            pi.exec(sensor.sensorCode);
+                            //pi.exec(sensor.sensorCode + "\nsensor.setStatus(sensor.SENSOR_PROCESSED)");
                             pi.cleanup();
                         }
 
